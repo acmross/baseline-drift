@@ -181,3 +181,28 @@ def test_delete_removes_measurements_checkin_and_audio(tmp_path):
     assert again.status_code == 404
     bad = client.delete("/api/session", params={"subject": "../x", "session": "fd1"})
     assert bad.status_code == 422
+
+
+def test_saved_session_can_be_opened_and_played_back(tmp_path):
+    data = tmp_path / "data"
+    client = TestClient(create_app(data_dir=data, max_upload_bytes=5_000_000))
+    made = client.post(
+        "/api/session", data={"subject": "AMANDA", "session": "fd1"},
+        files={"vowel": ("v.wav", wav_bytes(tmp_path / "v.wav"), "audio/wav"),
+               "passage": ("p.wav", wav_bytes(tmp_path / "p.wav", 1.5), "audio/wav")})
+    assert made.status_code == 201
+    client.post("/api/context", json={"subject": "AMANDA", "session": "fd1",
+                                      "raw": {"cough": "yes"}})
+    where = {"subject": "AMANDA", "session": "fd1"}
+
+    info = client.get("/api/session-detail", params=where).json()
+    assert info["takes"] == ["vowel", "passage"]
+    assert len(info["measures"]) == 8 and all(m["value_text"] for m in info["measures"])
+    assert any(item["answer"] == "yes" for item in info["checkin"])
+
+    audio = client.get("/api/audio", params={**where, "take": "vowel"})
+    assert audio.status_code == 200 and audio.content[:4] == b"RIFF"
+    assert client.get("/api/audio", params={**where, "take": "free"}).status_code == 404
+    assert client.get("/api/audio", params={**where, "take": "../x"}).status_code == 422
+    assert client.get("/api/session-detail",
+                      params={"subject": "AMANDA", "session": "fd9"}).status_code == 404

@@ -89,7 +89,6 @@
     <div id="level-meter" class="meter" role="meter" aria-label="Microphone level"
          aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
     <div id="take-countdown" aria-live="assertive" hidden></div>
-    <button id="take-stop" type="button" class="secondary">Stop take</button>
     </div>
     <div class="actions">
       <button id="save-session" type="button" disabled>Save session</button>
@@ -162,6 +161,16 @@
     <div id="trends-list" class="report-list"></div>
   </section>
   <div id="status" role="status" aria-live="polite"></div>
+  <dialog id="confirm-delete" aria-labelledby="confirm-delete-title">
+    <form method="dialog">
+      <h2 id="confirm-delete-title">Delete this session?</h2>
+      <p id="confirm-delete-text"></p>
+      <div class="actions">
+        <button value="cancel" class="secondary" autofocus>Cancel</button>
+        <button value="delete" class="danger">Delete session</button>
+      </div>
+    </form>
+  </dialog>
   <footer class="footer">
     <p class="sub">This describes what changed, not why. Nothing here is a diagnosis.</p>
   </footer>
