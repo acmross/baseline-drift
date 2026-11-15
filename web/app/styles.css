@@ -36,4 +36,15 @@ button.secondary { background: var(--surface-2); color: var(--text-primary); bor
 button:disabled { opacity: 0.45; cursor: not-allowed; }
 button:focus-visible, a:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
 a { color: var(--series-1); }
+.field { display: grid; gap: var(--space-1); margin-bottom: var(--space-3); }
+label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+input {
+  min-height: 44px; padding: 0 var(--space-2); background: var(--surface-2);
+  color: var(--text-primary); border: 1px solid var(--line); border-radius: var(--radius);
+  font: inherit;
+}
+.meter { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; margin: var(--space-3) 0; }
+.meter span { display: block; height: 100%; width: 0; background: var(--series-1); transition: width 80ms linear; }
+.actions { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+.footer { margin-top: var(--space-4); border-top: 1px solid var(--line); padding-top: var(--space-3); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
