@@ -3,10 +3,11 @@
 **Single outcome:** Baseline Drift is submitted for judging before 23:59 Pacific,
 with every required field filled and every public link opened in a private window.
 
-**Where:** `D:\Ruben\2026.Nasa.Hackathon` (branch `main`, clean at `1e38fd2`). The
-`web-ui` worktree tracks the same commit; PR #1 and PRs #2–#9 are merged.
-Read `docs/INSTRUCTIONS.md` for how to run the app; the form copy lives in
-`SUBMISSION.md`.
+**Where:** `D:\Ruben\2026.Nasa.Hackathon` (branch `main`, clean and pushed). The
+`web-ui` worktree tracks the same commit; PRs #1–#9 are merged. Read
+`docs/INSTRUCTIONS.md` for how to run the app; the form copy lives in
+`SUBMISSION.md`. The session record is
+`docs/sessions/2026-11-15-executive-report.md`.
 
 ## Done today after the verification pass
 
