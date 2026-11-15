@@ -11,7 +11,8 @@ const state = {
 const TAKES = [
   { key: "vowel", label: "sustained \"ah\"", seconds: 5 },
   { key: "passage", label: "fixed passage", seconds: 30 },
-  { key: "free", label: "free speech", seconds: 30 },
+  // Free speech always runs its full length: the take needs the whole sample.
+  { key: "free", label: "free speech", seconds: 30, fixedLength: true },
 ];
 
 const COUNTDOWN_SECONDS = 3;
@@ -238,8 +239,10 @@ async function recordTake(task, maxSeconds, onTick, stopButton) {
       let timer = 0;
       const finish = () => {
         clearInterval(timer);
-        stopButton.removeEventListener("click", finish);
-        stopButton.disabled = true;
+        if (stopButton) {
+          stopButton.removeEventListener("click", finish);
+          stopButton.disabled = true;
+        }
         resolve();
       };
       timer = setInterval(() => {
@@ -247,9 +250,11 @@ async function recordTake(task, maxSeconds, onTick, stopButton) {
         if (onTick) onTick(left);
         if (left <= 0) finish();
       }, 250);
-      stopButton.textContent = "Finish take";
-      stopButton.disabled = false;
-      stopButton.addEventListener("click", finish);
+      if (stopButton) {
+        stopButton.textContent = "Finish take";
+        stopButton.disabled = false;
+        stopButton.addEventListener("click", finish);
+      }
     });
     recorder.stop();
     await stopped;
@@ -332,9 +337,12 @@ async function captureTake(take, button) {
   button.textContent = "Starting...";
   try {
     await runCountdown(COUNTDOWN_SECONDS, name);
+    if (take.fixedLength) button.textContent = "Recording...";
     state.takes[take.key] = await recordTake(take.key, take.seconds, (left) => {
-      status.textContent = `Recording ${name}. ${left}s left. Press Finish take when done.`;
-    }, button);
+      status.textContent = take.fixedLength
+        ? `Recording ${name}. ${left}s left. Keep talking until the time runs out.`
+        : `Recording ${name}. ${left}s left. Press Finish take when done.`;
+    }, take.fixedLength ? null : button);
   } finally {
     setPassageVisible(false);
   }
