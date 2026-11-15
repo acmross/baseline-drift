@@ -68,14 +68,6 @@ function setStatus(text) {
   document.getElementById("status").textContent = text;
 }
 
-// Stop take abandons the take in progress. Nothing from it is kept, and a
-// take recorded earlier for the same card is left as it was.
-function takeStopped() {
-  const error = new Error("take stopped");
-  error.name = "TakeStopped";
-  return error;
-}
-
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -184,10 +176,7 @@ async function runCountdown(seconds, label) {
   for (let remaining = seconds; remaining > 0; remaining -= 1) {
     countdown.textContent = String(remaining);
     status.textContent = `Starting ${label} in ${remaining}...`;
-    for (let i = 0; i < 10; i += 1) {
-      await sleep(100);
-      if (state.stopTake) throw takeStopped();
-    }
+    await sleep(1000);
   }
   countdown.textContent = "Go";
   await sleep(250);
@@ -329,7 +318,7 @@ async function recordTake(task, maxSeconds, onTick, stopButton) {
       timer = setInterval(() => {
         const left = Math.max(0, maxSeconds - Math.floor((Date.now() - started) / 1000));
         if (onTick) onTick(left);
-        if (left <= 0 || state.stopTake) finish();
+        if (left <= 0) finish();
       }, 250);
       if (stopButton) {
         stopButton.textContent = "Finish take";
@@ -339,7 +328,6 @@ async function recordTake(task, maxSeconds, onTick, stopButton) {
     });
     recorder.stop();
     await stopped;
-    if (state.stopTake) throw takeStopped();
 
     const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
     const audio = await context.decodeAudioData(await blob.arrayBuffer());
@@ -416,7 +404,6 @@ async function captureTake(take, button) {
   const name = `take ${number}: ${take.label}`;
   setStep(take.key, "active");
   setPassageVisible(take.key === "passage");
-  state.stopTake = false;
   moveLive(take.key);
   const countdown = document.getElementById("take-countdown");
   button.textContent = "Starting...";
@@ -452,13 +439,8 @@ async function startTake(key) {
       + (ready ? " Save the session when you are ready, or retake any take."
                : " Record the remaining takes.");
   } catch (error) {
-    if (error && error.name === "TakeStopped") {
-      status.textContent = `Take ${TAKES.indexOf(take) + 1} stopped. Nothing from it was kept.`;
-    } else {
-      handleRecordingError(error);
-    }
+    handleRecordingError(error);
   } finally {
-    state.stopTake = false;
     state.recording = false;
     setBusy(false);
   }
@@ -1104,9 +1086,6 @@ document.getElementById("to-report").addEventListener("click", () => {
 });
 document.getElementById("save-session").addEventListener("click", () => saveSession(false));
 document.getElementById("replace-session").addEventListener("click", () => saveSession(true));
-document.getElementById("take-stop").addEventListener("click", () => {
-  if (state.recording) state.stopTake = true;
-});
 
 for (const button of document.querySelectorAll(".take-button")) {
   button.addEventListener("click", () => startTake(button.dataset.take));
