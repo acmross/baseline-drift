@@ -28,6 +28,12 @@ def test_checkin_ids_and_labels():
         assert token in js, token
 
 
+def test_checkin_flow_completes_and_inverts_setup():
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    for token in ("finishCheckin", "yesno_inverted"):
+        assert token in js, token
+
+
 def test_no_diagnostic_copy():
     text = "".join((APP / name).read_text(encoding="utf-8")
                    for name in ("index.html", "app.js", "styles.css")).lower()

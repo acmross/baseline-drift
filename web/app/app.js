@@ -135,9 +135,11 @@ const checkin = { questions: [], index: 0, answers: {} };
 function parseAnswer(type, raw) {
   const text = raw.trim();
   if (type === "yesno" || type === "yesno_inverted") {
-    if (/^(yes|yeah|yep|yup|true)/i.test(text)) return true;
-    if (/^(no|nope|nah|false|none)/i.test(text)) return false;
-    return null;
+    let value = null;
+    if (/^(yes|yeah|yep|yup|true)/i.test(text)) value = true;
+    else if (/^(no|nope|nah|false|none)/i.test(text)) value = false;
+    if (type === "yesno_inverted" && value !== null) value = !value;
+    return value;
   }
   if (type === "number") {
     const match = text.match(/-?\d+(?:\.\d+)?/);
@@ -176,14 +178,10 @@ function advanceCheckin(value) {
   if (question) checkin.answers[question.field] = value;
   checkin.index += 1;
   renderQuestion();
+  return checkin.index >= checkin.questions.length;
 }
 
-async function submitCheckin() {
-  const question = checkin.questions[checkin.index];
-  if (!question) return;
-  const raw = document.getElementById("answer").value;
-  advanceCheckin(parseAnswer(question.type, raw));
-  if (checkin.index < checkin.questions.length) return;
+async function finishCheckin() {
   await api("/api/context", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -195,12 +193,24 @@ async function submitCheckin() {
   setStatus("Check-in stored. Open the report when ready.");
 }
 
+async function submitCheckin() {
+  const question = checkin.questions[checkin.index];
+  if (!question) return;
+  const raw = document.getElementById("answer").value;
+  const done = advanceCheckin(parseAnswer(question.type, raw));
+  if (done) await finishCheckin();
+}
+
 document.getElementById("record-start").addEventListener("click", runSession);
 document.getElementById("checkin-form").addEventListener("submit", (event) => {
   event.preventDefault();
   submitCheckin();
 });
-document.getElementById("checkin-skip").addEventListener("click", () => advanceCheckin(null));
+document.getElementById("checkin-skip").addEventListener("click", async () => {
+  if (!checkin.questions.length) return;
+  const done = advanceCheckin(null);
+  if (done) await finishCheckin();
+});
 document.getElementById("to-report").addEventListener("click", () => showState("report"));
 document.getElementById("to-checkin").addEventListener("click", () => {
   showState("checkin");
