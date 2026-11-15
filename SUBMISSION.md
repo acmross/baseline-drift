@@ -131,6 +131,33 @@ offline on existing hardware, tracks a person against their own history rather
 than a population they may not resemble, and gives them something concrete to
 bring to a clinician they see rarely.
 
+**Prior work, and what is actually new.** The signal is not speculative and we
+are not claiming an empty field. NASA-funded work on the HERA isolation analog
+predicted crew efficacy and cohesion at 80 to 91 percent from acoustic features
+(that figure is team functioning, not individual fatigue, and we are careful not
+to overstate it). Axiom Space is flying Voice in Space on private astronaut
+missions, using electroglottograph measurements and scripted recordings to train
+detection algorithms. NIH's Bridge2AI-Voice has assembled 48,000 recordings
+using the same Praat and OpenSMILE toolchain we use.
+
+What none of those are is a deployed, crew-facing tool. Axiom's is a study that
+reports to investigators and requires dedicated hardware. Bridge2AI is
+cross-sectional and supervised, built to classify which condition a voice
+indicates, with mostly one session per participant, so it structurally cannot
+train a per-person baseline. Our contribution is the thing that runs on the
+laptop the crew already has, needs no labels, no training and no network, and
+reports to the person who made the recording.
+
+**Additional data-quality findings from OSD-575.** Beyond the glucose artifact,
+running our detector surfaced three more problems in the dataset worth
+documenting: a header that breaks its own naming convention (`alt_max` and
+`ast_max` where every other analyte uses `_range_max`), which silently drops two
+analytes from any code matching the pattern; haptoglobin pinned at 17,907,000 in
+seven of twenty-eight samples in the cytokine panel, which is an assay ceiling
+rather than a measurement; and reference ranges that shift mid-study for one
+subject alone, meaning her pre-flight and post-flight values are not judged
+against the same yardstick. Each is reproducible from the committed code.
+
 **What we have not shown.** We have not demonstrated that unexplained drift
 predicts anything. NASA's HERA Standard Measures, which hold crew affect scores
 from the same isolation analog, is the dataset that would confirm or refute it.
