@@ -130,6 +130,80 @@ async function runSession() {
   }
 }
 
+const checkin = { questions: [], index: 0, answers: {} };
+
+function parseAnswer(type, raw) {
+  const text = raw.trim();
+  if (type === "yesno" || type === "yesno_inverted") {
+    if (/^(yes|yeah|yep|yup|true)/i.test(text)) return true;
+    if (/^(no|nope|nah|false|none)/i.test(text)) return false;
+    return null;
+  }
+  if (type === "number") {
+    const match = text.match(/-?\d+(?:\.\d+)?/);
+    return match ? Number(match[0]) : null;
+  }
+  return text || null;
+}
+
+function buildAnswers() {
+  return checkin.answers;
+}
+
+async function loadQuestions() {
+  checkin.questions = await api("/api/questions");
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const question = checkin.questions[checkin.index];
+  if (!question) {
+    document.getElementById("question-label").textContent = "All questions answered.";
+    document.getElementById("answer").disabled = true;
+    document.getElementById("checkin-next").disabled = true;
+    document.getElementById("checkin-skip").disabled = true;
+    return;
+  }
+  document.getElementById("question-label").textContent = question.ask;
+  const answer = document.getElementById("answer");
+  answer.value = "";
+  answer.type = question.type === "number" ? "text" : "text";
+  answer.focus();
+}
+
+function advanceCheckin(value) {
+  const question = checkin.questions[checkin.index];
+  if (question) checkin.answers[question.field] = value;
+  checkin.index += 1;
+  renderQuestion();
+}
+
+async function submitCheckin() {
+  const question = checkin.questions[checkin.index];
+  if (!question) return;
+  const raw = document.getElementById("answer").value;
+  advanceCheckin(parseAnswer(question.type, raw));
+  if (checkin.index < checkin.questions.length) return;
+  await api("/api/context", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      subject: state.subject, session: state.session, answers: buildAnswers(),
+    }),
+  });
+  document.getElementById("to-report").disabled = false;
+  setStatus("Check-in stored. Open the report when ready.");
+}
+
 document.getElementById("record-start").addEventListener("click", runSession);
-document.getElementById("to-checkin").addEventListener("click", () => showState("checkin"));
+document.getElementById("checkin-form").addEventListener("submit", (event) => {
+  event.preventDefault();
+  submitCheckin();
+});
+document.getElementById("checkin-skip").addEventListener("click", () => advanceCheckin(null));
+document.getElementById("to-report").addEventListener("click", () => showState("report"));
+document.getElementById("to-checkin").addEventListener("click", () => {
+  showState("checkin");
+  if (!checkin.questions.length) loadQuestions();
+});
 showState("record");

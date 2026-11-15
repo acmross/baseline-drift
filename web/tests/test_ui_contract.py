@@ -18,6 +18,16 @@ def test_three_take_flow_is_wired():
         assert token in js, token
 
 
+def test_checkin_ids_and_labels():
+    html = (APP / "index.html").read_text(encoding="utf-8")
+    for element_id in ("checkin-form", "question-label", "answer",
+                       "checkin-next", "checkin-skip", "to-report"):
+        assert f'id="{element_id}"' in html, element_id
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    for token in ("/api/questions", "/api/context", "buildAnswers"):
+        assert token in js, token
+
+
 def test_no_diagnostic_copy():
     text = "".join((APP / name).read_text(encoding="utf-8")
                    for name in ("index.html", "app.js", "styles.css")).lower()

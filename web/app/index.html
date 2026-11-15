@@ -32,6 +32,20 @@
   </section>
   <section id="checkin" class="panel" hidden aria-labelledby="checkin-title">
     <h2 id="checkin-title">Check-in</h2>
+    <p class="sub">Answers are context, not a diagnosis. Skip anything you prefer not to answer.</p>
+    <form id="checkin-form">
+      <div class="field">
+        <label id="question-label" for="answer">Question</label>
+        <input id="answer" name="answer" autocomplete="off">
+      </div>
+      <div class="actions">
+        <button id="checkin-next" type="submit">Next</button>
+        <button id="checkin-skip" type="button" class="secondary">Skip</button>
+      </div>
+    </form>
+    <div class="actions">
+      <button id="to-report" type="button" class="secondary" disabled>Open report</button>
+    </div>
   </section>
   <section id="report" class="panel" hidden aria-labelledby="report-title">
     <h2 id="report-title">Report</h2>
