@@ -223,6 +223,57 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
         return {"subject": subject, "session": session, "features": features,
                 "recorded_at": record["recorded_at"]}
 
+    TAKE_NAMES = ("vowel", "passage", "free")
+
+    def _find_session(subject: str, session: str) -> tuple[str, str, dict]:
+        try:
+            subject = validate_id(subject, "subject")
+            session = validate_id(session, "session")
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        for record in read_records(data / "sessions.jsonl"):
+            if record.get("subject") == subject and record.get("session") == session:
+                return subject, session, record
+        raise HTTPException(status_code=404, detail="no such session")
+
+    @app.get("/api/session-detail")
+    def session_detail(subject: str, session: str) -> dict:
+        """One saved session: its measurements, check-in answers and takes."""
+        from web.reporting import LABEL, _fmt
+        from pipeline.voice_drift import MIN_CHANGE
+        subject, session, record = _find_session(subject, session)
+        features = record.get("features", {})
+        measures = [{"feature": f, "label": LABEL.get(f, f),
+                     "value_text": _fmt(f, features.get(f))} for f in MIN_CHANGE]
+        answers = None
+        for entry in read_records(data / "context.jsonl"):
+            if entry.get("subject") == subject and entry.get("session") == session:
+                answers = entry.get("answers", {})
+        checkin = None
+        if answers is not None:
+            checkin = []
+            for question in QUESTIONS:
+                field = question["field"]
+                text = answers.get(field + "_raw") or "Not answered"
+                checkin.append({"field": field, "ask": question["ask"], "answer": text})
+        recording_dir = data / "recordings" / subject
+        takes = [t for t in TAKE_NAMES
+                 if (recording_dir / f"{session}_{t}.wav").exists()]
+        return {"subject": subject, "session": session,
+                "recorded_at": record.get("recorded_at"),
+                "measures": measures, "checkin": checkin, "takes": takes}
+
+    @app.get("/api/audio")
+    def session_audio(subject: str, session: str, take: str) -> FileResponse:
+        """A saved take, played back on this machine only."""
+        subject, session, _ = _find_session(subject, session)
+        if take not in TAKE_NAMES:
+            raise HTTPException(status_code=422, detail="unknown take")
+        path = data / "recordings" / subject / f"{session}_{take}.wav"
+        if not path.exists():
+            raise HTTPException(status_code=404, detail="no audio for this take")
+        return FileResponse(path, media_type="audio/wav", headers=fresh)
+
     @app.delete("/api/session")
     def delete_session(subject: str, session: str) -> dict:
         """Remove one session for good: its measurements, check-in and audio."""

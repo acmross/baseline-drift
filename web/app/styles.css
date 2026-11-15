@@ -155,3 +155,9 @@ button.danger { background: var(--accent); border-color: var(--accent); color: #
 /* The sample button carries the same orange mark as the sample banner. */
 .sample-link { border-left: 3px solid var(--accent) !important; }
 .take-audio { display: block; width: 100%; max-width: 420px; height: 36px; margin-top: var(--space-2); color-scheme: dark; }
+.session-detail { padding: 0 0 var(--space-3) 80px; }
+.session-detail h4 { margin: var(--space-3) 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); font-weight: 600; }
+.detail-line { display: flex; gap: var(--space-3); align-items: center; padding: 4px 0; font-size: 14px; }
+.detail-line .k { flex: 0 0 46%; color: var(--text-secondary); }
+.detail-line .v { flex: 1 1 auto; min-width: 0; }
+.detail-line .take-audio { margin-top: 0; }

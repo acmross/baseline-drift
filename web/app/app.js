@@ -749,6 +749,46 @@ function measuresSection(data, title) {
 
 // Every saved session with its date and a delete control. Deleting is
 // permanent, so it takes two presses: Delete, then Confirm delete.
+// One saved session opened in place: its takes to listen to, the numbers
+// measured from it, and the check-in answers given with it.
+const TAKE_TITLES = { vowel: 'Sustained "ah"', passage: "Fixed passage", free: "Free speech" };
+function sessionDetail(info, query) {
+  const wrap = document.createElement("div");
+  const part = (title) => {
+    const h = document.createElement("h4");
+    h.textContent = title;
+    wrap.appendChild(h);
+  };
+  const pair = (label, value) => {
+    const line = document.createElement("div");
+    line.className = "detail-line";
+    const k = document.createElement("span");
+    k.className = "k";
+    k.textContent = label;
+    const v = document.createElement("span");
+    v.className = "v";
+    if (typeof value === "string") v.textContent = value; else v.appendChild(value);
+    line.append(k, v);
+    wrap.appendChild(line);
+  };
+  part("Listen");
+  if (!info.takes.length) pair("Audio", "No audio saved for this session.");
+  for (const take of info.takes) {
+    const audio = document.createElement("audio");
+    audio.className = "take-audio";
+    audio.controls = true;
+    audio.preload = "none";
+    audio.src = `/api/audio?${query}&take=${take}`;
+    pair(TAKE_TITLES[take] || take, audio);
+  }
+  part("Measurements");
+  for (const measure of info.measures) pair(measure.label, measure.value_text);
+  part("Check-in");
+  if (!info.checkin) pair("Check-in", "No check-in saved for this session.");
+  else for (const item of info.checkin) pair(item.ask, item.answer);
+  return wrap;
+}
+
 function sessionsSection(data) {
   if (state.sample || !data.sessions || !data.sessions.length) return null;
   const box = document.createElement("div");
@@ -807,8 +847,39 @@ function sessionsSection(data) {
         cancel.disabled = false;
       }
     });
-    row.append(name, when, remove, cancel);
-    box.appendChild(row);
+    const view = document.createElement("button");
+    view.type = "button";
+    view.className = "secondary small";
+    view.textContent = "Open";
+    view.setAttribute("aria-expanded", "false");
+    const detail = document.createElement("div");
+    detail.className = "session-detail";
+    detail.hidden = true;
+    view.addEventListener("click", async () => {
+      if (!detail.hidden) {
+        detail.hidden = true;
+        detail.replaceChildren();          // also stops any audio playing
+        view.textContent = "Open";
+        view.setAttribute("aria-expanded", "false");
+        return;
+      }
+      view.disabled = true;
+      try {
+        const query = `subject=${encodeURIComponent(data.subject)}`
+          + `&session=${encodeURIComponent(session)}`;
+        const info = await api(`/api/session-detail?${query}`);
+        detail.replaceChildren(sessionDetail(info, query));
+        detail.hidden = false;
+        view.textContent = "Close";
+        view.setAttribute("aria-expanded", "true");
+      } catch (error) {
+        setStatus(`Could not open ${sessionName(session)}. (${error.message})`);
+      } finally {
+        view.disabled = false;
+      }
+    });
+    row.append(name, when, view, remove, cancel);
+    box.append(row, detail);
   });
   return box;
 }
