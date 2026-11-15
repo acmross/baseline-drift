@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baseline Drift: starting the demo</title>
+<style>
+  :root { --bg: #121211; --panel: #1a1a19; --line: #32322f; --ink: #f0efec; --ink-2: #c3c2b7; --ink-3: #8a897f; --blue: #3987e5; --orange: #d95926; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--ink);
+         font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; padding: 24px; }
+  main { width: 100%; max-width: 520px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 32px; }
+  h1 { margin: 0 0 4px; font-size: 20px; }
+  .sub { margin: 0 0 24px; color: var(--ink-3); font-size: 13px; }
+  .track { height: 10px; background: #232322; border-radius: 5px; overflow: hidden; }
+  .fill { height: 100%; width: 0; background: var(--blue); border-radius: 5px; transition: width 400ms linear; }
+  #status { margin: 14px 0 0; font-weight: 600; }
+  #detail { margin: 6px 0 0; color: var(--ink-2); font-size: 14px; }
+  .other { margin: 24px 0 0; padding-top: 16px; border-top: 1px solid var(--line); color: var(--ink-3); font-size: 14px; }
+  a { color: var(--blue); }
+  .late #status { color: var(--orange); }
+</style>
+</head>
+<body>
+<main id="box">
+  <h1>Baseline Drift</h1>
+  <p class="sub">Daily voice check-in · hosted demo</p>
+  <div class="track" role="progressbar" aria-label="Starting the demo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="bar"><div class="fill" id="fill"></div></div>
+  <p id="status" role="status" aria-live="polite">Starting the demo...</p>
+  <p id="detail">The demo runs on a free server that sleeps when no one is using it. Waking it takes up to a minute. This page opens the demo by itself as soon as it is ready.</p>
+  <p class="other">In a hurry? The <a href="../try/">sample report</a> opens instantly and needs no server.</p>
+</main>
+<script>
+"use strict";
+// Free hosting sleeps when idle. This page lives on GitHub Pages, which is
+// always up, so a visitor sees progress here instead of a blank wait, and is
+// sent to the demo the moment its health check answers.
+const DEMO = "https://baseline-drift.onrender.com";
+const EXPECTED_MS = 60000;
+const started = Date.now();
+const fill = document.getElementById("fill");
+const bar = document.getElementById("bar");
+const status = document.getElementById("status");
+let done = false;
+
+function show(pct) {
+  fill.style.width = `${pct}%`;
+  bar.setAttribute("aria-valuenow", String(Math.round(pct)));
+}
+
+// The bar is an estimate: it eases toward 95% over the expected wait and only
+// reaches 100% when the server has actually answered.
+function tick() {
+  if (done) return;
+  const elapsed = Date.now() - started;
+  show(95 * (1 - Math.exp(-2.5 * elapsed / EXPECTED_MS)));
+  const seconds = Math.round(elapsed / 1000);
+  if (elapsed > 90000) {
+    document.getElementById("box").classList.add("late");
+    status.textContent = "Still starting. This is taking longer than usual.";
+  } else if (seconds >= 3) {
+    status.textContent = `Waking the server... ${seconds}s`;
+  }
+  setTimeout(tick, 500);
+}
+
+async function check() {
+  if (done) return;
+  try {
+    const response = await fetch(`${DEMO}/api/health?t=${Date.now()}`, { cache: "no-store" });
+    const body = await response.json();
+    if (response.ok && body.ok) {
+      done = true;
+      show(100);
+      status.textContent = "Ready. Opening the demo...";
+      setTimeout(() => { window.location.replace(DEMO + "/"); }, 400);
+      return;
+    }
+  } catch (error) {
+    // Not awake yet, or still returning the host's own waiting page.
+  }
+  setTimeout(check, 2500);
+}
+
+tick();
+check();
+</script>
+<noscript><p style="color:#f0efec;text-align:center">Open the demo directly: <a href="https://baseline-drift.onrender.com">baseline-drift.onrender.com</a> (it can take a minute to load).</p></noscript>
+</body>
+</html>
