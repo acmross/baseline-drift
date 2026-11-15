@@ -3,14 +3,14 @@
 **Single outcome:** Baseline Drift is submitted for judging before 23:59 Pacific,
 with every required field filled and every public link opened in a private window.
 
-**Where:** `D:\Ruben\2026.Nasa.Hackathon` (branch `main`, `45280b0`, clean). The
-`web-ui` worktree now tracks the same commit; PR #1 and PRs #2–#9 are merged.
+**Where:** `D:\Ruben\2026.Nasa.Hackathon` (branch `main`, clean at `1e38fd2`). The
+`web-ui` worktree tracks the same commit; PR #1 and PRs #2–#9 are merged.
 Read `docs/INSTRUCTIONS.md` for how to run the app; the form copy lives in
 `SUBMISSION.md`.
 
 ---
 
-## State verified at 14:30 Pacific
+## State verified at 14:45 Pacific
 
 - Full suite: **82 passed** on `main` (`python -m pytest web/tests -q`).
 - Online preview: <https://acmross.github.io/baseline-drift/try/> → 200.
@@ -25,6 +25,31 @@ Read `docs/INSTRUCTIONS.md` for how to run the app; the form copy lives in
   fixture. Say that out loud if you present it.
 - The `v0.1-demo-2026-11-14` release exe was built 2026-11-14 23:06, before the
   tabs, session playback, deletion and hosted demo landed. It is stale but usable.
+
+## Live browser verification (fresh Chrome profile, 14:40–14:45)
+
+One Playwright pass: **25 checks passed**, 2 console errors, both only
+`favicon.ico` 404s (cosmetic).
+
+- **Preview** — sample report and 36-session trends render (8 measure rows); the
+  dataset switch loads the real four-session report; a session opens with its
+  measurements and "not published" notes; Delete raises the confirm dialog;
+  **zero third-party requests**.
+- **Deck** — 7 slides, `1/7` pager, slides 3 and 6 render correctly, `#2`–`#7`
+  hashes and arrow keys navigate.
+- **Hosted demo** — the wake page redirects to Render; the banner says everything
+  is deleted within 2 hours; three synthetic uploads produced **201** with all
+  eight features; the report reached `baseline` at 3 sessions; session detail
+  listed all three takes; audio returned 192 KB; deleting one session removed
+  its 3 audio files and the report count dropped to 2; the visitor space was
+  cleaned back to `empty`.
+- **Local app** — offline privacy copy, sample report and trends render;
+  **zero external requests**.
+
+**Not covered by automation:** the microphone and MediaRecorder path (permission
+prompt, level meter, real takes, upload from the UI), check-in submit through the
+browser, keyboard-only walk, focus states and contrast. Those need a human at the
+demo laptop.
 
 ## Decision needed: how to fill *Project Demonstration*
 
@@ -53,6 +78,12 @@ details. Do not start Option B today.
 
 ## P0 — submit
 
+- [x] Automated live pass (above): preview, deck, hosted pipeline, local app.
+      The "verify first" step chosen for today is done; only the mic path needs a
+      human.
+- [ ] If a human is at the demo laptop, run one real take through the browser and
+      confirm the level meter, the three takes and the upload. Otherwise say the
+      hosted API path was verified with synthetic audio and move on.
 - [ ] Confirm who is clicking Submit and that they are signed in to the team's
       Space Apps account. Everything below is worthless until that is settled.
 - [ ] Confirm the deadline in the event's own timezone (San Jose, 23:59 Pacific).
@@ -80,6 +111,8 @@ details. Do not start Option B today.
       the repository.
 - [ ] Correct `docs/INSTRUCTIONS.md` and the 2026-11-14 debrief, which still say
       PR #1 is unmerged and the suite has 65 tests.
+- [ ] Add a small inline favicon to `web/app/index.html` (and rebuild `docs/try`)
+      so the console no longer logs a `favicon.ico` 404. Cosmetic only.
 
 ## Do not start today
 
@@ -98,3 +131,4 @@ details. Do not start Option B today.
 | Hosted demo sleeps during judging | The wake page polls and redirects; the deck and preview need no server. |
 | The deck's "our run" reads as real speech | Say "synthetic six-session fixture" wherever the result is discussed; the README already labels it. |
 | Team member's real data is only 4 sessions | Present it as real recorded use, not as a completed six-session result. |
+| Mic path never tested in a browser | Test one take on the demo laptop before submitting; the hosted API path is already proven with synthetic audio. |
