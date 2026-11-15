@@ -33,7 +33,10 @@
           <p class="step-title">Sustained "ah" <span class="step-len">about 5 seconds</span></p>
           <p id="vowel-instruction" class="instruction">Take a normal breath and hold 'ah' at a comfortable, steady pitch and volume until you run out of comfortable breath.</p>
         </div>
-        <span class="step-state">Not recorded</span>
+        <div class="step-side">
+          <span class="step-state">Not recorded</span>
+          <button type="button" class="secondary take-button" data-take="vowel">Record</button>
+        </div>
       </li>
       <li class="step" data-take="passage">
         <span class="step-n">2</span>
@@ -42,7 +45,10 @@
           <p class="instruction">Read this aloud at your normal speaking pace. The text appears when this take begins.</p>
           <div id="passage-text" class="passage" hidden>Commander's log, day forty. Sixteen sunrises today and I just caught three of them. The coffee floats and the plants are leaning toward the window again. We flushed the pump, checked the hatch seals, and measured the garden. The ship is in one piece and the stars are where we left them this evening. Signing off until tomorrow.</div>
         </div>
-        <span class="step-state">Not recorded</span>
+        <div class="step-side">
+          <span class="step-state">Not recorded</span>
+          <button type="button" class="secondary take-button" data-take="passage">Record</button>
+        </div>
       </li>
       <li class="step" data-take="free">
         <span class="step-n">3</span>
@@ -50,24 +56,20 @@
           <p class="step-title">Free speech <span class="step-len">up to 30 seconds</span></p>
           <p id="free-prompt" class="instruction">Describe what you have done since your last check-in.</p>
         </div>
-        <span class="step-state">Not recorded</span>
+        <div class="step-side">
+          <span class="step-state">Not recorded</span>
+          <button type="button" class="secondary take-button" data-take="free">Record</button>
+        </div>
       </li>
     </ol>
     <p id="record-error" class="error" role="alert" hidden></p>
-    <p id="take-status" role="status" aria-live="polite">Ready. Three takes, one at a time. Each starts when you press the button.</p>
+    <p id="take-status" role="status" aria-live="polite">Record each take with its own button, in any order. Save the session when you are done.</p>
     <div id="level-meter" class="meter" role="meter" aria-label="Microphone level"
          aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
     <div id="take-countdown" aria-live="assertive" hidden></div>
     <div class="actions">
-      <button id="record-start" type="button">Start take 1</button>
-      <button id="stop-take" type="button" class="secondary" hidden>Finish take</button>
+      <button id="save-session" type="button" disabled>Save session</button>
       <button id="to-checkin" type="button" class="secondary" disabled>Continue to check-in</button>
-    </div>
-    <div id="review" class="actions" hidden>
-      <button id="save-session" type="button">Save session</button>
-      <button type="button" class="secondary retake" data-take="vowel">Retake "ah"</button>
-      <button type="button" class="secondary retake" data-take="passage">Retake passage</button>
-      <button type="button" class="secondary retake" data-take="free">Retake free speech</button>
     </div>
     <div class="actions">
       <button id="retry-upload" type="button" class="secondary" hidden>Retry upload</button>

@@ -7,7 +7,7 @@ APP = Path(__file__).resolve().parents[1] / "app"
 
 def test_record_ids_exist():
     html = (APP / "index.html").read_text(encoding="utf-8")
-    for element_id in ("record", "record-start", "take-status", "level-meter",
+    for element_id in ("record", "save-session", "take-status", "level-meter",
                        "session-label", "subject", "to-checkin", "passage-text",
                        "take-countdown", "retry-upload", "record-error"):
         assert f'id="{element_id}"' in html, element_id
@@ -144,13 +144,14 @@ def test_stable_features_are_rendered():
 def test_navigation_and_retake_controls_exist():
     html = (APP / "index.html").read_text(encoding="utf-8")
     js = (APP / "app.js").read_text(encoding="utf-8")
-    for element_id in ("nav-record", "nav-report", "review", "save-session",
-                       "replace-session", "stop-take", "take-steps"):
+    for element_id in ("nav-record", "nav-report", "save-session", "replace-session",
+                       "take-steps", "to-checkin"):
         assert f'id="{element_id}"' in html, element_id
+    # Every take card carries its own Record / Retake button.
     for take in ("vowel", "passage", "free"):
-        assert f'data-take="{take}"' in html, take
-    for token in ("retakeOne", "saveSession", "openReport", '"replace", "true"'):
+        assert f'class="secondary take-button" data-take="{take}"' in html, take
+    for token in ("startTake", "saveSession", "openReport", '"replace", "true"'):
         assert token in js, token
-    # Takes are reviewed before anything is stored: recording must not auto-upload.
-    run = re.search(r"async function runSession\(\).*?\n}\n", js, re.S)
-    assert run and "uploadTakes" not in run.group(0)
+    # Recording a take never stores anything: only Save session uploads.
+    start = re.search(r"async function startTake\(key\).*?\n}\n", js, re.S)
+    assert start and "uploadTakes" not in start.group(0)

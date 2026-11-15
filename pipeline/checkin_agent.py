@@ -26,7 +26,8 @@ import sys, json, argparse, subprocess, re
 # yes could plausibly account for. Empty means: record it, but never let it
 # suppress a finding. Upper-respiratory effects on voice quality are well
 # established; sleep effects on rate and pausing are reasonably supported;
-# headache has no established acoustic signature, so it explains nothing.
+# pain has no established acoustic signature, so it is recorded in the crew
+# member's own words and explains nothing.
 QUESTIONS = [
     {"field": "cold_or_congestion",
      "ask": "Do you have a cold, congestion, or a sore throat today?",
@@ -41,9 +42,9 @@ QUESTIONS = [
      "ask": "Roughly how many hours did you sleep?",
      "type": "number",
      "explains": ["voiced_rate_hz", "pause_ratio", "intensity_db"]},
-    {"field": "headache",
-     "ask": "Any headache?",
-     "type": "yesno",
+    {"field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "type": "free",
      "explains": []},
     {"field": "posture",
      "ask": "Were you sitting, standing, reclined, or floating?",

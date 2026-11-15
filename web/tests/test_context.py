@@ -31,8 +31,8 @@ def test_normal_sleep_licenses_nothing():
     assert build_explains({"sleep_hours": 7.0}) == {}
 
 
-def test_headache_licenses_nothing():
-    assert build_explains({"headache": True}) == {}
+def test_unusual_pain_licenses_nothing():
+    assert build_explains({"unusual_pain": "lower back, since this morning"}) == {}
 
 
 def test_reclined_posture_licenses_pitch_and_pausing():

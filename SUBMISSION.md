@@ -67,13 +67,13 @@ gate 2 cut 52 flags to 11. On synthetic voice data where nothing changed, gates
 
 **The conversation, and why it matters.** A short check-in runs alongside the
 recording, optionally driven by a small language model on the same machine. It
-asks about congestion, cough, sleep, posture and whether the recording setup
-changed. Each question declares which acoustic features a "yes" could plausibly
+asks about congestion, cough, sleep, unusual pain, posture and whether the
+recording setup changed. Each question declares which acoustic features a "yes" could plausibly
 account for: upper respiratory symptoms are well established as affecting voice
 quality, so a reported cold licenses movement in F0, harmonic-to-noise ratio,
-jitter, shimmer and intensity. Headache licenses nothing, because it has no
-established acoustic signature, so it is recorded but never used to suppress a
-finding.
+jitter, shimmer and intensity. Unusual pain licenses nothing, because it has no
+established acoustic signature, so it is recorded in the crew member's own
+words but never used to suppress a finding.
 
 What falls out is the useful part. In our test run, a speaker reporting a cold
 has three of five changes accounted for, while "more pausing" and "speaking

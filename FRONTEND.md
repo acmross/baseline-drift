@@ -70,7 +70,7 @@ has a reported explanation. Unexplained findings are the ones to surface first.
 ```json
 {"subject":"AMANDA","session":"day1",
  "answers":{"cold_or_congestion":true,"cough":false,"sleep_hours":7.0,
-            "headache":null,"posture":"sitting","setup_changed":false,
+            "unusual_pain":null,"posture":"sitting","setup_changed":false,
             "anything_else":null,"cold_or_congestion_raw":"yeah a bit stuffy"},
  "explains":{"f0_mean_hz":["cold_or_congestion"],"hnr_db":["cold_or_congestion"]},
  "backend":"none"}

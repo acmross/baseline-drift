@@ -101,5 +101,6 @@ input {
 .step-body { flex: 1 1 auto; min-width: 0; }
 .step-title { margin: 0 0 4px; font-weight: 600; }
 .step-len { margin-left: 8px; font-weight: 400; font-size: 13px; color: var(--text-secondary); }
+.step-side { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
 .step-state { flex: 0 0 auto; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); }
 .step.active .step-state { color: var(--text-primary); }

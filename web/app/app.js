@@ -4,7 +4,8 @@ const state = {
   subject: "AMANDA",
   session: "day1",
   takes: {},
-  next: 0,          // index of the next take to record in this session
+  recording: false, // true while the microphone is in use
+  saved: [],        // takes stored by the last save, until a new take is recorded
 };
 
 const TAKES = [
@@ -20,7 +21,7 @@ const SESSION_RE = /^[a-z0-9][a-z0-9-]{1,15}$/;
 // One place for recovery copy so static contract tests can pin every path.
 const ERROR_COPY = {
   microphone: "Microphone access was blocked or no microphone was found. "
-    + "Allow microphone access in the browser, then press the start button again.",
+    + "Allow microphone access in the browser, then press Record on the take again.",
   validation: "The local pipeline rejected these takes (422 validation error). "
     + "The takes are still here; press Retry upload.",
   duplicate: "This session already exists on this machine. Press Replace saved "
@@ -48,15 +49,14 @@ function showState(name) {
 }
 
 // While the microphone is in use nothing else may start or navigate away.
+// While the microphone or an upload is in use nothing else may start.
 function setBusy(busy) {
-  const ids = ["record-start", "save-session", "nav-record", "nav-report",
-               "replace-session"];
-  for (const id of ids) document.getElementById(id).disabled = busy;
-  for (const button of document.querySelectorAll(".retake")) button.disabled = busy;
-}
-
-function showReview(visible) {
-  document.getElementById("review").hidden = !visible;
+  for (const id of ["save-session", "nav-record", "nav-report", "replace-session",
+                    "retry-upload"]) {
+    document.getElementById(id).disabled = busy;
+  }
+  for (const button of document.querySelectorAll(".take-button")) button.disabled = busy;
+  if (!busy) refreshSteps();
 }
 
 function setStatus(text) {
@@ -162,28 +162,35 @@ function setPassageVisible(visible) {
   document.getElementById("passage-text").hidden = !visible;
 }
 
-const STEP_TEXT = { idle: "Not recorded", next: "Up next", active: "Recording now",
-                    done: "Captured" };
+const STEP_TEXT = { idle: "Not recorded", active: "Recording now", done: "Captured",
+                    saved: "Saved" };
+
+function takeButton(key) {
+  return document.querySelector(`.take-button[data-take="${key}"]`);
+}
 
 function setStep(key, stepState) {
   const step = document.querySelector(`.step[data-take="${key}"]`);
   if (!step) return;
   step.classList.toggle("active", stepState === "active");
-  step.classList.toggle("done", stepState === "done");
+  step.classList.toggle("done", stepState === "done" || stepState === "saved");
   step.querySelector(".step-state").textContent = STEP_TEXT[stepState] || STEP_TEXT.idle;
 }
 
+// Each card shows its own state and its own Record or Retake button. Saving
+// needs the two takes the measures come from; free speech is optional.
 function refreshSteps() {
-  TAKES.forEach((take, index) => {
-    if (state.takes[take.key]) setStep(take.key, "done");
-    else setStep(take.key, index === state.next ? "next" : "idle");
-  });
-  const button = document.getElementById("record-start");
-  button.textContent = state.next < TAKES.length
-    ? `Start take ${state.next + 1}` : "Record all three again";
+  for (const take of TAKES) {
+    const captured = Boolean(state.takes[take.key]);
+    const stored = state.saved.includes(take.key);
+    setStep(take.key, captured ? "done" : (stored ? "saved" : "idle"));
+    takeButton(take.key).textContent = captured ? "Retake" : "Record";
+  }
+  document.getElementById("save-session").disabled =
+    !(state.takes.vowel && state.takes.passage);
 }
 
-async function recordTake(task, maxSeconds, onTick) {
+async function recordTake(task, maxSeconds, onTick, stopButton) {
   let stream = null;
   let context = null;
   let recorder = null;
@@ -226,16 +233,15 @@ async function recordTake(task, maxSeconds, onTick) {
     const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
     recorder.start();
 
-    // The take ends when the time runs out or the crew member presses
-    // Finish take, whichever comes first.
-    const stopButton = document.getElementById("stop-take");
+    // The take ends when the time runs out or the crew member presses the
+    // card's button (now reading Finish take), whichever comes first.
     await new Promise((resolve) => {
       const started = Date.now();
       let timer = 0;
       const finish = () => {
         clearInterval(timer);
         stopButton.removeEventListener("click", finish);
-        stopButton.hidden = true;
+        stopButton.disabled = true;
         resolve();
       };
       timer = setInterval(() => {
@@ -243,7 +249,8 @@ async function recordTake(task, maxSeconds, onTick) {
         if (onTick) onTick(left);
         if (left <= 0) finish();
       }, 250);
-      stopButton.hidden = false;
+      stopButton.textContent = "Finish take";
+      stopButton.disabled = false;
       stopButton.addEventListener("click", finish);
     });
     recorder.stop();
@@ -255,8 +262,8 @@ async function recordTake(task, maxSeconds, onTick) {
   } finally {
     // Every exit path must release the microphone and decode context, or a
     // failed take leaves the browser holding the device.
-    document.getElementById("stop-take").hidden = true;
     if (raf) cancelAnimationFrame(raf);
+    document.querySelector("#level-meter span").style.width = "0%";
     if (recorder && recorder.state !== "inactive") recorder.stop();
     if (stream) stream.getTracks().forEach((track) => track.stop());
     if (context && context.state !== "closed") await context.close();
@@ -273,7 +280,10 @@ async function uploadTakes(replace) {
   form.append("session", state.session);
   if (replace) form.append("replace", "true");
   for (const take of TAKES) {
-    if (!state.takes[take.key]) throw new Error(`missing ${take.key} take`);
+    if (!state.takes[take.key]) {
+      if (take.key === "free") continue;            // free speech is optional
+      throw new Error(`missing ${take.key} take`);
+    }
     form.append(take.key, state.takes[take.key], `${state.session}_${take.key}.wav`);
   }
   return api("/api/session", { method: "POST", body: form });
@@ -308,92 +318,69 @@ function handleRecordingError(error) {
     return;
   }
   status.textContent = `Recording failed: ${error.message}. Check the microphone and `
-    + "press the start button to try again.";
+    + "press Record on the take to try again.";
 }
 
 // Records one take with a countdown, a live time-left readout, and the step
 // card marked as active, so it is never unclear which take is being captured.
-async function captureTake(take) {
+// Records one take: countdown, live time-left readout, the card marked active,
+// and the card's own button acting as Finish take.
+async function captureTake(take, button) {
   const status = document.getElementById("take-status");
   const number = TAKES.indexOf(take) + 1;
-  const name = `take ${number} of ${TAKES.length}: ${take.label}`;
+  const name = `take ${number}: ${take.label}`;
   setStep(take.key, "active");
   setPassageVisible(take.key === "passage");
+  button.textContent = "Starting...";
   try {
     await runCountdown(COUNTDOWN_SECONDS, name);
     state.takes[take.key] = await recordTake(take.key, take.seconds, (left) => {
       status.textContent = `Recording ${name}. ${left}s left. Press Finish take when done.`;
-    });
+    }, button);
   } finally {
     setPassageVisible(false);
   }
 }
 
-// Each press records exactly one take. Nothing is stored until Save session.
-async function runSession() {
-  const status = document.getElementById("take-status");
-  if (state.next >= TAKES.length) {       // "Record all three again"
-    clearTakes();
-    state.next = 0;
-  }
-  if (state.next === 0) {
-    const ids = readIds();
-    if (!ids) return;
-    state.subject = ids.subject;
-    state.session = ids.session;
-    clearTakes();
-    showReview(false);
-    document.getElementById("retry-upload").hidden = true;
-    document.getElementById("replace-session").hidden = true;
-  }
-  const take = TAKES[state.next];
-  setBusy(true);
-  try {
-    await captureTake(take);
-    state.next += 1;
-    if (state.next < TAKES.length) {
-      status.textContent = `Take ${state.next} captured. Press Start take `
-        + `${state.next + 1} when you are ready.`;
-    } else {
-      status.textContent = "Three takes captured. Save the session, or retake any take first.";
-      showReview(true);
-    }
-  } catch (error) {
-    handleRecordingError(error);
-  } finally {
-    refreshSteps();
-    setBusy(false);
-  }
-}
-
-async function retakeOne(key) {
+// A card's button records (or re-records) only that take. Other takes are
+// left exactly as they are, and nothing is stored until Save session.
+async function startTake(key) {
+  if (state.recording) return;            // the same button is Finish take
   const take = TAKES.find((item) => item.key === key);
-  if (!take) return;
+  if (!take || !readIds()) return;
   const status = document.getElementById("take-status");
+  state.recording = true;
+  state.saved = [];
   setBusy(true);
   try {
-    await captureTake(take);
-    status.textContent = `Retook take ${TAKES.indexOf(take) + 1}. Save the session, or retake again.`;
+    await captureTake(take, takeButton(key));
+    const ready = state.takes.vowel && state.takes.passage;
+    status.textContent = `Take ${TAKES.indexOf(take) + 1} captured.`
+      + (ready ? " Save the session when you are ready, or retake any take."
+               : " Record the remaining takes.");
   } catch (error) {
     handleRecordingError(error);
   } finally {
-    refreshSteps();
+    state.recording = false;
     setBusy(false);
   }
 }
 
 async function saveSession(replace) {
+  const ids = readIds();
+  if (!ids) return;
+  state.subject = ids.subject;
+  state.session = ids.session;
   const status = document.getElementById("take-status");
   setBusy(true);
-  status.textContent = "Uploading to the local pipeline...";
+  status.textContent = "Saving to this machine...";
   try {
     await uploadTakes(replace);
     status.textContent = replace
-      ? "Session replaced on this machine. Continue to check-in."
-      : "Session stored on this machine.";
-    showReview(false);
-    state.next = 0;                       // the next press starts a new session
-    document.getElementById("record-start").textContent = "Start take 1";
+      ? `Session ${state.session} replaced on this machine. Continue to check-in.`
+      : `Session ${state.session} saved on this machine. Continue to check-in.`;
+    state.saved = Object.keys(state.takes);
+    clearTakes();
     document.getElementById("replace-session").hidden = true;
     document.getElementById("retry-upload").hidden = true;
     document.getElementById("to-checkin").disabled = false;
@@ -422,7 +409,7 @@ function openReport() {
 async function retryUpload() {
   if (!state.takes.vowel || !state.takes.passage) {
     document.getElementById("take-status").textContent =
-      "No captured takes to upload. Press Start take 1.";
+      "No captured takes to upload. Record the takes first.";
     return;
   }
   const retry = document.getElementById("retry-upload");
@@ -432,8 +419,10 @@ async function retryUpload() {
   try {
     await uploadTakes();
     retry.hidden = true;
-    showReview(false);
-    status.textContent = "Session stored on this machine.";
+    state.saved = Object.keys(state.takes);
+    clearTakes();
+    refreshSteps();
+    status.textContent = "Session saved on this machine.";
     document.getElementById("to-checkin").disabled = false;
   } catch (error) {
     handleUploadError(error);
@@ -723,11 +712,10 @@ document.getElementById("to-report").addEventListener("click", () => {
   showState("report");
   loadReport();
 });
-document.getElementById("record-start").addEventListener("click", runSession);
 document.getElementById("save-session").addEventListener("click", () => saveSession(false));
 document.getElementById("replace-session").addEventListener("click", () => saveSession(true));
-for (const button of document.querySelectorAll(".retake")) {
-  button.addEventListener("click", () => retakeOne(button.dataset.take));
+for (const button of document.querySelectorAll(".take-button")) {
+  button.addEventListener("click", () => startTake(button.dataset.take));
 }
 document.getElementById("nav-record").addEventListener("click", () => showState("record"));
 document.getElementById("nav-report").addEventListener("click", openReport);

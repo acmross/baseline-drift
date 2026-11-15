@@ -46,7 +46,7 @@ RAW_DAY6 = {
     "cold_or_congestion": "yeah a bit stuffy",
     "cough": "no",
     "sleep_hours": "7",
-    "headache": "no",
+    "unusual_pain": "no",
     "posture": "sitting",
     "setup_changed": "yes",
     "anything_else": "demo dry run",
