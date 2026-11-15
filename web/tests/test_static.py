@@ -42,3 +42,9 @@ def test_static_files_are_never_cached(tmp_path):
     c = client(tmp_path)
     for path in ("/", "/app.js", "/styles.css"):
         assert c.get(path).headers.get("cache-control") == "no-store", path
+
+
+def test_privacy_notice_is_on_the_page(tmp_path):
+    text = client(tmp_path).get("/").text
+    assert "Private. For your personal use only." in text
+    assert "Nothing is shared unless you choose to share it yourself." in text

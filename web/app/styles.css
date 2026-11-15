@@ -104,3 +104,16 @@ input {
 .step-side { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
 .step-state { flex: 0 0 auto; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); }
 .step.active .step-state { color: var(--text-primary); }
+
+/* Check-in: tick any that apply. Each option is a pill with its own box. */
+.checks { border: 0; padding: 0; margin: 0 0 var(--space-3); display: flex; flex-wrap: wrap; gap: 8px; }
+.checks legend { width: 100%; padding: 0; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+.check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface-2); color: var(--text-primary); font-size: 14px; text-transform: none; letter-spacing: 0; cursor: pointer; }
+.check input { min-height: 0; width: 18px; height: 18px; margin: 0; padding: 0; accent-color: var(--series-1); }
+.check:has(input:checked) { border-color: var(--series-1); }
+.check:focus-within { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+
+/* The privacy promise is the product, so it is stated on every screen. */
+.privacy { margin: 0 0 20px; padding: 14px 16px; border: 1px solid var(--line-strong); border-left: 4px solid var(--series-1); border-radius: 8px; background: var(--surface-1); }
+.privacy p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
+.privacy .privacy-title { margin-bottom: 4px; font-size: 14px; font-weight: 600; color: var(--text-primary); }

@@ -29,8 +29,6 @@ const ERROR_COPY = {
     + "the report.",
   server: "The local pipeline could not store this session. "
     + "The takes are still here; press Retry upload.",
-  questions: "Could not load check-in questions. Check that the local server is "
-    + "running, then press Next or Skip to retry.",
   context: "Check-in save failed. Press Retry save.",
   report: "Could not build the report. Press Refresh to try again.",
 };
@@ -431,82 +429,43 @@ async function retryUpload() {
   }
 }
 
-const checkin = {
-  questions: [],
-  index: 0,
-  answers: {},
-  saveFailed: false,
-};
-
+// The check-in is one form: tick anything that applies, or nothing at all.
+// It is sent as the same raw text the scripted check-in produces, so the
+// server parses it with the CLI's rules and the two paths cannot drift.
 function buildRaw() {
-  const raw = {};
-  for (const question of checkin.questions) {
-    raw[question.field] = Object.prototype.hasOwnProperty.call(checkin.answers,
-                                                               question.field)
-      ? checkin.answers[question.field]
-      : null;
-  }
-  return raw;
+  const form = document.getElementById("checkin-form");
+  const ticked = (field) => Array.from(
+    form.querySelectorAll(`input[type="checkbox"][data-field="${field}"]`))
+    .filter((box) => box.checked).map((box) => box.value);
+  const text = (id) => document.getElementById(id).value.trim() || null;
+  const cold = ticked("cold_or_congestion");
+  const pain = ticked("unusual_pain").length > 0;
+  const posture = form.querySelector('input[name="posture"]:checked');
+  return {
+    cold_or_congestion: cold.length ? `yes: ${cold.join(", ")}` : "no",
+    cough: ticked("cough").length ? "yes" : "no",
+    sleep_hours: text("sleep-hours"),
+    unusual_pain: pain ? (text("pain-where") || "yes") : "no",
+    posture: posture ? posture.value : null,
+    // The question behind this field is "same setup as usual?", so a ticked
+    // "different" box is a no.
+    setup_changed: ticked("setup_changed").length
+      ? "no, different microphone or room" : "yes",
+    anything_else: text("anything-else"),
+  };
 }
 
-async function loadQuestions() {
-  const next = document.getElementById("checkin-next");
-  const skip = document.getElementById("checkin-skip");
-  setStatus("Loading check-in questions...");
-  try {
-    checkin.questions = await api("/api/questions");
-    checkin.index = 0;
-    checkin.answers = {};
-    checkin.saveFailed = false;
-    next.textContent = "Next";
-    skip.disabled = false;
-    renderQuestion();
-    setStatus("");
-  } catch (error) {
-    checkin.questions = [];
-    checkin.index = 0;
-    document.getElementById("question-label").textContent = "Questions did not load.";
-    next.textContent = "Retry load";
-    next.disabled = false;
-    skip.disabled = false;
-    setStatus(`${ERROR_COPY.questions} (${error.message})`);
-  }
+function resetCheckin() {
+  document.getElementById("checkin-form").reset();
+  document.getElementById("pain-where-field").hidden = true;
+  document.getElementById("checkin-save").textContent = "Save check-in";
+  document.getElementById("to-report").disabled = true;
+  setStatus("");
 }
 
-function renderQuestion() {
-  const next = document.getElementById("checkin-next");
-  const skip = document.getElementById("checkin-skip");
-  const answer = document.getElementById("answer");
-  const question = checkin.questions[checkin.index];
-  next.textContent = "Next";
-  next.disabled = false;
-  skip.disabled = false;
-  answer.disabled = false;
-  if (!question) {
-    document.getElementById("question-label").textContent = "All questions answered.";
-    answer.disabled = true;
-    next.disabled = true;
-    skip.disabled = true;
-    return;
-  }
-  document.getElementById("question-label").textContent = question.ask;
-  answer.value = "";
-  answer.type = "text";
-  answer.focus();
-}
-
-function advanceCheckin(value) {
-  const question = checkin.questions[checkin.index];
-  if (question) checkin.answers[question.field] = value;
-  checkin.index += 1;
-  renderQuestion();
-  return checkin.index >= checkin.questions.length;
-}
-
-async function finishCheckin() {
-  const next = document.getElementById("checkin-next");
-  const skip = document.getElementById("checkin-skip");
-  next.disabled = true;
+async function submitCheckin() {
+  const save = document.getElementById("checkin-save");
+  save.disabled = true;
   setStatus("Saving check-in...");
   try {
     await api("/api/context", {
@@ -516,37 +475,15 @@ async function finishCheckin() {
         subject: state.subject, session: state.session, raw: buildRaw(),
       }),
     });
-    checkin.saveFailed = false;
-    next.textContent = "Next";
-    next.disabled = true;
-    skip.disabled = true;
-    document.getElementById("question-label").textContent = "All questions answered.";
+    save.textContent = "Save check-in";
     document.getElementById("to-report").disabled = false;
-    setStatus("Check-in stored. Open the report when ready.");
+    setStatus("Check-in saved. Open the report when ready.");
   } catch (error) {
-    checkin.saveFailed = true;
-    next.textContent = "Retry save";
-    next.disabled = false;
-    skip.disabled = true;
-    document.getElementById("question-label").textContent = "Check-in not saved yet.";
+    save.textContent = "Retry save";
     setStatus(`${ERROR_COPY.context} (${error.message})`);
+  } finally {
+    save.disabled = false;
   }
-}
-
-async function submitCheckin() {
-  if (!checkin.questions.length) {
-    await loadQuestions();
-    return;
-  }
-  if (checkin.saveFailed) {
-    await finishCheckin();
-    return;
-  }
-  const question = checkin.questions[checkin.index];
-  if (!question) return;
-  const raw = document.getElementById("answer").value;
-  const done = advanceCheckin(raw);
-  if (done) await finishCheckin();
 }
 
 function sparkline(values, mean, sd, flagged) {
@@ -726,18 +663,12 @@ document.getElementById("checkin-form").addEventListener("submit", (event) => {
   event.preventDefault();
   submitCheckin();
 });
-document.getElementById("checkin-skip").addEventListener("click", async () => {
-  if (!checkin.questions.length) {
-    await loadQuestions();
-    return;
-  }
-  if (checkin.saveFailed) return;
-  const done = advanceCheckin(null);
-  if (done) await finishCheckin();
+document.getElementById("pain-check").addEventListener("change", (event) => {
+  document.getElementById("pain-where-field").hidden = !event.target.checked;
 });
 document.getElementById("to-checkin").addEventListener("click", () => {
+  resetCheckin();
   showState("checkin");
-  if (!checkin.questions.length) loadQuestions();
 });
 showState("record");
 refreshSteps();

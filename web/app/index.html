@@ -12,6 +12,10 @@
     <h1>Baseline Drift</h1>
     <p class="sub">Daily voice check-in · stays on this machine</p>
   </header>
+  <aside class="privacy" aria-label="Privacy">
+    <p class="privacy-title">Private. For your personal use only.</p>
+    <p>Your recordings, answers and results stay on this computer. Nothing is sent to mission control, a flight surgeon, your crewmates or anyone else. Nothing is shared unless you choose to share it yourself.</p>
+  </aside>
   <nav class="tabs" aria-label="Sections">
     <button id="nav-record" type="button" class="secondary" aria-current="page">Record</button>
     <button id="nav-report" type="button" class="secondary">Report</button>
@@ -78,20 +82,44 @@
   </section>
   <section id="checkin" class="panel" hidden aria-labelledby="checkin-title">
     <h2 id="checkin-title">Check-in</h2>
-    <p class="sub">Answers are context, not a diagnosis. Skip anything you prefer not to answer.</p>
+    <p class="sub">Tick anything that applies today, or leave it all blank. Answers are context, not a diagnosis.</p>
     <form id="checkin-form">
+      <fieldset class="checks">
+        <legend>Today I have</legend>
+        <label class="check"><input type="checkbox" data-field="cold_or_congestion" value="a cold"> A cold</label>
+        <label class="check"><input type="checkbox" data-field="cold_or_congestion" value="congestion"> Congestion</label>
+        <label class="check"><input type="checkbox" data-field="cold_or_congestion" value="a sore throat"> A sore throat</label>
+        <label class="check"><input type="checkbox" data-field="cough" value="coughing"> Coughing</label>
+        <label class="check"><input type="checkbox" id="pain-check" data-field="unusual_pain" value="unusual pain"> Unusual pain or discomfort</label>
+      </fieldset>
+      <div class="field" id="pain-where-field" hidden>
+        <label for="pain-where">Where is the pain?</label>
+        <input id="pain-where" autocomplete="off">
+      </div>
+      <fieldset class="checks">
+        <legend>Recording setup</legend>
+        <label class="check"><input type="checkbox" data-field="setup_changed" value="different"> Different microphone or room than usual</label>
+      </fieldset>
+      <fieldset class="checks">
+        <legend>Position while recording</legend>
+        <label class="check"><input type="radio" name="posture" data-field="posture" value="sitting"> Sitting</label>
+        <label class="check"><input type="radio" name="posture" data-field="posture" value="standing"> Standing</label>
+        <label class="check"><input type="radio" name="posture" data-field="posture" value="reclined"> Reclined</label>
+        <label class="check"><input type="radio" name="posture" data-field="posture" value="floating"> Floating</label>
+      </fieldset>
       <div class="field">
-        <label id="question-label" for="answer">Question</label>
-        <input id="answer" name="answer" autocomplete="off">
+        <label for="sleep-hours">Hours of sleep last night</label>
+        <input id="sleep-hours" data-field="sleep_hours" type="number" min="0" max="24" step="0.5" inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="anything-else">Anything else worth recording</label>
+        <input id="anything-else" data-field="anything_else" autocomplete="off">
       </div>
       <div class="actions">
-        <button id="checkin-next" type="submit">Next</button>
-        <button id="checkin-skip" type="button" class="secondary">Skip</button>
+        <button id="checkin-save" type="submit">Save check-in</button>
+        <button id="to-report" type="button" class="secondary" disabled>Open report</button>
       </div>
     </form>
-    <div class="actions">
-      <button id="to-report" type="button" class="secondary" disabled>Open report</button>
-    </div>
   </section>
   <section id="report" class="panel" hidden aria-labelledby="report-title">
     <h2 id="report-title">Report</h2>

@@ -21,28 +21,30 @@ def test_three_take_flow_is_wired():
 
 def test_checkin_ids_and_labels():
     html = (APP / "index.html").read_text(encoding="utf-8")
-    for element_id in ("checkin-form", "question-label", "answer",
-                       "checkin-next", "checkin-skip", "to-report"):
+    for element_id in ("checkin-form", "checkin-save", "to-report", "pain-check",
+                       "pain-where", "sleep-hours", "anything-else"):
         assert f'id="{element_id}"' in html, element_id
     js = (APP / "app.js").read_text(encoding="utf-8")
-    for token in ("/api/questions", "/api/context", "buildRaw"):
+    for token in ("/api/context", "buildRaw"):
         assert token in js, token
 
 
-def test_checkin_sends_raw_answers_and_skip_still_finalizes():
-    # Structural guard: the repo has no DOM/JS harness, so pin the data flow in app.js.
-    js = (APP / "app.js").read_text(encoding="utf-8")
+def test_checkin_form_covers_every_question_and_sends_raw_answers():
+    # The form is static, so pin it to the CLI's question list: a question
+    # added there must get a control here, and the client must build every field.
+    from pipeline.checkin_agent import QUESTIONS
 
-    skip = re.search(r'getElementById\("checkin-skip"\)\.addEventListener\(.*?\}\);',
-                     js, re.S)
-    assert skip, "checkin-skip listener not found"
-    block = skip.group(0)
-    assert "advanceCheckin(null)" in block, "skip must store null"
-    assert "finishCheckin()" in block, "skip must finalize the check-in"
+    html = (APP / "index.html").read_text(encoding="utf-8")
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    build = re.search(r"function buildRaw\(\).*?\n}\n", js, re.S)
+    assert build, "buildRaw must exist"
+    for question in QUESTIONS:
+        field = question["field"]
+        assert f'data-field="{field}"' in html, field
+        assert re.search(rf"\b{field}:", build.group(0)), field
 
     assert "parseAnswer" not in js, "the client must not reimplement the CLI parser"
     assert re.search(r"raw:\s*buildRaw\(\)", js), "context POST must send raw answers"
-    assert re.search(r"function buildRaw\(\)", js), "buildRaw must exist"
 
 
 def test_no_diagnostic_copy():
@@ -131,7 +133,7 @@ def test_retry_upload_control_exists():
 def test_error_status_paths_are_wired():
     js = (APP / "app.js").read_text(encoding="utf-8")
     for token in ("ERROR_COPY", "NotAllowedError", "status === 422", "status === 409",
-                  "Retry save", "Retry load", "Press Refresh"):
+                  "Retry save", "Press Refresh"):
         assert token in js, token
 
 
