@@ -167,6 +167,9 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
     app.state.hosted = hosted
     app.state.data_dir = base
     app.state.static_dir = static
+    # Exposed so tests (and an operator debugging retention) can force a sweep
+    # without waiting for the once-a-minute throttle.
+    app.state.visitor_store = data if hosted else None
 
     @app.get("/api/health")
     def health():
