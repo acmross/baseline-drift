@@ -65,8 +65,8 @@ input {
 .meter { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; margin: var(--space-3) 0; }
 .meter span { display: block; height: 100%; width: 0; background: var(--series-1); transition: width 80ms linear; }
 .actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
-.tabs { display: flex; gap: var(--space-2); margin-bottom: var(--space-3); }
-.tabs button[aria-current="page"] { border-color: var(--text-primary); }
+.tabs { display: flex; gap: var(--space-2); margin: 0 0 20px; }
+.tabs button[aria-current="page"] { background: var(--series-1); border-color: var(--series-1); color: #fff; }
 .footer { margin-top: var(--space-4); border-top: 1px solid var(--line); padding-top: var(--space-3); }
 .headline { font-size: 17px; font-weight: 600; margin: var(--space-3) 0 var(--space-1); }
 .report-list { margin-top: var(--space-3); }

@@ -36,3 +36,9 @@ def test_no_external_assets():
     for name in ("index.html", "app.js", "styles.css"):
         text = (APP / name).read_text(encoding="utf-8")
         assert not network.search(text), name
+
+
+def test_static_files_are_never_cached(tmp_path):
+    c = client(tmp_path)
+    for path in ("/", "/app.js", "/styles.css"):
+        assert c.get(path).headers.get("cache-control") == "no-store", path

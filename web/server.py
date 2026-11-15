@@ -119,17 +119,21 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
                    for r in context_records}
         return build_report(records, context, subject)
 
+    # The page is served from disk on this machine, so caching buys nothing
+    # and a stale script against a newer page breaks the buttons.
+    fresh = {"Cache-Control": "no-store"}
+
     @app.get("/")
     def index() -> FileResponse:
-        return FileResponse(static / "index.html", media_type="text/html")
+        return FileResponse(static / "index.html", media_type="text/html", headers=fresh)
 
     @app.get("/app.js")
     def app_js() -> FileResponse:
-        return FileResponse(static / "app.js", media_type="text/javascript")
+        return FileResponse(static / "app.js", media_type="text/javascript", headers=fresh)
 
     @app.get("/styles.css")
     def styles() -> FileResponse:
-        return FileResponse(static / "styles.css", media_type="text/css")
+        return FileResponse(static / "styles.css", media_type="text/css", headers=fresh)
 
     @app.post("/api/session", status_code=201)
     def create_session(
