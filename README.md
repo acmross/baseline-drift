@@ -29,7 +29,7 @@ There are three ways in, from least to most effort.
   Your voice is not measured there, because measuring needs the pipeline
   running on your own machine.
 
-**Hosted demo, the real pipeline with nothing to install.** The hosted demo
+**Hosted demo, the real pipeline with nothing to install.** <https://baseline-drift.onrender.com>
 runs the same app and the same Praat measurements on a small demo server, so
 you can record a few check-ins and get your own numbers back. It is the one
 version that sends a recording off your device, and it says so on the page:
