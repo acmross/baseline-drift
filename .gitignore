@@ -6,3 +6,5 @@ report.html
 recordings/
 audio/
 .DS_Store
+.worktrees/
+.superpowers/
