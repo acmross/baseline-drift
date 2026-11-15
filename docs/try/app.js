@@ -829,6 +829,10 @@ function shortDate(date, withTime) {
 // Weekly and monthly points are averages; sessions without a date cannot be
 // placed on a calendar, so they are left out of those two and counted.
 function trendPoints(measure, data, group) {
+  // Sessions the report flagged for this measure are drawn in the flag colour.
+  const finding = (data.findings || []).find((item) => item.feature === measure.feature);
+  const flaggedSessions = new Set(finding
+    ? finding.flagged_indices.map((index) => data.sessions[index]) : []);
   const readings = measure.series.map((value, index) => ({
     value,
     session: data.sessions[index],
@@ -840,6 +844,7 @@ function trendPoints(measure, data, group) {
       undated: 0,
       points: readings.map((reading) => ({
         value: reading.value,
+        flagged: flaggedSessions.has(reading.session),
         label: sessionName(reading.session),
         tip: `${sessionName(reading.session)}${reading.when
           ? `, ${shortDate(reading.when, true)}` : ""}`,
@@ -908,6 +913,10 @@ function trendChart(points, measure) {
                   class: "band" });
     add("line", { x1: 0, x2: width, y1: y(mean), y2: y(mean), class: "meanline" });
   }
+  // Fewer points get bigger dots; a long history gets small ones so the
+  // shape of the line stays readable.
+  const radius = points.length <= 16 ? 5.5 : points.length <= 30 ? 4
+    : points.length <= 60 ? 3 : 2.2;
   if (points.length > 1) {
     add("polyline", { class: "series",
                       points: points.map((point, index) =>
@@ -915,9 +924,12 @@ function trendChart(points, measure) {
   }
   points.forEach((point, index) => {
     const isLatest = index === points.length - 1;
-    const dot = add("circle", { cx: x(index), cy: y(point.value),
-                                r: isLatest ? 6.5 : 5.5,
-                                class: isLatest ? "dot latest" : "dot" });
+    const dot = add("circle", {
+      cx: x(index), cy: y(point.value),
+      r: point.flagged || isLatest ? radius + 1 : radius,
+      "stroke-width": radius < 4 ? 1 : 2,
+      class: point.flagged ? "dot flag" : (isLatest ? "dot latest" : "dot"),
+    });
     const title = document.createElementNS(ns, "title");
     title.textContent = `${point.tip}: ${formatValue(measure.format, point.value)}`;
     dot.appendChild(title);
