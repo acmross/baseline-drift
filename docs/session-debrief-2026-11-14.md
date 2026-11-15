@@ -37,7 +37,7 @@
 - **`MIN_CHANGE` is still placeholder-calibrated.** Set thresholds from repeated same-sitting recordings before trusting real output.
 - **Pipeline bug worked around, not fixed.** `pipeline/voice_drift.analyse` returns `(stats, (stats, []))` on empty findings; `web/reporting.py` normalizes it because the pipeline was read-only. The CLI stable case is still affected.
 - **PR not merged.** All work is on `web-ui`. The exe is gitignored and must be rebuilt from merged source.
-- **Main advanced during the session.** The teammate added `SUBMISSION.md` and replaced `docs/pitch.md` (`e25fe30`); session docs were rebased on top (`eb3d841`). The `web-ui` branch was then merged with `main` (`518a0b0`) and the `.gitignore` conflict resolved. GitHub was still computing PR mergeability at close.
+- **Main advanced during the session.** The teammate added `SUBMISSION.md` and replaced `docs/pitch.md` (`e25fe30`); session docs were rebased on top (`eb3d841`). The `web-ui` branch was then merged with `main` (`518a0b0`) and the `.gitignore` conflict resolved. GitHub reported PR #1 **MERGEABLE/CLEAN** at close (head `518a0b0`, base `9b55137`, main ahead at `2e1cef5`).
 - **Submission clock.** November 15, 11:59 PM local event time (San Jose); saving is not submitting. Form copy is drafted in `SUBMISSION.md`; public links, OSD-575 citation, and the SI declaration still need to be verified and submitted.
 
 ## Decisions made
