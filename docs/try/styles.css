@@ -145,3 +145,12 @@ input {
 .session-when { flex: 1 1 auto; color: var(--text-secondary); font-size: 13px; }
 button.small { min-height: 36px; padding: 0 12px; font-size: 13px; }
 button.danger { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+/* While a take runs, its countdown and level sit inside that take's card. */
+#take-live.in-card { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--line); display: grid; grid-template-columns: auto 1fr; column-gap: var(--space-3); align-items: center; }
+#take-live.in-card #take-countdown { grid-row: 1 / span 2; grid-column: 1; min-width: 72px; min-height: 0; margin: 0; font-size: 40px; color: var(--series-1); font-variant-numeric: tabular-nums; }
+#take-live.in-card #take-status { grid-column: 2; margin: 0; }
+#take-live.in-card .meter { grid-column: 2; margin: var(--space-2) 0 0; }
+
+/* The sample button carries the same orange mark as the sample banner. */
+.sample-link { border-left: 3px solid var(--accent) !important; }

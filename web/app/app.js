@@ -178,9 +178,26 @@ async function runCountdown(seconds, label) {
     status.textContent = `Starting ${label} in ${remaining}...`;
     await sleep(1000);
   }
-  countdown.textContent = "Recording";
+  countdown.textContent = "Go";
   await sleep(250);
-  countdown.hidden = true;
+}
+
+// The countdown, time left and microphone level sit inside the card being
+// recorded, so nothing about the take in progress is off screen.
+function moveLive(key) {
+  const live = document.getElementById("take-live");
+  if (key) {
+    const card = document.querySelector(`.step[data-take="${key}"]`);
+    card.querySelector(".step-body").appendChild(live);
+    live.classList.add("in-card");
+    card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  } else {
+    const steps = document.getElementById("take-steps");
+    const error = document.getElementById("record-error");
+    (error || steps).after(live);
+    live.classList.remove("in-card");
+    document.getElementById("take-countdown").hidden = true;
+  }
 }
 
 function setPassageVisible(visible) {
@@ -360,16 +377,20 @@ async function captureTake(take, button) {
   const name = `take ${number}: ${take.label}`;
   setStep(take.key, "active");
   setPassageVisible(take.key === "passage");
+  moveLive(take.key);
+  const countdown = document.getElementById("take-countdown");
   button.textContent = "Starting...";
   try {
     await runCountdown(COUNTDOWN_SECONDS, name);
     if (take.fixedLength) button.textContent = "Recording...";
     state.takes[take.key] = await recordTake(take.key, take.seconds, (left) => {
+      countdown.textContent = `${left}s`;
       status.textContent = take.fixedLength
         ? `Recording ${name}. ${left}s left. Keep talking until the time runs out.`
         : `Recording ${name}. ${left}s left. Press Finish take when done.`;
     }, take.fixedLength ? null : button);
   } finally {
+    moveLive(null);
     setPassageVisible(false);
   }
 }
