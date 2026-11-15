@@ -10,6 +10,33 @@ unreachable. Crews carry most of the responsibility for noticing change in
 themselves, using the least reliable observer available: a person judging their
 own condition. Baseline Drift gives them a measurement instead.
 
+## Try it
+
+There are three ways in, from least to most effort.
+
+**1. Online preview, nothing to install.** Open
+<https://acmross.github.io/baseline-drift/try/> to explore the Report and Trends
+views with a sample crew member. The data there is simulated and labelled as
+such: 36 made-up check-ins across ten weeks. The preview cannot record, because
+measuring a voice needs the pipeline running on your own machine.
+
+**2. The real app on macOS or Linux.** Needs Python 3.
+
+    git clone https://github.com/acmross/baseline-drift.git
+    cd baseline-drift
+    python3 -m pip install -r web/requirements.txt
+    python3 -m uvicorn web.server:app --host 127.0.0.1 --port 8899
+
+Then open <http://127.0.0.1:8899>. Record the three takes, save, tick the
+check-in, and open the report. Three sessions build your baseline; the fourth is
+the first one scored. Everything you record stays in `web/data/` on your
+machine. The app also has a "See a sample report" button that shows the same
+simulated crew member as the online preview.
+
+**3. The real app on Windows.** Download `BaselineDrift.exe` from the
+[releases page](https://github.com/acmross/baseline-drift/releases) and run it.
+It starts the same local app and opens your browser.
+
 ## What it does
 
 The astronaut records a short check-in and answers a few questions. The tool

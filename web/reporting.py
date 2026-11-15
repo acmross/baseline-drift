@@ -5,6 +5,7 @@ Findings come from the same analyse() the CLI uses, so the UI cannot drift from
 the validated gate logic. Only presentation is added here: labels, units,
 series, and the explained-versus-unexplained ordering.
 """
+import statistics
 from collections import defaultdict
 
 from pipeline.voice_drift import MIN_CHANGE, analyse
@@ -20,6 +21,78 @@ UNITS = {
     "jitter_local": "", "shimmer_local": "", "hnr_db": " dB",
     "pause_ratio": "", "voiced_rate_hz": "/s",
 }
+
+
+HINT = {
+    "f0_mean_hz": "How high or low your voice is.",
+    "f0_sd_hz": "How much your pitch moves as you speak.",
+    "intensity_db": "How loud your voice is.",
+    "jitter_local": "Tiny wobble in pitch from one cycle to the next. Lower is steadier.",
+    "shimmer_local": "Tiny wobble in loudness from one cycle to the next. Lower is steadier.",
+    "hnr_db": "How clear the voice is against breath and noise. Higher is clearer.",
+    "pause_ratio": "Share of the reading spent silent.",
+    "voiced_rate_hz": "How much voiced sound per second. Higher is faster.",
+}
+
+
+def _fmt(feature, value):
+    """One readable number per measure; raw values stay in the JSON beside it."""
+    if value is None:
+        return "not measured"
+    if feature in ("jitter_local", "shimmer_local", "pause_ratio"):
+        return f"{value * 100:.2f}%" if feature != "pause_ratio" else f"{value * 100:.1f}%"
+    if feature == "voiced_rate_hz":
+        return f"{value:.1f} per second"
+    return f"{value:.1f}{UNITS.get(feature, '')}"
+
+
+def _fmt_spread(feature, sd):
+    if feature in ("jitter_local", "shimmer_local", "pause_ratio"):
+        return f"{sd * 100:.2f} points"
+    if feature == "voiced_rate_hz":
+        return f"{sd:.1f}"
+    return f"{sd:.1f}{UNITS.get(feature, '')}"
+
+
+def _measures(records, n_baseline, flagged):
+    """Every measure with its numbers, so a quiet report still shows the data."""
+    baseline = records[:n_baseline]
+    rows = []
+    for feature in MIN_CHANGE:
+        series = [r["features"].get(feature) for r in records]
+        latest = next((v for v in reversed(series) if v is not None), None)
+        base_vals = [v for v in (r["features"].get(feature) for r in baseline)
+                     if v is not None]
+        mean = statistics.mean(base_vals) if base_vals else None
+        sd = statistics.stdev(base_vals) if len(base_vals) >= 2 else None
+        complete = len(records) >= n_baseline
+        if latest is None or mean is None:
+            change = ""
+        else:
+            delta = latest - mean
+            direction = "above" if delta > 0 else "below"
+            change = ("same as your baseline" if abs(delta) < 1e-9 else
+                      f"{_fmt_spread(feature, abs(delta))} {direction} your baseline")
+        rows.append({
+            "feature": feature,
+            "label": LABEL.get(feature, feature),
+            "hint": HINT.get(feature, ""),
+            "format": ("percent2" if feature in ("jitter_local", "shimmer_local")
+                       else "percent1" if feature == "pause_ratio"
+                       else "rate" if feature == "voiced_rate_hz"
+                       else "hz" if feature.endswith("_hz") else "db"),
+            "series": series,
+            "latest": latest,
+            "baseline_mean": mean,
+            "baseline_sd": sd,
+            "baseline_complete": complete,
+            "latest_text": _fmt(feature, latest),
+            "baseline_text": _fmt(feature, mean) if mean is not None else "",
+            "spread_text": _fmt_spread(feature, sd) if sd is not None else "",
+            "change_text": change,
+            "flagged": feature in flagged,
+        })
+    return rows
 
 
 def _findings_for(stats, findings, subject, records, context):
@@ -48,6 +121,9 @@ def _findings_for(stats, findings, subject, records, context):
             "explained_by": reasons,
             "series": [r["features"].get(feature) for r in records],
             "flagged_indices": flagged,
+            "value_text": _fmt(feature, latest["value"]),
+            "baseline_text": _fmt(feature, latest["baseline_mean"]),
+            "spread_text": _fmt_spread(feature, stats[feature]["sd"]),
         })
     return sorted(rows, key=lambda row: (bool(row["explained"]), row["feature"]))
 
@@ -66,9 +142,13 @@ def build_report(records, context, subject, n_baseline=3, z_threshold=2.0, min_r
         "headline": "No sessions yet",
         "findings": [],
         "stable_features": [],
+        "measures": [],
     }
     if not subject_records:
         return base
+    base["sessions"] = [r["session"] for r in subject_records]
+    base["recorded_at"] = [r.get("recorded_at") for r in subject_records]
+    base["measures"] = _measures(subject_records, n_baseline, set())
     if len(subject_records) <= n_baseline:
         # The first n_baseline sessions define the reference distribution, so
         # the session that completes it cannot also be scored against itself.
@@ -96,6 +176,7 @@ def build_report(records, context, subject, n_baseline=3, z_threshold=2.0, min_r
         for feature in MIN_CHANGE if feature in stats and feature not in by_feature
     ]
     base["findings"] = rows
+    base["measures"] = _measures(subject_records, n_baseline, by_feature)
 
     if not findings:
         base["state"] = "stable"

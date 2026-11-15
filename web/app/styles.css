@@ -64,7 +64,9 @@ input {
 .error[hidden] { display: none; }
 .meter { height: 8px; background: var(--surface-2); border-radius: 4px; overflow: hidden; margin: var(--space-3) 0; }
 .meter span { display: block; height: 100%; width: 0; background: var(--series-1); transition: width 80ms linear; }
-.actions { display: flex; gap: var(--space-2); margin-top: var(--space-3); }
+.actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-3); }
+.tabs { display: flex; gap: var(--space-2); margin: 0 0 20px; }
+.tabs button[aria-current="page"] { background: var(--series-1); border-color: var(--series-1); color: #fff; }
 .footer { margin-top: var(--space-4); border-top: 1px solid var(--line); padding-top: var(--space-3); }
 .headline { font-size: 17px; font-weight: 600; margin: var(--space-3) 0 var(--space-1); }
 .report-list { margin-top: var(--space-3); }
@@ -83,9 +85,57 @@ input {
 .spark { flex: 0 0 auto; }
 .stable-list { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--line); }
 .stable-list h3 { margin: 0 0 var(--space-1); font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
-.band { fill: var(--surface-2); stroke: var(--text-secondary); stroke-width: 1; }
+.band { fill: rgba(57, 135, 229, 0.16); stroke: rgba(57, 135, 229, 0.55); stroke-width: 1; }
 .meanline { stroke: var(--text-secondary); stroke-width: 1; stroke-dasharray: 3 3; opacity: 1; }
-.series { fill: none; stroke: var(--series-1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
-.dot { fill: var(--series-1); stroke: var(--surface-0); stroke-width: 2; }
+.series { fill: none; stroke: var(--series-1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; opacity: 0.75; }
+.dot { fill: #8fc0ff; stroke: var(--surface-1); stroke-width: 2; }
+.dot.latest { fill: #ffffff; }
 .dot.flag { fill: var(--accent); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* One card per take, so it is always clear which take is live. */
+.steps { list-style: none; padding: 0; margin: var(--space-3) 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.step { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-3); border: 1px solid var(--line); border-radius: 8px; }
+.step.active { border-color: var(--series-1); }
+.step-n { flex: 0 0 28px; height: 28px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; font-size: 13px; font-weight: 600; }
+.step.active .step-n, .step.done .step-n { background: var(--series-1); color: #fff; }
+.step-body { flex: 1 1 auto; min-width: 0; }
+.step-title { margin: 0 0 4px; font-weight: 600; }
+.step-len { margin-left: 8px; font-weight: 400; font-size: 13px; color: var(--text-secondary); }
+.step-side { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.step-state { flex: 0 0 auto; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); }
+.step.active .step-state { color: var(--text-primary); }
+
+/* Check-in: tick any that apply. Each option is a pill with its own box. */
+.checks { border: 0; padding: 0; margin: 0 0 var(--space-3); display: flex; flex-wrap: wrap; gap: 8px; }
+.checks legend { width: 100%; padding: 0; margin-bottom: 8px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+.check { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface-2); color: var(--text-primary); font-size: 14px; text-transform: none; letter-spacing: 0; cursor: pointer; }
+.check input { min-height: 0; width: 18px; height: 18px; margin: 0; padding: 0; accent-color: var(--series-1); }
+.check:has(input:checked) { border-color: var(--series-1); }
+.check:focus-within { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+
+/* The privacy promise is the product, so it is stated on every screen. */
+.privacy { margin: 0 0 20px; padding: 14px 16px; border: 1px solid var(--line-strong); border-left: 4px solid var(--series-1); border-radius: 8px; background: var(--surface-1); }
+.privacy p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
+.privacy .privacy-title { margin-bottom: 4px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
+
+.prompts { margin: 6px 0 0; padding-left: 18px; color: var(--text-primary); font-size: 14px; line-height: 1.6; }
+
+.row .hint { color: var(--text-muted); margin-top: 2px; }
+.stable-list .row:first-of-type { margin-top: var(--space-2); }
+
+/* Trends: one wide chart per measure. */
+.trend-group[aria-pressed="true"] { background: var(--series-1); border-color: var(--series-1); color: #fff; }
+.trend { padding: var(--space-3) 0; border-top: 1px solid var(--line); }
+.trend-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); margin-bottom: 6px; }
+.trend-head .label { white-space: nowrap; font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+.trend-head .latest { font-size: 16px; font-weight: 600; }
+.trend-head .range { font-size: 13px; color: var(--text-secondary); }
+.trend svg { display: block; width: 100%; height: auto; }
+.trend .axis { fill: var(--text-muted); font-size: 11px; }
+.trend .series { fill: none; stroke: var(--series-1); stroke-width: 2; }
+
+/* Sample mode is always labelled, so made-up data is never mistaken for real. */
+.sample-link { margin-left: auto; }
+.privacy.sample { border-left-color: var(--accent); }
+.privacy.sample .actions { margin-top: 10px; }

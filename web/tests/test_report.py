@@ -71,3 +71,24 @@ def test_unexplained_findings_come_first():
     assert first["explained"] == []
     explained = [f for f in report["findings"] if f["feature"] == "intensity_db"][0]
     assert explained["explained"] == ["cold_or_congestion"]
+
+
+def test_measures_are_reported_with_numbers_in_every_state():
+    building = build_report(baseline_records()[:2], {}, "AMANDA")
+    loud = next(m for m in building["measures"] if m["feature"] == "intensity_db")
+    assert loud["latest_text"] == "85.0 dB" and loud["baseline_complete"] is False
+
+    records = baseline_records() + [
+        record("day4", intensity_db=85.2, pause_ratio=0.056, f0_mean_hz=120.2)]
+    stable = build_report(records, {}, "AMANDA")
+    assert stable["state"] == "stable"
+    loud = next(m for m in stable["measures"] if m["feature"] == "intensity_db")
+    assert loud["series"] == [84.0, 85.0, 86.0, 85.2]
+    assert loud["baseline_text"] == "85.0 dB" and loud["spread_text"] == "1.0 dB"
+    assert loud["change_text"] == "0.2 dB above your baseline"
+    assert loud["flagged"] is False and loud["hint"]
+    pause = next(m for m in stable["measures"] if m["feature"] == "pause_ratio")
+    assert pause["latest_text"] == "5.6%"
+    # A measure with no data is listed as not measured, never dropped silently.
+    jitter = next(m for m in stable["measures"] if m["feature"] == "jitter_local")
+    assert jitter["latest_text"] == "not measured"

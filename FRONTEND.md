@@ -42,7 +42,7 @@ One page, three states. No router, no build step, no CDN.
 
 **1. Record.** Three takes per session, in order: a 5-second sustained "ah", a
 fixed passage read aloud (about 30s, text is in `recording_protocol.md`), and
-60 seconds of free speech. Show the passage on screen for take 2. A level meter
+30 seconds of free speech. Show the passage on screen for take 2. A level meter
 while recording is worth the twenty minutes it costs: without one, people find
 out the mic was muted after the take.
 
@@ -70,7 +70,7 @@ has a reported explanation. Unexplained findings are the ones to surface first.
 ```json
 {"subject":"AMANDA","session":"day1",
  "answers":{"cold_or_congestion":true,"cough":false,"sleep_hours":7.0,
-            "headache":null,"posture":"sitting","setup_changed":false,
+            "unusual_pain":null,"posture":"sitting","setup_changed":false,
             "anything_else":null,"cold_or_congestion_raw":"yeah a bit stuffy"},
  "explains":{"f0_mean_hz":["cold_or_congestion"],"hnr_db":["cold_or_congestion"]},
  "backend":"none"}

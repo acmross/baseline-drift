@@ -31,8 +31,8 @@ def test_normal_sleep_licenses_nothing():
     assert build_explains({"sleep_hours": 7.0}) == {}
 
 
-def test_headache_licenses_nothing():
-    assert build_explains({"headache": True}) == {}
+def test_unusual_pain_licenses_nothing():
+    assert build_explains({"unusual_pain": "lower back, since this morning"}) == {}
 
 
 def test_reclined_posture_licenses_pitch_and_pausing():
@@ -165,3 +165,29 @@ def test_raw_cold_answer_explains_a_report_finding(tmp_path):
     report = client.get("/api/report", params={"subject": "AMANDA"}).json()
     row = next(f for f in report["findings"] if f["feature"] == "hnr_db")
     assert row["explained"] == ["cold_or_congestion"]
+
+
+def test_checklist_raw_strings_parse_as_intended():
+    """The check-in form sends these exact strings; pin how the CLI rules read them."""
+    from web.context_builder import build_answers_from_raw
+
+    ticked = build_answers_from_raw({
+        "cold_or_congestion": "yes: a cold, a sore throat", "cough": "yes",
+        "sleep_hours": "5.5", "unusual_pain": "lower back", "posture": "floating",
+        "setup_changed": "no, different microphone or room", "anything_else": None,
+    })
+    assert ticked["cold_or_congestion"] is True and ticked["cough"] is True
+    assert ticked["setup_changed"] is True and ticked["sleep_hours"] == 5.5
+    assert ticked["unusual_pain"] == "lower back"
+    explains = build_explains(ticked)
+    assert "cold_or_congestion" in explains["hnr_db"]
+    assert "unusual_pain" not in sum(explains.values(), [])
+
+    blank = build_answers_from_raw({
+        "cold_or_congestion": "no", "cough": "no", "sleep_hours": None,
+        "unusual_pain": "no", "posture": None, "setup_changed": "yes",
+        "anything_else": None,
+    })
+    assert blank["cold_or_congestion"] is False and blank["cough"] is False
+    assert blank["setup_changed"] is False
+    assert build_explains(blank) == {}
