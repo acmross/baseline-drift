@@ -167,11 +167,6 @@ def build_report(records, context, subject, n_baseline=3, z_threshold=2.0, min_r
         return base
 
     stats, findings = analyse(subject_records, n_baseline, z_threshold, min_run)
-    # pipeline.voice_drift.analyse has an operator-precedence bug on its empty
-    # return: it yields (stats, (stats, [])) instead of (stats, []). The
-    # pipeline is read-only here, so normalise the shape before presentation.
-    if isinstance(findings, tuple):
-        findings = findings[1]
     rows = _findings_for(stats, findings, subject, subject_records, context)
     by_feature = {row["feature"] for row in rows}
     base["stable_features"] = [

@@ -146,7 +146,12 @@ def analyse(records, n_baseline, z_threshold, min_run=2):
                     "phrase": up if delta > 0 else down,
                 })
     order = [r["session"] for r in later]
-    return stats, consecutive_runs(findings, order, min_run) if findings else (stats, [])
+    # Keep the return shape stable: callers unpack two values, and the empty
+    # case used to fall through to a nested (stats, []) tuple because the
+    # conditional applied to the whole return expression.
+    if not findings:
+        return stats, []
+    return stats, consecutive_runs(findings, order, min_run)
 
 
 def report(subject, stats, findings, n_baseline, context=None):
