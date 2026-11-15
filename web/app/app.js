@@ -271,7 +271,8 @@ function findingRow(finding) {
   detail.className = "detail";
   detail.textContent = `${finding.value}${finding.unit} against your baseline of `
     + `${finding.baseline_mean}${finding.unit} · ${finding.run_length} `
-    + `session${finding.run_length === 1 ? "" : "s"} running`;
+    + `session${finding.run_length === 1 ? "" : "s"} running`
+    + ` · baseline band ±${finding.baseline_sd}${finding.unit}`;
   const tag = document.createElement("span");
   tag.className = finding.explained.length ? "tag explained" : "tag open";
   tag.textContent = finding.explained.length

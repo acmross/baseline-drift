@@ -73,3 +73,14 @@ def test_report_ids_and_renderer():
     js = (APP / "app.js").read_text(encoding="utf-8")
     for token in ("renderReport", "/api/report", "sparkline"):
         assert token in js, token
+
+
+def test_report_band_contrast_and_text():
+    # Structural guard: visible band outline, readable tag, and a textual band meaning.
+    css = (APP / "styles.css").read_text(encoding="utf-8")
+    band = re.search(r"\.band\s*\{[^}]*\}", css)
+    assert band and "stroke" in band.group(0), "band needs a visible outline"
+    tag = re.search(r"\.tag\.explained\s*\{[^}]*\}", css)
+    assert tag and "--text-secondary" in tag.group(0), "explained tag needs AA contrast"
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    assert "baseline band" in js
