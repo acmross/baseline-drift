@@ -16,6 +16,7 @@ if str(ROOT) not in sys.path:
 
 from web.context_builder import build_explains                  # noqa: E402
 from web.feature_merge import merge_session_features            # noqa: E402
+from web.reporting import build_report                          # noqa: E402
 from web.session_store import (                                 # noqa: E402
     append_record, has_session, read_records, validate_id,
 )
@@ -74,6 +75,18 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
             "answers": answers, "explains": explains, "backend": "none",
         })
         return {"explains": explains}
+
+    @app.get("/api/report")
+    def report(subject: str) -> dict:
+        try:
+            subject = validate_id(subject, "subject")
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        records = read_records(data / "sessions.jsonl")
+        context_records = read_records(data / "context.jsonl")
+        context = {(r["subject"], r["session"]): r.get("explains", {})
+                   for r in context_records}
+        return build_report(records, context, subject)
 
     @app.get("/")
     def index() -> FileResponse:
