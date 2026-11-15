@@ -1,75 +1,100 @@
-# Next session
+# Next session — Sunday 15 November 2026 (submission day)
 
-**Single outcome:** a submitted, demo-ready Baseline Drift entry with real recordings, verified links, and the PR merged.
+**Single outcome:** Baseline Drift is submitted for judging before 23:59 Pacific,
+with every required field filled and every public link opened in a private window.
 
-**Where:** work in `D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui` (branch `web-ui`, PR #1) until the merge. Read `docs/INSTRUCTIONS.md` first. The submission form copy is drafted in `SUBMISSION.md`.
+**Where:** `D:\Ruben\2026.Nasa.Hackathon` (branch `main`, `45280b0`, clean). The
+`web-ui` worktree now tracks the same commit; PR #1 and PRs #2–#9 are merged.
+Read `docs/INSTRUCTIONS.md` for how to run the app; the form copy lives in
+`SUBMISSION.md`.
 
 ---
 
-## P0 — before anything else
+## State verified at 14:30 Pacific
 
-- [ ] Run the full suite: `python -m pytest web/tests -v` → 65 passed.
-- [ ] Open PR #1 and read the review comments. Address any actionable feedback before new work.
-- [ ] Confirm the local event and its timezone; the submission deadline follows it (Sunday, Nov 15, 11:59 PM local). `SUBMISSION.md` says San Jose; reconfirm.
-- [ ] Confirm the submission form fields and the SI/AI declaration requirements.
+- Full suite: **82 passed** on `main` (`python -m pytest web/tests -q`).
+- Online preview: <https://acmross.github.io/baseline-drift/try/> → 200.
+- Hosted demo wake page: <https://acmross.github.io/baseline-drift/demo/> → 200.
+- Hosted demo health: <https://baseline-drift.onrender.com/api/health> → `{"ok":true}`.
+- Seven-slide deck: <https://acmross.github.io/baseline-drift/pitch-deck.html> → 200,
+  7 slide sections, renders in a fresh Chrome profile, `1/7` pager visible.
+- Published real dataset: 4 sessions (`day5`, `day7`, `fd8`, `fd9`), state `stable`.
+  It is the team member's real data from her laptop, check-in answers excluded.
+- The six-session findings story (2 unexplained: pausing, speaking rate; 3 explained
+  by the reported cold: pitch, voice clarity, loudness) comes from the **synthetic**
+  fixture. Say that out loud if you present it.
+- The `v0.1-demo-2026-11-14` release exe was built 2026-11-14 23:06, before the
+  tabs, session playback, deletion and hosted demo landed. It is stale but usable.
 
-## P0 — real recordings and browser checks
+## Decision needed: how to fill *Project Demonstration*
 
-- [ ] On the demo laptop, one microphone, one room: record six sessions (days 1-6) through the real UI.
-- [ ] Verify the browser checks that were never automated:
-  - mic permission prompt and level meter
-  - three takes complete in order, passage text visible during take 2
-  - upload lands in `web/data/recordings/<SUBJECT>/`
-  - keyboard-only flow, focus states, contrast
-  - network disabled: page loads and the report still works
-  - no external requests in the browser network panel
-- [ ] Day 3: report says baseline complete and scoring begins next session.
-- [ ] Day 6: report shows sustained findings. On the demo day, report a real cold with normal sleep and unchanged setup; confirm pitch/clarity/loudness are explained and pausing/rate remain unexplained.
-- [ ] If the genuine tired-day session does not fire, keep the null result and say so. Do not hand-tune thresholds to force it.
+**Option A — link the existing seven-slide deck (recommended).**
+Pros: already live, exactly 7 slides, public and sign-in-free, verified in a
+private profile, no production time, matches the required format literally.
+Cons: no app screenshots in it; it loads Google Fonts (falls back to system fonts
+offline); the "in our run" line refers to synthetic data unless the presenter
+says so.
 
-## P0 — calibration
+**Option B — record a 30-second screen video.**
+Pros: shows the real UI and the report states, which judges remember.
+Cons: a new recording, upload, public link and private-window check; 30 seconds
+cannot carry the three-gate argument; loses the before/after view a judge can
+sit on. High effort, new failure points, low marginal gain.
 
-- [ ] Record the same passage several times in one sitting; measure the spread of each feature.
-- [ ] Set `MIN_CHANGE` in `pipeline/voice_drift.py` above the measured noise floor. This is a pipeline change; review it separately and keep the tests green.
-- [ ] Re-run the six-session report and the e2e test after calibration. Record the thresholds in the demo notes.
+**Option C — use the hosted demo URL as the demonstration link.**
+Pros: a judge can run the real pipeline immediately.
+Cons: the field asks for slides or a video; a live app is not that format; the
+free Render instance can sleep for up to a minute, adding friction on first
+load. Better kept as a bonus in the project details, where the README already
+links it.
 
-## P0 — demo and deck
+**Recommendation:** Option A now, Option C only as an extra link in the written
+details. Do not start Option B today.
 
-- [ ] Refresh the 7-slide deck using `docs/demo/record.png`, `docs/demo/report-baseline.png`, and `docs/demo/report-findings.png`.
-- [ ] Use the 2-minute walkthrough in `docs/demo-script.md` as the spoken track.
-- [ ] Keep the 80-91% HERA figure tied to team cohesion/efficacy, never individual fatigue.
-- [ ] Both submission links public, no password, no sign-in. Test them in a private browser window.
-- [ ] Include the OSD-575 citation and the caveats; declare AI tools honestly.
+## P0 — submit
 
-## P1 — merge and package
+- [ ] Confirm who is clicking Submit and that they are signed in to the team's
+      Space Apps account. Everything below is worthless until that is settled.
+- [ ] Confirm the deadline in the event's own timezone (San Jose, 23:59 Pacific).
+- [ ] Paste the blocks from `SUBMISSION.md`: Summary, Project Details, NASA Data,
+      Space Agency Partner, Super Intelligence declaration, Project Links.
+      The demonstration link is the deck URL; the project link is the GitHub repo.
+- [ ] NASA Data field: OSD-575, HERA NTRS citations, NASA medical operations,
+      HERA Standard Measures, 5 Hazards and Risks of Human Spaceflight.
+- [ ] SI declaration: code generation and text generation, per the README's
+      "Use of AI tools" section.
+- [ ] Private-window check: repository, deck, online preview, hosted demo.
+      Confirm no password, no sign-in, and that the deck shows 7 slides.
+- [ ] Tick both verification checkboxes and click **Submit for Judging**, not
+      Save Progress. Screenshot the confirmation.
+- [ ] Record the submission time and any confirmation URL at the bottom of
+      `SUBMISSION.md`.
 
-- [ ] Merge PR #1 into `main` after the P0 checks. Note: `main` moved during the session (`e25fe30`, teammate submission/pitch commits); the branch was merged with `main` (`518a0b0`) and the `.gitignore` conflict was resolved. Verify PR #1 is mergeable before merging.
-- [ ] Rebuild the exe from merged `main`: `.\build_exe.ps1`, then smoke-test `dist\BaselineDrift.exe`.
-- [x] Release `v0.1-demo-2026-11-14` already carries the exe asset; rebuild and replace it if source changes. Do not commit the 48 MB binary.
-- [ ] Push `main`; leave the worktree clean.
+## P1 — only after the submission is confirmed
 
-## P1 — optional improvements (only if time remains)
+- [ ] Rebuild the exe from `main` (`.\build_exe.ps1`), smoke-test
+      `dist\BaselineDrift.exe`, and replace the release asset so the README's
+      Windows download matches the current UI. This is a 48 MB upload; skip it
+      if the form is still open.
+- [ ] Add the deck link to the README's "Try it" section for judges who browse
+      the repository.
+- [ ] Correct `docs/INSTRUCTIONS.md` and the 2026-11-14 debrief, which still say
+      PR #1 is unmerged and the suite has 65 tests.
 
-- [ ] Fix the `pipeline/voice_drift.analyse` empty-return precedence bug upstream and remove the workaround in `web/reporting.py`; add a stable-state test.
-- [ ] Add TestClient coverage for `/api/questions`, `/api/context`, and `/api/report`.
-- [ ] Strengthen the offline audit to catch protocol-relative URLs and CSS `url(https://…)`.
-- [ ] Add try/catch and retry paths for report loading if the demo network stack proves flaky.
-- [ ] Add contract docstrings to the two remaining route handlers.
+## Do not start today
 
-## Definition of done
-
-- [ ] 65+ tests pass on the merged tree.
-- [ ] Six real sessions produce the expected baseline and findings states.
-- [ ] Exe builds from merged `main` and serves the UI at 127.0.0.1.
-- [ ] Both submission links open in a private window.
-- [ ] Submission clicked before the deadline, with buffer.
+- Six real sessions. Two more days of real data cannot be fabricated; the
+  published four-session real set stays as it is.
+- `MIN_CHANGE` calibration. It needs repeated same-sitting recordings and a
+  separate reviewed pipeline change. Do not move thresholds to make a demo fire.
+- The optional upstream `pipeline/voice_drift.analyse` fix and extra API tests.
 
 ## Risks
 
 | Risk | Mitigation |
 | --- | --- |
-| Real voice does not move enough to clear `MIN_CHANGE` | Calibrate above the noise floor; report the null if it still does not fire. |
-| Browser audio or mic fails on the demo laptop | Test early; fall back to the synthetic dry-run report and say it is synthetic. |
-| PR merge is delayed | Submit from the branch if necessary; merge after. |
-| Deadline/timezone confusion | Confirm the local event and submit with at least one hour of buffer. |
-| Missing AI/data declaration | Prepare it before the final hour; do not retrofit at 11 PM. |
+| Deadline/timezone confusion | Submit with at least two hours of buffer; screenshot the confirmation. |
+| Wrong link in the demonstration field | Use the deck URL above; open it in a private window from the form machine. |
+| Hosted demo sleeps during judging | The wake page polls and redirects; the deck and preview need no server. |
+| The deck's "our run" reads as real speech | Say "synthetic six-session fixture" wherever the result is discussed; the README already labels it. |
+| Team member's real data is only 4 sessions | Present it as real recorded use, not as a completed six-session result. |

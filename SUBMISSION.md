@@ -178,8 +178,8 @@ corpus. Both require credentialed access.
 | NASA Medical Operations requirements (private medical conferences) | https://www.nasa.gov/reference/6-0-medical-operations/ |
 | NASA Human Research Program, Standard Measures at HERA | https://nlsp.nasa.gov/explore/home/lsda_sm_hera |
 
-TODO: add the 5 Hazards of Human Spaceflight and Risks of Human Spaceflight
-links from the challenge Resources tab, which we read as background.
+| 5 Hazards of Human Spaceflight (NASA Human Research Program) | https://www.nasa.gov/hrp/hazards/ |
+| Risks of Human Spaceflight (NASA Human Research Program) | https://www.nasa.gov/hrp/risks/ |
 
 ---
 
@@ -212,9 +212,10 @@ disclosure section of README.md, which judges can see.
 
 **Project:** https://github.com/acmross/baseline-drift
 
-**Project Demonstration:** TODO. Seven slides or a video of 30 seconds or less,
-on a public link that needs no password or sign-in. Test it in a private
-browser window before submitting.
+**Project Demonstration:** https://acmross.github.io/baseline-drift/pitch-deck.html
+Seven slides, public, no password or sign-in. Verified in a fresh browser
+profile on 2026-11-15; arrow keys, clicks and the `#2`-`#7` hash move between
+slides.
 
 ---
 
