@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
@@ -124,8 +124,15 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
     fresh = {"Cache-Control": "no-store"}
 
     @app.get("/")
-    def index() -> FileResponse:
-        return FileResponse(static / "index.html", media_type="text/html", headers=fresh)
+    def index() -> HTMLResponse:
+        # Stamp the script and stylesheet links with their modification time.
+        # A browser that cached an older copy sees a new address and fetches
+        # the current file, so the page can never run against a stale script.
+        stamp = int(max((static / name).stat().st_mtime for name in ("app.js", "styles.css")))
+        html = (static / "index.html").read_text(encoding="utf-8")
+        html = html.replace('href="/styles.css"', f'href="/styles.css?v={stamp}"')
+        html = html.replace('src="/app.js"', f'src="/app.js?v={stamp}"')
+        return HTMLResponse(html, headers=fresh)
 
     @app.get("/app.js")
     def app_js() -> FileResponse:

@@ -48,3 +48,13 @@ def test_privacy_notice_is_on_the_page(tmp_path):
     text = client(tmp_path).get("/").text
     assert "Private. For your personal use only." in text
     assert "Nothing is shared unless you choose to share it yourself." in text
+
+
+def test_page_links_are_version_stamped(tmp_path):
+    c = client(tmp_path)
+    text = c.get("/").text
+    script = re.search(r'src="(/app\.js\?v=\d+)"', text)
+    style = re.search(r'href="(/styles\.css\?v=\d+)"', text)
+    assert script and style
+    assert c.get(script.group(1)).status_code == 200
+    assert c.get(style.group(1)).status_code == 200
