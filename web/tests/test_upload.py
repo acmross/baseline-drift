@@ -239,6 +239,8 @@ def test_hosted_demo_keeps_visitors_apart_and_expires(tmp_path):
     TestClient(app, base_url="https://testserver").get("/")
     assert not list(data.rglob("*.wav")) and not list(data.rglob("sessions.jsonl"))
     assert "BASELINE_DRIFT_HOSTED" in second.get("/").text
+    health = second.get("/api/health")
+    assert health.json()["ok"] and health.headers["access-control-allow-origin"] == "*"
 
 
 def test_local_app_is_not_hosted(tmp_path):

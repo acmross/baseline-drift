@@ -169,7 +169,15 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
     app.state.static_dir = static
 
     @app.get("/api/health")
-    def health() -> dict:
+    def health():
+        if hosted:
+            # The wake-up page on GitHub Pages polls this from another origin
+            # to know when the sleeping demo server has started. It exposes
+            # nothing but "I am up".
+            from fastapi.responses import JSONResponse
+            return JSONResponse({"ok": True, "offline": False},
+                                headers={"Access-Control-Allow-Origin": "*",
+                                         "Cache-Control": "no-store"})
         return {"ok": True, "offline": True}
 
     @app.get("/api/next-session")

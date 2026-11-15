@@ -19,11 +19,11 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 APP = ROOT / "web" / "app"
 REPO_URL = "https://github.com/acmross/baseline-drift"
-HOSTED_URL = "https://baseline-drift.onrender.com"
+HOSTED_URL = "https://acmross.github.io/baseline-drift/demo/"
 
 NOTE = f'''    <aside class="privacy" aria-label="About this preview">
       <p class="privacy-title">Try the check-in here. Your voice is not measured or kept.</p>
-      <p>You can record the three takes, play them back and fill in the check-in. The audio never leaves this browser tab and is discarded. Measuring a voice needs Baseline Drift running on your own computer, which is also what keeps recordings private, so the report you see afterwards is the sample. To have your own voice measured without installing anything, open the <a href="{HOSTED_URL}">hosted demo</a> (it can take a minute to wake up). To run it privately on your own computer, follow the steps at <a href="{REPO_URL}#try-it">{REPO_URL}</a>.</p>
+      <p>You can record the three takes, play them back and fill in the check-in. The audio never leaves this browser tab and is discarded. Measuring a voice needs Baseline Drift running on your own computer, which is also what keeps recordings private, so the report you see afterwards is the sample. To have your own voice measured without installing anything, open the <a href="{HOSTED_URL}">hosted demo</a>. To run it privately on your own computer, follow the steps at <a href="{REPO_URL}#try-it">{REPO_URL}</a>.</p>
     </aside>
 '''
 
