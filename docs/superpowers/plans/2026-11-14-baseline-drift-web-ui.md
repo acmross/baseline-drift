@@ -407,7 +407,7 @@ def test_validate_id_accepts_normal_values():
     assert validate_id("day-12", "session") == "day-12"
 
 
-@pytest.mark.parametrize("value", ["../etc", "", "amanda", "A" * 40, "day 1"])
+@pytest.mark.parametrize("value", ["../etc", "", "AMANDA", "A" * 40, "day 1"])
 def test_validate_id_rejects_bad_values(value):
     with pytest.raises(ValueError):
         validate_id(value, "session")
