@@ -122,11 +122,31 @@ function clearRecordError() {
   error.hidden = true;
 }
 
+// "fd12" reads as "FD12"; older labels such as "day3" are shown as they are.
+function sessionName(session) {
+  const match = /^fd(\d+)$/.exec(session || "");
+  return match ? `FD${match[1]}` : (session || "");
+}
+
+// Fill in the next flight day for whoever is typed in the crew member box.
+async function suggestFlightDay() {
+  const subject = document.getElementById("subject").value.trim().toUpperCase();
+  if (!SUBJECT_RE.test(subject) || state.recording) return;
+  try {
+    const next = await api(`/api/next-session?subject=${encodeURIComponent(subject)}`);
+    document.getElementById("session-label").value = String(next.flight_day);
+  } catch (error) {
+    // The field keeps whatever it shows; the crew member can still type a day.
+  }
+}
+
 function readIds() {
   const subjectInput = document.getElementById("subject");
   const sessionInput = document.getElementById("session-label");
   const subject = subjectInput.value.trim().toUpperCase();
-  const session = sessionInput.value.trim().toLowerCase();
+  // Flight days are counted from 1 (launch day is FD1) and stored as fd<n>.
+  const day = Number(sessionInput.value);
+  const session = `fd${day}`;
   clearRecordError();
   if (!SUBJECT_RE.test(subject)) {
     showRecordError("Crew member must be 2-16 characters: uppercase letters, digits, "
@@ -134,9 +154,9 @@ function readIds() {
     subjectInput.focus();
     return null;
   }
-  if (!SESSION_RE.test(session)) {
-    showRecordError("Mission day must be 2-16 characters: lowercase letters, digits, "
-      + "or hyphens, starting with a letter or digit (for example day1).");
+  if (!Number.isInteger(day) || day < 1 || day > 9999 || !SESSION_RE.test(session)) {
+    showRecordError("Flight day must be a whole number, 1 or higher. Launch day is "
+      + "flight day 1.");
     sessionInput.focus();
     return null;
   }
@@ -383,10 +403,12 @@ async function saveSession(replace) {
   try {
     await uploadTakes(replace);
     status.textContent = replace
-      ? `Session ${state.session} replaced on this machine. Continue to check-in.`
-      : `Session ${state.session} saved on this machine. Continue to check-in.`;
+      ? `${sessionName(state.session)} replaced on this machine. Continue to check-in.`
+      : `${sessionName(state.session)} saved on this machine. Continue to check-in.`;
     state.saved = Object.keys(state.takes);
     clearTakes();
+    state.recording = false;
+    suggestFlightDay();
     document.getElementById("replace-session").hidden = true;
     document.getElementById("retry-upload").hidden = true;
     document.getElementById("to-checkin").disabled = false;
@@ -628,8 +650,12 @@ function measuresSection(data, title) {
   heading.textContent = title;
   const note = document.createElement("p");
   note.className = "sub";
-  note.textContent = `Latest session${data.sessions && data.sessions.length
-    ? ` (${data.sessions[data.sessions.length - 1]})` : ""} of ${data.session_count}. `
+  const last = data.sessions && data.sessions.length ? data.sessions.length - 1 : -1;
+  const stamp = last >= 0 && data.recorded_at && data.recorded_at[last]
+    ? `, recorded ${new Date(data.recorded_at[last]).toLocaleString([], {
+      month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}` : "";
+  note.textContent = `Latest session${last >= 0
+    ? ` (${sessionName(data.sessions[last])}${stamp})` : ""} of ${data.session_count}. `
     + "The big number is your latest reading. Each dot on the chart is one session.";
   box.append(heading, note);
   for (const measure of rows) box.appendChild(measureRow(measure));
@@ -700,6 +726,7 @@ document.getElementById("nav-record").addEventListener("click", () => showState(
 document.getElementById("nav-report").addEventListener("click", openReport);
 document.getElementById("retry-upload").addEventListener("click", retryUpload);
 document.getElementById("subject").addEventListener("input", clearRecordError);
+document.getElementById("subject").addEventListener("change", suggestFlightDay);
 document.getElementById("session-label").addEventListener("input", clearRecordError);
 document.getElementById("checkin-form").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -714,3 +741,4 @@ document.getElementById("to-checkin").addEventListener("click", () => {
 });
 showState("record");
 refreshSteps();
+suggestFlightDay();

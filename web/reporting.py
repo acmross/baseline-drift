@@ -143,6 +143,7 @@ def build_report(records, context, subject, n_baseline=3, z_threshold=2.0, min_r
     if not subject_records:
         return base
     base["sessions"] = [r["session"] for r in subject_records]
+    base["recorded_at"] = [r.get("recorded_at") for r in subject_records]
     base["measures"] = _measures(subject_records, n_baseline, set())
     if len(subject_records) <= n_baseline:
         # The first n_baseline sessions define the reference distribution, so

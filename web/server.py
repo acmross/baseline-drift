@@ -5,7 +5,9 @@ Serves the one-page crew UI and the pipeline endpoints on 127.0.0.1 only.
 No network calls leave this process; the browser page loads no external assets.
 """
 import os
+import re
 import sys
+from datetime import datetime
 from pathlib import Path
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
@@ -73,6 +75,21 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
     @app.get("/api/health")
     def health() -> dict:
         return {"ok": True, "offline": True}
+
+    @app.get("/api/next-session")
+    def next_session(subject: str) -> dict:
+        """Suggest the next flight day so nobody has to remember the count."""
+        try:
+            subject = validate_id(subject, "subject")
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        mine = [r for r in read_records(data / "sessions.jsonl")
+                if r.get("subject") == subject]
+        numbers = [int(m.group(1)) for r in mine
+                   if (m := re.fullmatch(r"(?:fd|day)(\d+)", r.get("session", "")))]
+        day = max(numbers + [len(mine)]) + 1
+        return {"subject": subject, "flight_day": day, "session": f"fd{day}",
+                "session_count": len(mine)}
 
     @app.get("/api/questions")
     def questions() -> list[dict]:
@@ -189,11 +206,15 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
         features = merge_session_features(extract(vowel_path), extract(passage_path))
         record = {
             "subject": subject, "session": session,
+            # The laptop's own clock, with its UTC offset, so sessions can be
+            # placed in time and time of day is available to the report.
+            "recorded_at": datetime.now().astimezone().isoformat(timespec="seconds"),
             "file": passage_path.name, "files": saved,
             "features": features,
         }
         append_record(sessions_path, record)
-        return {"subject": subject, "session": session, "features": features}
+        return {"subject": subject, "session": session, "features": features,
+                "recorded_at": record["recorded_at"]}
 
     return app
 
