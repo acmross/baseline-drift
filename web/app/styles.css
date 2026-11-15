@@ -85,10 +85,11 @@ input {
 .spark { flex: 0 0 auto; }
 .stable-list { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px solid var(--line); }
 .stable-list h3 { margin: 0 0 var(--space-1); font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
-.band { fill: var(--surface-2); stroke: var(--text-secondary); stroke-width: 1; }
+.band { fill: rgba(57, 135, 229, 0.16); stroke: rgba(57, 135, 229, 0.55); stroke-width: 1; }
 .meanline { stroke: var(--text-secondary); stroke-width: 1; stroke-dasharray: 3 3; opacity: 1; }
-.series { fill: none; stroke: var(--series-1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
-.dot { fill: var(--series-1); stroke: var(--surface-0); stroke-width: 2; }
+.series { fill: none; stroke: var(--series-1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; opacity: 0.75; }
+.dot { fill: #8fc0ff; stroke: var(--surface-1); stroke-width: 2; }
+.dot.latest { fill: #ffffff; }
 .dot.flag { fill: var(--accent); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 
@@ -133,4 +134,3 @@ input {
 .trend svg { display: block; width: 100%; height: auto; }
 .trend .axis { fill: var(--text-muted); font-size: 11px; }
 .trend .series { fill: none; stroke: var(--series-1); stroke-width: 2; }
-.trend .dot { fill: var(--series-1); stroke: var(--surface-1); stroke-width: 2; }

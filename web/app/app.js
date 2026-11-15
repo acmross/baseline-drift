@@ -518,9 +518,9 @@ async function submitCheckin() {
 }
 
 function sparkline(values, mean, sd, flagged) {
-  const width = 220;
-  const height = 44;
-  const pad = 6;
+  const width = 300;
+  const height = 76;
+  const pad = 10;
   const clean = values.filter((value) => value !== null);
   if (clean.length < 2) return document.createElement("span");
   const lo = Math.min(...clean, mean - 2.5 * sd);
@@ -555,19 +555,24 @@ function sparkline(values, mean, sd, flagged) {
   const points = [];
   values.forEach((value, index) => {
     if (value === null) return;
-    const dot = document.createElementNS(ns, "circle");
-    dot.setAttribute("cx", String(x(index)));
-    dot.setAttribute("cy", String(y(value)));
-    dot.setAttribute("r", flagged.includes(index) ? "4" : "2.5");
-    dot.setAttribute("class", flagged.includes(index) ? "dot flag" : "dot");
-    svg.appendChild(dot);
-    points.push(`${x(index).toFixed(1)},${y(value).toFixed(1)}`);
+    points.push({ index, cx: x(index), cy: y(value) });
   });
-
+  // Line first, dots on top, so every reading stays visible.
   const polyline = document.createElementNS(ns, "polyline");
-  polyline.setAttribute("points", points.join(" "));
+  polyline.setAttribute("points",
+    points.map((point) => `${point.cx.toFixed(1)},${point.cy.toFixed(1)}`).join(" "));
   polyline.setAttribute("class", "series");
   svg.appendChild(polyline);
+  points.forEach((point, order) => {
+    const isFlag = flagged.includes(point.index);
+    const isLatest = order === points.length - 1;
+    const dot = document.createElementNS(ns, "circle");
+    dot.setAttribute("cx", String(point.cx));
+    dot.setAttribute("cy", String(point.cy));
+    dot.setAttribute("r", isFlag ? "6.5" : (isLatest ? "6" : "5"));
+    dot.setAttribute("class", isFlag ? "dot flag" : (isLatest ? "dot latest" : "dot"));
+    svg.appendChild(dot);
+  });
   return svg;
 }
 
@@ -768,8 +773,8 @@ function trendPoints(measure, data, group) {
 function trendChart(points, measure) {
   const ns = "http://www.w3.org/2000/svg";
   const width = 640;
-  const height = 132;
-  const pad = { left: 10, right: 10, top: 12, bottom: 24 };
+  const height = 156;
+  const pad = { left: 14, right: 14, top: 16, bottom: 26 };
   const svg = document.createElementNS(ns, "svg");
   svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
   svg.setAttribute("role", "img");
@@ -805,7 +810,10 @@ function trendChart(points, measure) {
                         `${x(index).toFixed(1)},${y(point.value).toFixed(1)}`).join(" ") });
   }
   points.forEach((point, index) => {
-    const dot = add("circle", { cx: x(index), cy: y(point.value), r: 4, class: "dot" });
+    const isLatest = index === points.length - 1;
+    const dot = add("circle", { cx: x(index), cy: y(point.value),
+                                r: isLatest ? 6.5 : 5.5,
+                                class: isLatest ? "dot latest" : "dot" });
     const title = document.createElementNS(ns, "title");
     title.textContent = `${point.tip}: ${formatValue(measure.format, point.value)}`;
     dot.appendChild(title);
