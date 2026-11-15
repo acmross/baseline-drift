@@ -64,3 +64,12 @@ def test_no_external_assets_anywhere():
     for name in ("index.html", "app.js", "styles.css"):
         text = (APP / name).read_text(encoding="utf-8")
         assert not network.search(text), name
+
+
+def test_report_ids_and_renderer():
+    html = (APP / "index.html").read_text(encoding="utf-8")
+    for element_id in ("report-headline", "report-list", "baseline-note", "report-refresh"):
+        assert f'id="{element_id}"' in html, element_id
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    for token in ("renderReport", "/api/report", "sparkline"):
+        assert token in js, token

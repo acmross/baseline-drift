@@ -201,6 +201,142 @@ async function submitCheckin() {
   if (done) await finishCheckin();
 }
 
+function sparkline(values, mean, sd, flagged) {
+  const width = 220;
+  const height = 44;
+  const pad = 6;
+  const clean = values.filter((value) => value !== null);
+  if (clean.length < 2) return document.createElement("span");
+  const lo = Math.min(...clean, mean - 2.5 * sd);
+  const hi = Math.max(...clean, mean + 2.5 * sd);
+  const span = hi - lo || 1;
+  const x = (index) => pad + index * (width - 2 * pad) / Math.max(values.length - 1, 1);
+  const y = (value) => height - pad - (value - lo) * (height - 2 * pad) / span;
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("width", String(width));
+  svg.setAttribute("height", String(height));
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "trend across sessions with the baseline band");
+
+  const band = document.createElementNS(ns, "rect");
+  band.setAttribute("x", "0");
+  band.setAttribute("y", String(Math.min(y(mean + sd), y(mean - sd))));
+  band.setAttribute("width", String(width));
+  band.setAttribute("height", String(Math.max(Math.abs(y(mean - sd) - y(mean + sd)), 1)));
+  band.setAttribute("class", "band");
+  svg.appendChild(band);
+
+  const line = document.createElementNS(ns, "line");
+  line.setAttribute("x1", "0");
+  line.setAttribute("x2", String(width));
+  line.setAttribute("y1", String(y(mean)));
+  line.setAttribute("y2", String(y(mean)));
+  line.setAttribute("class", "meanline");
+  svg.appendChild(line);
+
+  const points = [];
+  values.forEach((value, index) => {
+    if (value === null) return;
+    const dot = document.createElementNS(ns, "circle");
+    dot.setAttribute("cx", String(x(index)));
+    dot.setAttribute("cy", String(y(value)));
+    dot.setAttribute("r", flagged.includes(index) ? "4" : "2.5");
+    dot.setAttribute("class", flagged.includes(index) ? "dot flag" : "dot");
+    svg.appendChild(dot);
+    points.push(`${x(index).toFixed(1)},${y(value).toFixed(1)}`);
+  });
+
+  const polyline = document.createElementNS(ns, "polyline");
+  polyline.setAttribute("points", points.join(" "));
+  polyline.setAttribute("class", "series");
+  svg.appendChild(polyline);
+  return svg;
+}
+
+function findingRow(finding) {
+  const row = document.createElement("div");
+  row.className = finding.explained.length ? "row" : "row open-row";
+
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  const label = document.createElement("div");
+  label.className = "label";
+  label.textContent = finding.label;
+  const phrase = document.createElement("div");
+  phrase.className = "phrase";
+  phrase.textContent = finding.phrase;
+  const detail = document.createElement("div");
+  detail.className = "detail";
+  detail.textContent = `${finding.value}${finding.unit} against your baseline of `
+    + `${finding.baseline_mean}${finding.unit} · ${finding.run_length} `
+    + `session${finding.run_length === 1 ? "" : "s"} running`;
+  const tag = document.createElement("span");
+  tag.className = finding.explained.length ? "tag explained" : "tag open";
+  tag.textContent = finding.explained.length
+    ? `accounted for: ${finding.explained.join(", ").replaceAll("_", " ")}`
+    : "no reported explanation";
+
+  meta.append(label, phrase, detail, tag);
+  const spark = document.createElement("div");
+  spark.className = "spark";
+  spark.appendChild(sparkline(finding.series, finding.baseline_mean,
+                              finding.baseline_sd, finding.flagged_indices));
+  row.append(meta, spark);
+  return row;
+}
+
+function renderReport(data) {
+  document.getElementById("report-headline").textContent = data.headline;
+  document.getElementById("baseline-note").textContent = data.state === "baseline"
+    ? `Your baseline is built from your first ${data.n_baseline} sessions.`
+    : "Measured against your own baseline. Shaded band is one standard deviation; "
+      + "the dashed line is your baseline average.";
+  const list = document.getElementById("report-list");
+  list.replaceChildren();
+  if (data.state === "empty") {
+    const empty = document.createElement("p");
+    empty.textContent = "No sessions yet. Record your first check-in to begin.";
+    list.appendChild(empty);
+    return;
+  }
+  if (data.state === "baseline") {
+    const pending = document.createElement("p");
+    pending.textContent = `Building your baseline — ${data.baseline_progress.have} of `
+      + `${data.baseline_progress.need} sessions. No findings are reported yet.`;
+    list.appendChild(pending);
+    return;
+  }
+  if (!data.findings.length) {
+    const stable = document.createElement("p");
+    stable.textContent = "Nothing moved far enough from your baseline to report.";
+    list.appendChild(stable);
+    return;
+  }
+  for (const finding of data.findings) {
+    list.appendChild(findingRow(finding));
+  }
+  const footer = document.createElement("p");
+  footer.className = "sub";
+  footer.textContent = "This describes what changed, not why. Ordinary causes are the "
+    + "common ones: a head cold, a different microphone, the time of day, the room. "
+    + "Nothing here is a diagnosis.";
+  list.appendChild(footer);
+}
+
+async function loadReport() {
+  setStatus("Building your report…");
+  const data = await api(`/api/report?subject=${encodeURIComponent(state.subject)}`);
+  renderReport(data);
+  setStatus("");
+}
+
+document.getElementById("report-refresh").addEventListener("click", loadReport);
+document.getElementById("to-report").addEventListener("click", () => {
+  showState("report");
+  loadReport();
+});
 document.getElementById("record-start").addEventListener("click", runSession);
 document.getElementById("checkin-form").addEventListener("submit", (event) => {
   event.preventDefault();
@@ -211,7 +347,6 @@ document.getElementById("checkin-skip").addEventListener("click", async () => {
   const done = advanceCheckin(null);
   if (done) await finishCheckin();
 });
-document.getElementById("to-report").addEventListener("click", () => showState("report"));
 document.getElementById("to-checkin").addEventListener("click", () => {
   showState("checkin");
   if (!checkin.questions.length) loadQuestions();
