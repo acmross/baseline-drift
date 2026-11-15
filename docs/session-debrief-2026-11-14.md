@@ -1,5 +1,11 @@
 # Session debrief — 2026-11-14
 
+> **Update 2026-11-15:** PRs #1–#9 are merged, so `main` is the working branch.
+> The suite is now 92 tests. The online preview, hosted demo and seven-slide deck
+> are live, and the release exe was rebuilt from `main`. The text below is the
+> record of the 2026-11-14 session; where it says the PR is unmerged or the
+> suite has 65 tests, this update overrides it.
+
 **Bottom line:** Baseline Drift is a working, reviewed, offline voice check-in app with a winning PRD, a passing test suite, a synthetic demo capture, and a Windows executable. The work is on branch `web-ui` in PR #1 and is not yet merged. Real recordings and the final submission remain.
 
 ## What shipped

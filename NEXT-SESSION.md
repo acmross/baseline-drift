@@ -8,11 +8,27 @@ with every required field filled and every public link opened in a private windo
 Read `docs/INSTRUCTIONS.md` for how to run the app; the form copy lives in
 `SUBMISSION.md`.
 
+## Done today after the verification pass
+
+- Detector: `pipeline/voice_drift.analyse` returns a flat `(stats, [])` when
+  nothing moved; the reporting workaround is gone; `web/tests/test_pipeline.py`
+  pins the shape and the CLI stable case no longer crashes.
+- Hosted demo: `web/tests/test_hosted.py` proves per-visitor isolation, the
+  hardened cookie, malformed-cookie replacement, the retention sweep, the
+  visitor cap, cross-origin health and local mode (7 tests).
+- Exe rebuilt from `main` and the `v0.1-demo-2026-11-14` asset replaced; the
+  smoke test passed with no external requests.
+- Favicon on the app and the wake page, `docs/try` rebuilt; the console
+  `favicon.ico` 404s are gone.
+- `docs/INSTRUCTIONS.md` and the 2026-11-14 debrief corrected; README links the
+  deck.
+- Suite: **92 passed**.
+
 ---
 
 ## State verified at 14:45 Pacific
 
-- Full suite: **82 passed** on `main` (`python -m pytest web/tests -q`).
+- Full suite: **92 passed** on `main` (`python -m pytest web/tests -q`).
 - Online preview: <https://acmross.github.io/baseline-drift/try/> → 200.
 - Hosted demo wake page: <https://acmross.github.io/baseline-drift/demo/> → 200.
 - Hosted demo health: <https://baseline-drift.onrender.com/api/health> → `{"ok":true}`.

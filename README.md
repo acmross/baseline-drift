@@ -12,6 +12,10 @@ own condition. Baseline Drift gives them a measurement instead.
 
 ## Try it
 
+**The two-minute case:** the [seven-slide
+overview](https://acmross.github.io/baseline-drift/pitch-deck.html) covers the
+problem, the three gates, the NASA validation, and what we have not shown.
+
 There are three ways in, from least to most effort.
 
 **1. Online preview, nothing to install.** Open

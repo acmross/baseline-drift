@@ -4,13 +4,13 @@ This file is the operating manual for the next session. Read it before touching 
 
 ## Where the work lives
 
-- Main checkout: `D:\Ruben\2026.Nasa.Hackathon` (branch `main`).
-- Implementation branch: `web-ui` in the worktree `D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui`.
-- Pull request: https://github.com/acmross/baseline-drift/pull/1
+- Main checkout: `D:\Ruben\2026.Nasa.Hackathon` (branch `main`). PRs #1–#9 are
+  merged; do new work on `main`.
+- Spare checkout: the `web-ui` worktree at `.worktrees\web-ui` tracks `main` and
+  keeps the local demo data under `web/data/`.
 - Submission form copy: `SUBMISSION.md` (San Jose event).
-- Demo release: https://github.com/acmross/baseline-drift/releases/tag/v0.1-demo-2026-11-14 (Windows exe asset).
-- `main` advanced during the session with the teammate's submission/pitch commits (`e25fe30`); session docs were rebased on top (`eb3d841`). The PR branch head is `518a0b0` after merging `main` into it.
-- Do the next work in the worktree while the PR is open. Merge the PR only after the manual browser checks and real recordings are done.
+- Demo release: https://github.com/acmross/baseline-drift/releases/tag/v0.1-demo-2026-11-14
+  (Windows exe asset, rebuilt from `main` on 2026-11-15).
 
 ## Run the app from source
 
@@ -33,7 +33,7 @@ Data is written under `web/data/` (gitignored):
 python -m pytest web/tests -v
 ```
 
-Expected: 65 passed, 1 known third-party warning. Do not weaken tests to make them pass.
+Expected: 92 passed, 1 known third-party warning. Do not weaken tests to make them pass.
 
 ## Demo dry run (synthetic)
 
@@ -102,7 +102,7 @@ cd D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui
 - `web/context_builder.py` — raw answers to explains map (CLI parity).
 - `web/app/` — one-page UI.
 - `web/demo_dry_run.py` — synthetic demo and screenshots.
-- `web/tests/` — 65 tests.
+- `web/tests/` — 92 tests.
 - `baseline_drift_exe.py`, `build_exe.ps1` — packaged launcher and build.
 - `GroundState.PRD.md` — winning PRD.
 - `docs/superpowers/plans/2026-11-14-baseline-drift-web-ui.md` — implementation plan and task history.
