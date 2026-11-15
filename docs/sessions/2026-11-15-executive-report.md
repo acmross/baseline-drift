@@ -84,6 +84,8 @@ pushed. Submission itself was parked; the team owns the form.
 - Release: <https://github.com/acmross/baseline-drift/releases/tag/v0.1-demo-2026-11-14>
 - Handoff: `NEXT-SESSION.md`, `docs/INSTRUCTIONS.md`, `SUBMISSION.md`
 - Verification screenshots: local temp `bd-verify-d70a3rat` (not committed)
+- Session state at close: `main` clean and pushed; **96 tests passing**; release
+  asset current; worktree synced.
 
 ## Follow-up, 2026-11-15 (privacy)
 
