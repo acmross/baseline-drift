@@ -37,7 +37,7 @@
 - **`MIN_CHANGE` is still placeholder-calibrated.** Set thresholds from repeated same-sitting recordings before trusting real output.
 - **Pipeline bug worked around, not fixed.** `pipeline/voice_drift.analyse` returns `(stats, (stats, []))` on empty findings; `web/reporting.py` normalizes it because the pipeline was read-only. The CLI stable case is still affected.
 - **PR not merged.** All work is on `web-ui`. The exe is gitignored and must be rebuilt from merged source.
-- **Main advanced during the session.** The teammate added `SUBMISSION.md` and replaced `docs/pitch.md` (`e25fe30`); session docs were rebased on top (`eb3d841`). PR #1 base is `e25fe30`, head `1fac2c7`; mergeability was still computing at close.
+- **Main advanced during the session.** The teammate added `SUBMISSION.md` and replaced `docs/pitch.md` (`e25fe30`); session docs were rebased on top (`eb3d841`). The `web-ui` branch was then merged with `main` (`518a0b0`) and the `.gitignore` conflict resolved. GitHub was still computing PR mergeability at close.
 - **Submission clock.** November 15, 11:59 PM local event time (San Jose); saving is not submitting. Form copy is drafted in `SUBMISSION.md`; public links, OSD-575 citation, and the SI declaration still need to be verified and submitted.
 
 ## Decisions made
@@ -55,10 +55,10 @@ Follow `NEXT-SESSION.md`. The short version: real six-session recording, browser
 
 ## Artifacts
 
-- PR: https://github.com/acmross/baseline-drift/pull/1 (base `e25fe30`, head `1fac2c7`)
-- Main head at session close: `eb3d841`
+- PR: https://github.com/acmross/baseline-drift/pull/1 (head `518a0b0`; base `main`)
+- Main head at session close: latest `main` with the handoff docs
 - Submission form copy: `SUBMISSION.md`
-- Branch head at session close: `1fac2c7`
+- Branch head at session close: `518a0b0`
 - Worktree: `D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui`
 - Exe: `D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui\dist\BaselineDrift.exe`
 - Execution ledger: `.worktrees\web-ui\.superpowers\sdd\2026-11-14-baseline-drift-web-ui\progress.md`

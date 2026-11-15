@@ -43,7 +43,7 @@
 
 ## P1 — merge and package
 
-- [ ] Merge PR #1 into `main` after the P0 checks. Note: `main` moved during the session (`e25fe30`, teammate submission/pitch commits); check PR mergeability and rebase `web-ui` onto `main` if GitHub reports conflicts. Force-push only with explicit approval.
+- [ ] Merge PR #1 into `main` after the P0 checks. Note: `main` moved during the session (`e25fe30`, teammate submission/pitch commits); the branch was merged with `main` (`518a0b0`) and the `.gitignore` conflict was resolved. Verify PR #1 is mergeable before merging.
 - [ ] Rebuild the exe from merged `main`: `.\build_exe.ps1`, then smoke-test `dist\BaselineDrift.exe`.
 - [ ] Optional: publish a GitHub release and attach the exe as a release asset (do not commit the 48 MB binary).
 - [ ] Push `main`; leave the worktree clean.
