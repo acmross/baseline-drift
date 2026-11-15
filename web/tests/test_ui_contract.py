@@ -100,7 +100,7 @@ def test_fixed_instructions_and_passage_are_embedded():
             "volume until you run out of comfortable breath.") in html
     assert "Describe what you have done since your last check-in." in html
 
-    passage = re.search(r"> The quiet harbor.*?the sky\.", protocol, re.S)
+    passage = re.search(r"> Commander's log.*?until tomorrow\.", protocol, re.S)
     assert passage, "passage not found in the recording protocol"
     assert normalized(passage.group(0).replace(">", " ")) in normalized(html)
 
@@ -109,7 +109,7 @@ def test_fixed_instructions_and_passage_are_embedded():
     take = re.search(r'\{\s*key:\s*"passage".*?\}', js, re.S)
     assert take, "passage take not found"
     seconds = re.search(r"seconds:\s*(\d+)", take.group(0))
-    assert seconds and int(seconds.group(1)) >= 40, "passage take must allow the full read"
+    assert seconds and int(seconds.group(1)) >= 30, "passage take must allow the full read"
 
 
 def test_browser_audio_constraints_are_requested():

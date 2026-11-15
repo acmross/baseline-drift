@@ -19,11 +19,39 @@ from parselmouth.praat import call
 # per speaker after the baseline sessions would improve F0 stability.
 PITCH_FLOOR, PITCH_CEILING = 75.0, 500.0
 SILENCE_DB = 25.0   # dB below peak that counts as silence, for the pause ratio
+EDGE_MARGIN_S = 0.10  # kept on each side of the speech when trimming edges
+MIN_SPEECH_S = 0.20   # never trim a recording down to less than this
+
+
+def trim_edges(snd):
+    """
+    Drop leading and trailing silence, keeping pauses inside the speech.
+
+    Takes are recorded for a fixed window or stopped by hand, so the silence
+    before the first word and after the last one reflects the recorder, not the
+    speaker. Left in, it is counted as pausing and dilutes the rate measure.
+    """
+    if snd.get_total_duration() < MIN_SPEECH_S:
+        return snd
+    intensity = snd.to_intensity(minimum_pitch=PITCH_FLOOR)
+    db = intensity.values[0]
+    times = intensity.xs()
+    finite = np.isfinite(db)
+    if not finite.any():
+        return snd
+    loud = np.where(finite & (db >= db[finite].max() - SILENCE_DB))[0]
+    if loud.size == 0:
+        return snd
+    start = max(snd.xmin, times[loud[0]] - EDGE_MARGIN_S)
+    end = min(snd.xmax, times[loud[-1]] + EDGE_MARGIN_S)
+    if end - start < MIN_SPEECH_S:
+        return snd
+    return snd.extract_part(from_time=start, to_time=end, preserve_times=False)
 
 
 def extract(path):
-    snd = parselmouth.Sound(str(path))
-    dur = snd.get_total_duration()
+    snd = trim_edges(parselmouth.Sound(str(path)))
+    dur = snd.get_total_duration()   # speech only: edge silence is trimmed
 
     pitch = snd.to_pitch(pitch_floor=PITCH_FLOOR, pitch_ceiling=PITCH_CEILING)
     f0 = pitch.selected_array['frequency']

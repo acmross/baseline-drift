@@ -19,30 +19,34 @@ variable to give them reliably.
 
 Save as `<session>_vowel.wav`.
 
-## Task 2: the fixed passage (about 30 seconds)
+## Task 2: the fixed passage (about 22 seconds)
 
 Read this aloud at your normal speaking pace. Same passage every session.
 
-> The quiet harbor fills with morning light before the first boats move. A low
-> fog rests over the water, and the air holds the smell of salt and old rope.
-> Someone is singing on the far dock, though the words are hard to catch. Three
-> gulls argue above a crate of fish, then scatter when the engine coughs awake.
-> By seven the channel is busy, the fog is thinning, and the long gray shape of
-> the bridge begins to show against the sky.
+> Commander's log, day forty. Sixteen sunrises today and I just caught three of
+> them. The coffee floats and the plants are leaning toward the window again. We
+> flushed the pump, checked the hatch seals, and measured the garden. The ship is
+> in one piece and the stars are where we left them this evening. Signing off
+> until tomorrow.
 
-This passage is original and written for this task. It is 84 words, about 33
-seconds at a normal pace, and it is built for three properties:
+This passage is original and written for this task: a calm mission log, so it
+fits the setting without giving the reader anything to perform. It is 58 words,
+about 22 seconds at a normal pace, and it is built for three properties:
 
 - **Broad phonetic coverage.** All vowel classes, voiced and voiceless stops,
   the main fricatives, nasals, liquids and affricates. Narrow coverage would
   make the features sensitive to which sounds happened to appear.
 - **Emotionally neutral content.** Prosody follows meaning. A passage about
   anything charged would move pitch and rate on its own and contaminate the
-  measurement.
+  measurement. Read it deadpan, the same way every session.
 - **No proper nouns, no tongue twisters.** It has to read identically on a
   tired day, or the reading itself becomes the variable.
 
 This task carries speech rate, pause ratio and F0 range.
+
+Silence before the first word and after the last is trimmed automatically
+before measuring, so the length of the recording window does not matter. Pauses
+inside the reading are kept.
 
 Save as `<session>_passage.wav`.
 
@@ -91,7 +95,7 @@ the whole design.
 
     # then, per task (replace :0 with your device number)
     ffmpeg -f avfoundation -i ":0" -ar 16000 -ac 1 -t 6  day1_vowel.wav
-    ffmpeg -f avfoundation -i ":0" -ar 16000 -ac 1 -t 40 day1_passage.wav
+    ffmpeg -f avfoundation -i ":0" -ar 16000 -ac 1 -t 30 day1_passage.wav
     ffmpeg -f avfoundation -i ":0" -ar 16000 -ac 1 -t 70 day1_free.wav
 
 ### macOS, no ffmpeg
