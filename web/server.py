@@ -6,9 +6,9 @@ No network calls leave this process; the browser page loads no external assets.
 
 Hosted demo mode (BASELINE_DRIFT_HOSTED=1) is the one exception, and exists
 only so someone can try the real pipeline without installing it. There each
-visitor gets a private, temporary space keyed by a random cookie, the audio is
-deleted as soon as it has been measured, and everything else is deleted after
-RETENTION_SECONDS. The page says all of this in place of the privacy notice.
+visitor gets a private, temporary space keyed by a random cookie, and all of
+it (recordings, measurements, check-in answers) is deleted after
+RETENTION_SECONDS without use. The page says all of this in place of the privacy notice.
 """
 import contextvars
 import os
@@ -311,10 +311,6 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
             "features": features,
         }
         append_record(sessions_path, record)
-        if hosted:
-            # The demo server keeps the numbers, never the voice.
-            for name in saved.values():
-                (recording_dir / name).unlink(missing_ok=True)
         return {"subject": subject, "session": session, "features": features,
                 "recorded_at": record["recorded_at"]}
 
@@ -344,8 +340,6 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
         detail = build_detail(record, answers, QUESTIONS)
         detail["takes"] = [t for t in TAKE_NAMES
                            if (recording_dir / f"{session}_{t}.wav").exists()]
-        if hosted:
-            detail["audio_note"] = "The demo server deletes audio once it is measured."
         return detail
 
     @app.get("/api/audio")

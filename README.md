@@ -33,9 +33,9 @@ There are three ways in, from least to most effort.
 runs the same app and the same Praat measurements on a small demo server, so
 you can record a few check-ins and get your own numbers back. It is the one
 version that sends a recording off your device, and it says so on the page:
-the audio is deleted as soon as it is measured, your numbers sit under a
-random ID only your browser has, and they are deleted after two hours without
-use. The server sleeps when idle, so the first load can take about a minute.
+your recordings, numbers and check-in answers sit under a random ID only your
+browser has, so you can play them back and delete them, and everything is
+deleted automatically after two hours without use. The server sleeps when idle, so the first load can take about a minute.
 `Dockerfile` and `render.yaml` are what it runs from.
 
 **2. The real app on macOS or Linux.** Needs Python 3.

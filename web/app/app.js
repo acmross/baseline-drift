@@ -29,10 +29,11 @@ if (HOSTED_MINUTES) {
   document.getElementById("privacy-title").textContent =
     "Hosted demo. This is the one version that sends your recording off your device.";
   document.getElementById("privacy-body").textContent =
-    "To measure your voice here, your recording is sent to our demo server, measured, "
-    + "and the audio is deleted straight away. Your numbers and check-in answers are "
-    + `kept under a random ID that only this browser has, and are deleted after ${hours} `
-    + "hours without use. No one else can see them. The real Baseline Drift runs on "
+    "To measure your voice here, your recording is sent to our demo server. Your "
+    + "recordings, numbers and check-in answers are kept under a random ID that only "
+    + `this browser has, so you can play them back and delete them, and everything is `
+    + `deleted automatically after ${hours} hours without use. No one else can see or `
+    + "hear them. The real Baseline Drift runs on "
     + "your own computer and never sends anything anywhere.";
 }
 

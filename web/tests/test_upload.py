@@ -208,7 +208,7 @@ def test_saved_session_can_be_opened_and_played_back(tmp_path):
                       params={"subject": "AMANDA", "session": "fd9"}).status_code == 404
 
 
-def test_hosted_demo_keeps_visitors_apart_and_deletes_audio(tmp_path):
+def test_hosted_demo_keeps_visitors_apart_and_expires(tmp_path):
     data = tmp_path / "data"
     app = create_app(data_dir=data, max_upload_bytes=5_000_000, hosted=True)
     files = lambda: {  # noqa: E731
@@ -221,11 +221,22 @@ def test_hosted_demo_keeps_visitors_apart_and_deletes_audio(tmp_path):
     assert made.status_code == 201
     assert "bd_visitor" in first.cookies
     assert first.get("/api/report", params={"subject": "GUEST"}).json()["session_count"] == 1
-    assert not list(data.rglob("*.wav"))               # numbers kept, voice deleted
+    where = {"subject": "GUEST", "session": "fd1"}
+    assert first.get("/api/audio", params={**where, "take": "vowel"}).status_code == 200
 
     second = TestClient(app, base_url="https://testserver")
     assert second.get("/api/report", params={"subject": "GUEST"}).json()["session_count"] == 0
     assert second.cookies["bd_visitor"] != first.cookies["bd_visitor"]
+    assert second.get("/api/audio", params={**where, "take": "vowel"}).status_code == 404
+
+    # Past retention, the next new visitor's arrival sweeps the old space away.
+    import os, time
+    from web.server import RETENTION_SECONDS
+    for folder in data.iterdir():
+        old = time.time() - RETENTION_SECONDS - 60
+        os.utime(folder, (old, old))
+    TestClient(app, base_url="https://testserver").get("/")
+    assert not list(data.rglob("*.wav")) and not list(data.rglob("sessions.jsonl"))
     assert "BASELINE_DRIFT_HOSTED" in second.get("/").text
 
 
