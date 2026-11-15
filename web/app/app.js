@@ -814,7 +814,9 @@ function sessionsSection(data) {
   note.textContent = `The first ${data.n_baseline} sessions are your baseline. Select a `
     + "session to listen to it and see its measurements and check-in.";
   box.append(heading, note);
-  data.sessions.forEach((session, index) => {
+  // Newest first; index still points at the session's place in time.
+  const newestFirst = data.sessions.map((session, index) => ({ session, index })).reverse();
+  newestFirst.forEach(({ session, index }) => {
     const row = document.createElement("div");
     row.className = "session-row";
     // The whole left side of the row opens the session; Delete sits alone.
