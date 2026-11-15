@@ -10,7 +10,7 @@ const state = {
 const TAKES = [
   { key: "vowel", label: "sustained \"ah\"", seconds: 5 },
   { key: "passage", label: "fixed passage", seconds: 30 },
-  { key: "free", label: "free speech", seconds: 60 },
+  { key: "free", label: "free speech", seconds: 30 },
 ];
 
 const COUNTDOWN_SECONDS = 3;

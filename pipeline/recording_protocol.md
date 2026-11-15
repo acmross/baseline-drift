@@ -50,13 +50,13 @@ inside the reading are kept.
 
 Save as `<session>_passage.wav`.
 
-## Task 3: free speech (about 60 seconds)
+## Task 3: free speech (about 30 seconds)
 
 Answer the same prompt every session:
 
 > Describe what you have done since your last check-in.
 
-Talk continuously for roughly a minute. Content does not matter; continuity
+Talk continuously for roughly half a minute. Content does not matter; continuity
 does. This is the ecological sample, and it is where the check-in conversation
 sits once the agent is wired in.
 
@@ -96,7 +96,7 @@ the whole design.
     # then, per task (replace :0 with your device number)
     ffmpeg -f avfoundation -i ":0" -ar 16000 -ac 1 -t 6  day1_vowel.wav
     ffmpeg -f avfoundation -i ":0" -ar 16000 -ac 1 -t 30 day1_passage.wav
-    ffmpeg -f avfoundation -i ":0" -ar 16000 -ac 1 -t 70 day1_free.wav
+    ffmpeg -f avfoundation -i ":0" -ar 16000 -ac 1 -t 35 day1_free.wav
 
 ### macOS, no ffmpeg
 
