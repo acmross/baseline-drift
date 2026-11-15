@@ -7,6 +7,8 @@ This file is the operating manual for the next session. Read it before touching 
 - Main checkout: `D:\Ruben\2026.Nasa.Hackathon` (branch `main`).
 - Implementation branch: `web-ui` in the worktree `D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui`.
 - Pull request: https://github.com/acmross/baseline-drift/pull/1
+- Submission form copy: `SUBMISSION.md` (San Jose event).
+- `main` advanced during the session with the teammate's submission/pitch commits (`e25fe30`); session docs were rebased on top (`eb3d841`). The PR branch head is `1fac2c7`.
 - Do the next work in the worktree while the PR is open. Merge the PR only after the manual browser checks and real recordings are done.
 
 ## Run the app from source

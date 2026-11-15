@@ -2,7 +2,7 @@
 
 **Single outcome:** a submitted, demo-ready Baseline Drift entry with real recordings, verified links, and the PR merged.
 
-**Where:** work in `D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui` (branch `web-ui`, PR #1) until the merge. Read `docs/INSTRUCTIONS.md` first.
+**Where:** work in `D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui` (branch `web-ui`, PR #1) until the merge. Read `docs/INSTRUCTIONS.md` first. The submission form copy is drafted in `SUBMISSION.md`.
 
 ---
 
@@ -10,7 +10,7 @@
 
 - [ ] Run the full suite: `python -m pytest web/tests -v` → 65 passed.
 - [ ] Open PR #1 and read the review comments. Address any actionable feedback before new work.
-- [ ] Confirm the local event and its timezone; the submission deadline follows it (Sunday, Nov 15, 11:59 PM local).
+- [ ] Confirm the local event and its timezone; the submission deadline follows it (Sunday, Nov 15, 11:59 PM local). `SUBMISSION.md` says San Jose; reconfirm.
 - [ ] Confirm the submission form fields and the SI/AI declaration requirements.
 
 ## P0 — real recordings and browser checks
@@ -43,7 +43,7 @@
 
 ## P1 — merge and package
 
-- [ ] Merge PR #1 into `main` after the P0 checks.
+- [ ] Merge PR #1 into `main` after the P0 checks. Note: `main` moved during the session (`e25fe30`, teammate submission/pitch commits); check PR mergeability and rebase `web-ui` onto `main` if GitHub reports conflicts. Force-push only with explicit approval.
 - [ ] Rebuild the exe from merged `main`: `.\build_exe.ps1`, then smoke-test `dist\BaselineDrift.exe`.
 - [ ] Optional: publish a GitHub release and attach the exe as a release asset (do not commit the 48 MB binary).
 - [ ] Push `main`; leave the worktree clean.
