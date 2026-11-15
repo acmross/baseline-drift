@@ -8,3 +8,5 @@ audio/
 .DS_Store
 .worktrees/
 .superpowers/
+web/data/
+.venv/
