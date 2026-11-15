@@ -223,6 +223,27 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
         return {"subject": subject, "session": session, "features": features,
                 "recorded_at": record["recorded_at"]}
 
+    @app.delete("/api/session")
+    def delete_session(subject: str, session: str) -> dict:
+        """Remove one session for good: its measurements, check-in and audio."""
+        try:
+            subject = validate_id(subject, "subject")
+            session = validate_id(session, "session")
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        removed = remove_session(data / "sessions.jsonl", subject, session)
+        if not removed:
+            raise HTTPException(status_code=404, detail="no such session")
+        remove_session(data / "context.jsonl", subject, session)
+        files = 0
+        recording_dir = data / "recordings" / subject
+        for take in ("vowel", "passage", "free"):
+            path = recording_dir / f"{session}_{take}.wav"
+            if path.exists():
+                path.unlink()
+                files += 1
+        return {"subject": subject, "session": session, "audio_files_deleted": files}
+
     return app
 
 

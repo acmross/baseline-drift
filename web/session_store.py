@@ -43,6 +43,8 @@ def read_records(path: Path) -> list[dict]:
 def remove_session(path: Path, subject: str, session: str) -> int:
     """Rewrite a JSONL file without one subject/session; return how many were dropped."""
     path = Path(path)
+    if not path.exists():
+        return 0
     records = read_records(path)
     kept = [r for r in records
             if not (r.get("subject") == subject and r.get("session") == session)]

@@ -692,6 +692,72 @@ function measuresSection(data, title) {
   return box;
 }
 
+// Every saved session with its date and a delete control. Deleting is
+// permanent, so it takes two presses: Delete, then Confirm delete.
+function sessionsSection(data) {
+  if (state.sample || !data.sessions || !data.sessions.length) return null;
+  const box = document.createElement("div");
+  box.className = "stable-list";
+  const heading = document.createElement("h3");
+  heading.textContent = "Your sessions";
+  const note = document.createElement("p");
+  note.className = "sub";
+  note.textContent = `The first ${data.n_baseline} sessions are your baseline. Deleting `
+    + "a session removes its recording, measurements and check-in from this computer "
+    + "for good.";
+  box.append(heading, note);
+  data.sessions.forEach((session, index) => {
+    const row = document.createElement("div");
+    row.className = "session-row";
+    const name = document.createElement("span");
+    name.className = "session-name";
+    name.textContent = sessionName(session);
+    const when = document.createElement("span");
+    when.className = "session-when";
+    const stamp = data.recorded_at && data.recorded_at[index];
+    when.textContent = (stamp ? shortDate(new Date(stamp), true) : "no saved date")
+      + (index < data.n_baseline ? " · baseline" : "");
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "secondary small";
+    remove.textContent = "Delete";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "secondary small";
+    cancel.textContent = "Cancel";
+    cancel.hidden = true;
+    cancel.addEventListener("click", () => {
+      remove.textContent = "Delete";
+      remove.classList.remove("danger");
+      cancel.hidden = true;
+    });
+    remove.addEventListener("click", async () => {
+      if (cancel.hidden) {                 // first press only arms the button
+        remove.textContent = "Confirm delete";
+        remove.classList.add("danger");
+        cancel.hidden = false;
+        return;
+      }
+      remove.disabled = true;
+      cancel.disabled = true;
+      try {
+        await api(`/api/session?subject=${encodeURIComponent(data.subject)}`
+          + `&session=${encodeURIComponent(session)}`, { method: "DELETE" });
+        await loadReport();
+        setStatus(`${sessionName(session)} deleted from this computer.`);
+        suggestFlightDay();
+      } catch (error) {
+        setStatus(`Could not delete ${sessionName(session)}. (${error.message})`);
+        remove.disabled = false;
+        cancel.disabled = false;
+      }
+    });
+    row.append(name, when, remove, cancel);
+    box.appendChild(row);
+  });
+  return box;
+}
+
 function renderReport(data) {
   document.getElementById("report-headline").textContent = data.headline;
   document.getElementById("baseline-note").textContent = data.state === "baseline"
@@ -712,6 +778,8 @@ function renderReport(data) {
     list.appendChild(pending);
     const soFar = measuresSection(data, "Your measures so far");
     if (soFar) list.appendChild(soFar);
+    const sessionList = sessionsSection(data);
+    if (sessionList) list.appendChild(sessionList);
     return;
   }
   for (const finding of data.findings) {
@@ -719,6 +787,8 @@ function renderReport(data) {
   }
   const within = measuresSection(data, "Within your baseline");
   if (within) list.appendChild(within);
+  const sessionList = sessionsSection(data);
+  if (sessionList) list.appendChild(sessionList);
   const footer = document.createElement("p");
   footer.className = "sub";
   footer.textContent = "This describes what changed, not why. Ordinary causes are the "

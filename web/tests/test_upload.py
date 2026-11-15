@@ -150,3 +150,34 @@ def test_sessions_are_timestamped_and_next_flight_day_is_suggested(tmp_path):
     assert client.get("/api/next-session", params={"subject": "BOB"}).json()["flight_day"] == 1
     report = client.get("/api/report", params={"subject": "AMANDA"}).json()
     assert len(report["recorded_at"]) == 2 and all(report["recorded_at"])
+
+
+def test_delete_removes_measurements_checkin_and_audio(tmp_path):
+    data = tmp_path / "data"
+    client = TestClient(create_app(data_dir=data, max_upload_bytes=5_000_000))
+
+    def post(session):
+        return client.post(
+            "/api/session", data={"subject": "AMANDA", "session": session},
+            files={"vowel": ("v.wav", wav_bytes(tmp_path / "v.wav"), "audio/wav"),
+                   "passage": ("p.wav", wav_bytes(tmp_path / "p.wav", 1.5), "audio/wav")})
+
+    assert post("fd1").status_code == 201 and post("fd2").status_code == 201
+    client.post("/api/context", json={"subject": "AMANDA", "session": "fd1",
+                                      "answers": {"cough": True}})
+    audio = data / "recordings" / "AMANDA"
+    assert (audio / "fd1_vowel.wav").exists()
+
+    gone = client.delete("/api/session", params={"subject": "AMANDA", "session": "fd1"})
+    assert gone.status_code == 200 and gone.json()["audio_files_deleted"] == 2
+    assert not (audio / "fd1_vowel.wav").exists() and not (audio / "fd1_passage.wav").exists()
+    assert (audio / "fd2_vowel.wav").exists()                      # other sessions untouched
+    sessions = (data / "sessions.jsonl").read_text()
+    assert '"fd1"' not in sessions and '"fd2"' in sessions
+    assert (data / "context.jsonl").read_text().strip() == ""
+    assert client.get("/api/report", params={"subject": "AMANDA"}).json()["sessions"] == ["fd2"]
+
+    again = client.delete("/api/session", params={"subject": "AMANDA", "session": "fd1"})
+    assert again.status_code == 404
+    bad = client.delete("/api/session", params={"subject": "../x", "session": "fd1"})
+    assert bad.status_code == 422
