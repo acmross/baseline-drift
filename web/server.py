@@ -7,15 +7,37 @@ No network calls leave this process; the browser page loads no external assets.
 import sys
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 
 ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from web.feature_merge import merge_session_features            # noqa: E402
+from web.session_store import (                                 # noqa: E402
+    append_record, has_session, read_records, validate_id,
+)
 
-def create_app(data_dir: Path | None = None, static_dir: Path | None = None) -> FastAPI:
+MAX_UPLOAD_DEFAULT = 25 * 1024 * 1024
+
+
+def is_wav(blob: bytes) -> bool:
+    """A WAV file starts with RIFF and declares WAVE at byte 8. Cheap, exact."""
+    return len(blob) >= 44 and blob[:4] == b"RIFF" and blob[8:12] == b"WAVE"
+
+
+def read_upload(upload: UploadFile, max_bytes: int) -> bytes:
+    blob = upload.file.read()
+    if len(blob) > max_bytes:
+        raise HTTPException(status_code=413, detail=f"{upload.filename} is too large")
+    if not is_wav(blob):
+        raise HTTPException(status_code=422, detail=f"{upload.filename} is not a PCM WAV")
+    return blob
+
+
+def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
+               max_upload_bytes: int = MAX_UPLOAD_DEFAULT) -> FastAPI:
     """Build the app. Tests pass temp paths; production uses web/data and web/app."""
     data = Path(data_dir or (Path(__file__).parent / "data"))
     static = Path(static_dir or (Path(__file__).parent / "app"))
@@ -40,6 +62,51 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None) -> 
     @app.get("/styles.css")
     def styles() -> FileResponse:
         return FileResponse(static / "styles.css", media_type="text/css")
+
+    @app.post("/api/session", status_code=201)
+    def create_session(
+        subject: str = Form(...),
+        session: str = Form(...),
+        vowel: UploadFile = File(...),
+        passage: UploadFile = File(...),
+        free: UploadFile | None = File(None),
+    ) -> dict:
+        try:
+            subject = validate_id(subject, "subject")
+            session = validate_id(session, "session")
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+        sessions_path = data / "sessions.jsonl"
+        records = read_records(sessions_path)
+        if has_session(records, subject, session):
+            raise HTTPException(status_code=409, detail="session already recorded")
+
+        vowel_blob = read_upload(vowel, max_upload_bytes)
+        passage_blob = read_upload(passage, max_upload_bytes)
+        free_blob = read_upload(free, max_upload_bytes) if free else None
+
+        recording_dir = data / "recordings" / subject
+        recording_dir.mkdir(parents=True, exist_ok=True)
+        vowel_path = recording_dir / f"{session}_vowel.wav"
+        passage_path = recording_dir / f"{session}_passage.wav"
+        vowel_path.write_bytes(vowel_blob)
+        passage_path.write_bytes(passage_blob)
+        saved = {"vowel": vowel_path.name, "passage": passage_path.name}
+        if free_blob:
+            free_path = recording_dir / f"{session}_free.wav"
+            free_path.write_bytes(free_blob)
+            saved["free"] = free_path.name
+
+        from pipeline.voice_features import extract
+        features = merge_session_features(extract(vowel_path), extract(passage_path))
+        record = {
+            "subject": subject, "session": session,
+            "file": passage_path.name, "files": saved,
+            "features": features,
+        }
+        append_record(sessions_path, record)
+        return {"subject": subject, "session": session, "features": features}
 
     return app
 
