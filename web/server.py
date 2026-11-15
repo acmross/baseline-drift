@@ -4,6 +4,7 @@ Baseline Drift local server.
 Serves the one-page crew UI and the pipeline endpoints on 127.0.0.1 only.
 No network calls leave this process; the browser page loads no external assets.
 """
+import os
 import sys
 from pathlib import Path
 
@@ -27,6 +28,23 @@ from pipeline.checkin_agent import QUESTIONS                    # noqa: E402
 MAX_UPLOAD_DEFAULT = 25 * 1024 * 1024
 
 
+def default_data_dir() -> Path:
+    """
+    Writable data location for both source runs and the packaged executable.
+
+    A PyInstaller one-file build unpacks into a temporary directory, so data
+    written beside the source module would disappear on exit. In a frozen
+    build the exe's own folder is the transparent, inspectable location; an
+    explicit BASELINE_DRIFT_DATA override keeps tests and demos disposable.
+    """
+    override = os.environ.get("BASELINE_DRIFT_DATA")
+    if override:
+        return Path(override)
+    if getattr(sys, "frozen", False):
+        return Path(sys.executable).resolve().parent / "data"
+    return Path(__file__).parent / "data"
+
+
 def is_wav(blob: bytes) -> bool:
     """A WAV file starts with RIFF and declares WAVE at byte 8. Cheap, exact."""
     return len(blob) >= 44 and blob[:4] == b"RIFF" and blob[8:12] == b"WAVE"
@@ -43,8 +61,8 @@ def read_upload(upload: UploadFile, max_bytes: int) -> bytes:
 
 def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
                max_upload_bytes: int = MAX_UPLOAD_DEFAULT) -> FastAPI:
-    """Build the app. Tests pass temp paths; production uses web/data and web/app."""
-    data = Path(data_dir or (Path(__file__).parent / "data"))
+    """Build the app. Tests pass temp paths; production uses the data dir above."""
+    data = Path(data_dir or default_data_dir())
     static = Path(static_dir or (Path(__file__).parent / "app"))
     data.mkdir(parents=True, exist_ok=True)
 

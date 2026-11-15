@@ -10,3 +10,7 @@ audio/
 .superpowers/
 web/data/
 .venv/
+.venv-exe/
+build/
+dist/
+*.spec

@@ -38,3 +38,16 @@ cold check-in (normal sleep, same setup), prints the report summary, and writes
 `docs/demo/report-findings.png`. The synthetic audio is a source-model buzz, not
 speech; the run proves the demo path and the offline/no-external-request claim.
 
+## Windows executable
+
+Build a single portable exe with PyInstaller:
+
+    .\build_exe.ps1
+    .\dist\BaselineDrift.exe
+
+The exe starts the local server at http://127.0.0.1:8765, opens the default
+browser, and writes its data to a `data\` folder beside the executable. Close the
+console window to stop it. Set `BASELINE_DRIFT_DATA` to use a different data
+folder, or `BASELINE_DRIFT_NO_BROWSER=1` for an automated smoke test.
+
+
