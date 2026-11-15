@@ -92,7 +92,7 @@ links it.
 **Recommendation:** Option A now, Option C only as an extra link in the written
 details. Do not start Option B today.
 
-## P0 — submit
+## P0 — submit (parked this session; the team owns the form)
 
 - [x] Automated live pass (above): preview, deck, hosted pipeline, local app.
       The "verify first" step chosen for today is done; only the mic path needs a
@@ -117,18 +117,16 @@ details. Do not start Option B today.
 - [ ] Record the submission time and any confirmation URL at the bottom of
       `SUBMISSION.md`.
 
-## P1 — only after the submission is confirmed
+## P1 — done on 2026-11-15, independent of the submission
 
-- [ ] Rebuild the exe from `main` (`.\build_exe.ps1`), smoke-test
-      `dist\BaselineDrift.exe`, and replace the release asset so the README's
-      Windows download matches the current UI. This is a 48 MB upload; skip it
-      if the form is still open.
-- [ ] Add the deck link to the README's "Try it" section for judges who browse
-      the repository.
-- [ ] Correct `docs/INSTRUCTIONS.md` and the 2026-11-14 debrief, which still say
-      PR #1 is unmerged and the suite has 65 tests.
-- [ ] Add a small inline favicon to `web/app/index.html` (and rebuild `docs/try`)
-      so the console no longer logs a `favicon.ico` 404. Cosmetic only.
+- [x] Rebuilt the exe from `main`, smoke-tested it, and replaced the
+      `v0.1-demo-2026-11-14` asset (48,363,233 bytes; sha256
+      `6c350cef…`). The release download now matches the current UI.
+- [x] Added the deck link to the README's "Try it" section.
+- [x] Corrected `docs/INSTRUCTIONS.md` and added a dated update to the
+      2026-11-14 debrief.
+- [x] Added an inline favicon to the app and the wake page, rebuilt `docs/try`,
+      and confirmed both live pages log zero console errors.
 
 ## Do not start today
 
