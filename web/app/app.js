@@ -22,8 +22,9 @@ const ERROR_COPY = {
     + "Allow microphone access in the browser, then press Start recording again.",
   validation: "The local pipeline rejected these takes (422 validation error). "
     + "The takes are still here; press Retry upload.",
-  duplicate: "This session already exists on this machine. Continue to check-in "
-    + "or open the report.",
+  duplicate: "This session already exists on this machine. Press Replace saved "
+    + "session to overwrite it with these takes, or continue to check-in or open "
+    + "the report.",
   server: "The local pipeline could not store this session. "
     + "The takes are still here; press Retry upload.",
   questions: "Could not load check-in questions. Check that the local server is "
@@ -36,6 +37,25 @@ function showState(name) {
   for (const id of ["record", "checkin", "report"]) {
     document.getElementById(id).hidden = id !== name;
   }
+  // Check-in belongs to a recording session, so it sits under the Record tab.
+  const current = name === "report" ? "nav-report" : "nav-record";
+  for (const id of ["nav-record", "nav-report"]) {
+    const tab = document.getElementById(id);
+    if (id === current) tab.setAttribute("aria-current", "page");
+    else tab.removeAttribute("aria-current");
+  }
+}
+
+// While the microphone is in use nothing else may start or navigate away.
+function setBusy(busy) {
+  const ids = ["record-start", "save-session", "nav-record", "nav-report",
+               "replace-session"];
+  for (const id of ids) document.getElementById(id).disabled = busy;
+  for (const button of document.querySelectorAll(".retake")) button.disabled = busy;
+}
+
+function showReview(visible) {
+  document.getElementById("review").hidden = !visible;
 }
 
 function setStatus(text) {
@@ -205,10 +225,11 @@ function clearTakes() {
   state.takes = {};
 }
 
-async function uploadTakes() {
+async function uploadTakes(replace) {
   const form = new FormData();
   form.append("subject", state.subject);
   form.append("session", state.session);
+  if (replace) form.append("replace", "true");
   for (const take of TAKES) {
     if (!state.takes[take.key]) throw new Error(`missing ${take.key} take`);
     form.append(take.key, state.takes[take.key], `${state.session}_${take.key}.wav`);
@@ -222,6 +243,7 @@ function handleUploadError(error) {
   const status = document.getElementById("take-status");
   if (error.status === 409) {
     retry.hidden = true;
+    document.getElementById("replace-session").hidden = false;
     checkinButton.disabled = false;
     document.getElementById("to-report").disabled = false;
     status.textContent = ERROR_COPY.duplicate;
@@ -254,10 +276,11 @@ async function runSession() {
   state.session = ids.session;
   clearTakes();
   const status = document.getElementById("take-status");
-  const button = document.getElementById("record-start");
   const retry = document.getElementById("retry-upload");
-  button.disabled = true;
+  setBusy(true);
+  showReview(false);
   retry.hidden = true;
+  document.getElementById("replace-session").hidden = true;
   status.textContent = "Get ready. You will record three takes.";
   try {
     for (const take of TAKES) {
@@ -270,20 +293,68 @@ async function runSession() {
   } catch (error) {
     setPassageVisible(false);
     handleRecordingError(error);
-    button.disabled = false;
+    setBusy(false);
     return;
   }
   setPassageVisible(false);
+  // Nothing is stored until the crew member saves, so a bad take can be redone.
+  status.textContent = "Three takes captured. Save the session, or retake any take first.";
+  showReview(true);
+  setBusy(false);
+}
+
+async function retakeOne(key) {
+  const take = TAKES.find((item) => item.key === key);
+  if (!take) return;
+  const status = document.getElementById("take-status");
+  setBusy(true);
+  try {
+    setPassageVisible(take.key === "passage");
+    await runCountdown(COUNTDOWN_SECONDS, take.label);
+    status.textContent = `Recording ${take.label} (${take.seconds}s)...`;
+    state.takes[take.key] = await recordTake(take.key, take.seconds);
+    status.textContent = `Retook ${take.label}. Save the session, or retake again.`;
+  } catch (error) {
+    handleRecordingError(error);
+  } finally {
+    setPassageVisible(false);
+    setBusy(false);
+  }
+}
+
+async function saveSession(replace) {
+  const status = document.getElementById("take-status");
+  setBusy(true);
   status.textContent = "Uploading to the local pipeline...";
   try {
-    await uploadTakes();
-    status.textContent = "Session stored on this machine.";
+    await uploadTakes(replace);
+    status.textContent = replace
+      ? "Session replaced on this machine. Continue to check-in."
+      : "Session stored on this machine.";
+    showReview(false);
+    document.getElementById("replace-session").hidden = true;
+    document.getElementById("retry-upload").hidden = true;
     document.getElementById("to-checkin").disabled = false;
   } catch (error) {
     handleUploadError(error);
   } finally {
-    button.disabled = false;
+    setBusy(false);
   }
+}
+
+function openReport() {
+  const input = document.getElementById("subject");
+  const subject = input.value.trim().toUpperCase();
+  if (!SUBJECT_RE.test(subject)) {
+    showState("record");
+    showRecordError("Enter a crew member to open their report (for example AMANDA).");
+    input.focus();
+    return;
+  }
+  clearRecordError();
+  state.subject = subject;
+  showState("report");
+  loadReport();
 }
 
 async function retryUpload() {
@@ -299,6 +370,7 @@ async function retryUpload() {
   try {
     await uploadTakes();
     retry.hidden = true;
+    showReview(false);
     status.textContent = "Session stored on this machine.";
     document.getElementById("to-checkin").disabled = false;
   } catch (error) {
@@ -590,6 +662,13 @@ document.getElementById("to-report").addEventListener("click", () => {
   loadReport();
 });
 document.getElementById("record-start").addEventListener("click", runSession);
+document.getElementById("save-session").addEventListener("click", () => saveSession(false));
+document.getElementById("replace-session").addEventListener("click", () => saveSession(true));
+for (const button of document.querySelectorAll(".retake")) {
+  button.addEventListener("click", () => retakeOne(button.dataset.take));
+}
+document.getElementById("nav-record").addEventListener("click", () => showState("record"));
+document.getElementById("nav-report").addEventListener("click", openReport);
 document.getElementById("retry-upload").addEventListener("click", retryUpload);
 document.getElementById("subject").addEventListener("input", clearRecordError);
 document.getElementById("session-label").addEventListener("input", clearRecordError);

@@ -40,5 +40,18 @@ def read_records(path: Path) -> list[dict]:
     return records
 
 
+def remove_session(path: Path, subject: str, session: str) -> int:
+    """Rewrite a JSONL file without one subject/session; return how many were dropped."""
+    path = Path(path)
+    records = read_records(path)
+    kept = [r for r in records
+            if not (r.get("subject") == subject and r.get("session") == session)]
+    if len(kept) != len(records):
+        with path.open("w", encoding="utf-8") as fh:
+            for record in kept:
+                fh.write(json.dumps(record, ensure_ascii=False) + "\n")
+    return len(records) - len(kept)
+
+
 def has_session(records: list[dict], subject: str, session: str) -> bool:
     return any(r.get("subject") == subject and r.get("session") == session for r in records)

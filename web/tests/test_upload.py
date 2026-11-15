@@ -91,3 +91,35 @@ def test_upload_rejects_oversized_file(tmp_path):
         },
     )
     assert r.status_code == 413
+
+
+def test_replace_overwrites_session_and_drops_its_checkin(tmp_path):
+    data = tmp_path / "data"
+    client = TestClient(create_app(data_dir=data, max_upload_bytes=5_000_000))
+
+    def post(freq, **extra):
+        return client.post(
+            "/api/session",
+            data={"subject": "AMANDA", "session": "day1", **extra},
+            files={
+                "vowel": ("vowel.wav", wav_bytes(tmp_path / "v.wav", freq=freq), "audio/wav"),
+                "passage": ("passage.wav", wav_bytes(tmp_path / "p.wav", 1.5, freq), "audio/wav"),
+            },
+        )
+
+    first = post(220.0)
+    assert first.status_code == 201, first.text
+    ctx = client.post("/api/context", json={
+        "subject": "AMANDA", "session": "day1",
+        "answers": {"cold_or_congestion": True}})
+    assert ctx.status_code == 201, ctx.text
+
+    assert post(150.0).status_code == 409                 # no silent overwrite
+    redo = post(150.0, replace="true")
+    assert redo.status_code == 201, redo.text
+
+    sessions = (data / "sessions.jsonl").read_text().splitlines()
+    assert len(sessions) == 1                              # replaced, not appended
+    assert abs(redo.json()["features"]["f0_mean_hz"] - 150.0) < 5
+    context = (data / "context.jsonl").read_text().strip()
+    assert context == ""                                   # old answers do not carry over

@@ -21,7 +21,7 @@ from web.context_builder import (                                # noqa: E402
 from web.feature_merge import merge_session_features            # noqa: E402
 from web.reporting import build_report                          # noqa: E402
 from web.session_store import (                                 # noqa: E402
-    append_record, has_session, read_records, validate_id,
+    append_record, has_session, read_records, remove_session, validate_id,
 )
 from pipeline.checkin_agent import QUESTIONS                    # noqa: E402
 
@@ -138,6 +138,7 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
         vowel: UploadFile = File(...),
         passage: UploadFile = File(...),
         free: UploadFile | None = File(None),
+        replace: bool = Form(False),
     ) -> dict:
         try:
             subject = validate_id(subject, "subject")
@@ -147,12 +148,19 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
 
         sessions_path = data / "sessions.jsonl"
         records = read_records(sessions_path)
-        if has_session(records, subject, session):
+        exists = has_session(records, subject, session)
+        if exists and not replace:
             raise HTTPException(status_code=409, detail="session already recorded")
 
         vowel_blob = read_upload(vowel, max_upload_bytes)
         passage_blob = read_upload(passage, max_upload_bytes)
         free_blob = read_upload(free, max_upload_bytes) if free else None
+
+        if exists:
+            # A redo replaces the session and its check-in: answers given for
+            # the discarded takes must not explain the new ones.
+            remove_session(sessions_path, subject, session)
+            remove_session(data / "context.jsonl", subject, session)
 
         recording_dir = data / "recordings" / subject
         recording_dir.mkdir(parents=True, exist_ok=True)

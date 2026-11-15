@@ -139,3 +139,18 @@ def test_stable_features_are_rendered():
     js = (APP / "app.js").read_text(encoding="utf-8")
     assert "stable_features" in js
     assert "Stable this session" in js
+
+
+def test_navigation_and_retake_controls_exist():
+    html = (APP / "index.html").read_text(encoding="utf-8")
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    for element_id in ("nav-record", "nav-report", "review", "save-session",
+                       "replace-session"):
+        assert f'id="{element_id}"' in html, element_id
+    for take in ("vowel", "passage", "free"):
+        assert f'data-take="{take}"' in html, take
+    for token in ("retakeOne", "saveSession", "openReport", '"replace", "true"'):
+        assert token in js, token
+    # Takes are reviewed before anything is stored: recording must not auto-upload.
+    run = re.search(r"async function runSession\(\).*?\n}\n", js, re.S)
+    assert run and "uploadTakes" not in run.group(0)

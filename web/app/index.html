@@ -12,6 +12,10 @@
     <h1>Baseline Drift</h1>
     <p class="sub">Daily voice check-in · stays on this machine</p>
   </header>
+  <nav class="tabs" aria-label="Sections">
+    <button id="nav-record" type="button" class="secondary" aria-current="page">Record</button>
+    <button id="nav-report" type="button" class="secondary">Report</button>
+  </nav>
   <section id="record" class="panel" aria-labelledby="record-title">
     <h2 id="record-title">Record</h2>
     <div class="field">
@@ -38,8 +42,15 @@
       <button id="record-start" type="button">Start recording</button>
       <button id="to-checkin" type="button" class="secondary" disabled>Continue to check-in</button>
     </div>
+    <div id="review" class="actions" hidden>
+      <button id="save-session" type="button">Save session</button>
+      <button type="button" class="secondary retake" data-take="vowel">Retake "ah"</button>
+      <button type="button" class="secondary retake" data-take="passage">Retake passage</button>
+      <button type="button" class="secondary retake" data-take="free">Retake free speech</button>
+    </div>
     <div class="actions">
       <button id="retry-upload" type="button" class="secondary" hidden>Retry upload</button>
+      <button id="replace-session" type="button" class="secondary" hidden>Replace saved session</button>
     </div>
   </section>
   <section id="checkin" class="panel" hidden aria-labelledby="checkin-title">
