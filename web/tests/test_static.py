@@ -58,3 +58,25 @@ def test_page_links_are_version_stamped(tmp_path):
     assert script and style
     assert c.get(script.group(1)).status_code == 200
     assert c.get(style.group(1)).status_code == 200
+
+
+def test_sample_report_is_served_and_labelled(tmp_path):
+    report = client(tmp_path).get("/sample_report.json").json()
+    assert report["sample"] is True and report["subject"] == "SAMPLE"
+    assert report["state"] == "findings" and len(report["recorded_at"]) == report["session_count"]
+
+
+def test_online_preview_builds_and_matches_the_app(tmp_path):
+    from web.build_static_demo import build
+
+    out = build(tmp_path / "try")
+    html = (out / "index.html").read_text(encoding="utf-8")
+    assert "window.BASELINE_DRIFT_STATIC = true" in html
+    assert 'src="app.js"' in html and 'href="styles.css"' in html
+    assert "This online preview cannot record." in html
+    for name in ("app.js", "styles.css", "sample_report.json"):
+        assert (out / name).read_bytes() == (APP / name).read_bytes(), name
+    # The committed preview must not fall behind the app it mirrors.
+    committed = APP.parents[1] / "docs" / "try"
+    for name in ("index.html", "app.js", "styles.css", "sample_report.json"):
+        assert (committed / name).read_bytes() == (out / name).read_bytes(), name

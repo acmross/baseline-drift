@@ -151,6 +151,13 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
         html = html.replace('src="/app.js"', f'src="/app.js?v={stamp}"')
         return HTMLResponse(html, headers=fresh)
 
+    @app.get("/sample_report.json")
+    def sample_report() -> FileResponse:
+        # A simulated crew member's report, built by web/make_sample.py, so the
+        # report and trends can be explored before anyone has recorded.
+        return FileResponse(static / "sample_report.json",
+                            media_type="application/json", headers=fresh)
+
     @app.get("/app.js")
     def app_js() -> FileResponse:
         return FileResponse(static / "app.js", media_type="text/javascript", headers=fresh)

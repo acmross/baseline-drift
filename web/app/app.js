@@ -6,7 +6,12 @@ const state = {
   takes: {},
   recording: false, // true while the microphone is in use
   saved: [],        // takes stored by the last save, until a new take is recorded
+  sample: false,    // true while the simulated crew member is on screen
 };
+
+// The online preview is the same page with no local pipeline behind it: it can
+// show the sample report but cannot record.
+const STATIC_PREVIEW = Boolean(window.BASELINE_DRIFT_STATIC);
 
 const TAKES = [
   { key: "vowel", label: "sustained \"ah\"", seconds: 5 },
@@ -420,7 +425,26 @@ async function saveSession(replace) {
   }
 }
 
+// One place decides where a report comes from: the sample file, or this
+// machine's own sessions.
+async function fetchReport() {
+  if (state.sample) return api("sample_report.json");
+  return api(`/api/report?subject=${encodeURIComponent(state.subject)}`);
+}
+
+function setSample(on) {
+  state.sample = on;
+  document.getElementById("sample-banner").hidden = !on;
+  document.getElementById("sample-on").hidden = on || STATIC_PREVIEW;
+  document.getElementById("sample-off").hidden = STATIC_PREVIEW;
+}
+
 function openReport() {
+  if (state.sample) {
+    showState("report");
+    loadReport();
+    return;
+  }
   const input = document.getElementById("subject");
   const subject = input.value.trim().toUpperCase();
   if (!SUBJECT_RE.test(subject)) {
@@ -881,18 +905,18 @@ function renderTrends() {
 async function openTrends() {
   const input = document.getElementById("subject");
   const subject = input.value.trim().toUpperCase();
-  if (!SUBJECT_RE.test(subject)) {
+  if (!state.sample && !SUBJECT_RE.test(subject)) {
     showState("record");
     showRecordError("Enter a crew member to open their trends (for example AMANDA).");
     input.focus();
     return;
   }
   clearRecordError();
-  state.subject = subject;
+  if (!state.sample) state.subject = subject;
   showState("trends");
   setStatus("Loading your trends...");
   try {
-    trends.data = await api(`/api/report?subject=${encodeURIComponent(subject)}`);
+    trends.data = await fetchReport();
     renderTrends();
     setStatus("");
   } catch (error) {
@@ -905,7 +929,7 @@ async function loadReport() {
   refresh.disabled = true;
   setStatus("Building your report...");
   try {
-    const data = await api(`/api/report?subject=${encodeURIComponent(state.subject)}`);
+    const data = await fetchReport();
     renderReport(data);
     setStatus("");
   } catch (error) {
@@ -926,6 +950,14 @@ for (const button of document.querySelectorAll(".take-button")) {
   button.addEventListener("click", () => startTake(button.dataset.take));
 }
 document.getElementById("nav-record").addEventListener("click", () => showState("record"));
+document.getElementById("sample-on").addEventListener("click", () => {
+  setSample(true);
+  openReport();
+});
+document.getElementById("sample-off").addEventListener("click", () => {
+  setSample(false);
+  showState("record");
+});
 document.getElementById("nav-report").addEventListener("click", openReport);
 document.getElementById("nav-trends").addEventListener("click", openTrends);
 for (const button of document.querySelectorAll(".trend-group")) {
@@ -951,4 +983,11 @@ document.getElementById("to-checkin").addEventListener("click", () => {
 });
 showState("record");
 refreshSteps();
-suggestFlightDay();
+if (STATIC_PREVIEW) {
+  // No local pipeline here: open straight onto the sample and lock recording.
+  setSample(true);
+  for (const button of document.querySelectorAll(".take-button")) button.disabled = true;
+  openReport();
+} else {
+  suggestFlightDay();
+}

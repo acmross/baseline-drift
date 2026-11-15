@@ -134,3 +134,8 @@ input {
 .trend svg { display: block; width: 100%; height: auto; }
 .trend .axis { fill: var(--text-muted); font-size: 11px; }
 .trend .series { fill: none; stroke: var(--series-1); stroke-width: 2; }
+
+/* Sample mode is always labelled, so made-up data is never mistaken for real. */
+.sample-link { margin-left: auto; }
+.privacy.sample { border-left-color: var(--accent); }
+.privacy.sample .actions { margin-top: 10px; }

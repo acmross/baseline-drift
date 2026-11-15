@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baseline Drift</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="masthead">
+    <h1>Baseline Drift</h1>
+    <p class="sub">Daily voice check-in · stays on this machine</p>
+  </header>
+  <aside class="privacy" aria-label="Privacy">
+    <p class="privacy-title">Private. For your personal use only.</p>
+    <p>Your recordings, answers and results stay on this computer. Nothing is sent to mission control, a flight surgeon, your crewmates or anyone else. Nothing is shared unless you choose to share it yourself.</p>
+  </aside>
+  <nav class="tabs" aria-label="Sections">
+    <button id="nav-record" type="button" class="secondary" aria-current="page">Record</button>
+    <button id="nav-report" type="button" class="secondary">Report</button>
+    <button id="nav-trends" type="button" class="secondary">Trends</button>
+    <button id="sample-on" type="button" class="secondary sample-link">See a sample report</button>
+  </nav>
+  <aside id="sample-banner" class="privacy sample" aria-label="Sample data" hidden>
+    <p class="privacy-title">Sample data. Not a real person.</p>
+    <p>You are looking at a simulated crew member with made-up readings: 36 check-ins across ten weeks, steady at first, then slower and more halting speech alongside a reported cold. It is here so you can explore the Report and Trends views.</p>
+    <div class="actions"><button id="sample-off" type="button" class="secondary">Back to my own data</button></div>
+  </aside>
+  <section id="record" class="panel" aria-labelledby="record-title">
+    <h2 id="record-title">Record</h2>
+    <aside class="privacy" aria-label="About this preview">
+      <p class="privacy-title">This online preview cannot record.</p>
+      <p>Measuring a voice needs Baseline Drift running on your own computer, which is also what keeps recordings private. This page shows the sample report only. To record your own voice, follow the steps at <a href="https://github.com/acmross/baseline-drift#try-it">https://github.com/acmross/baseline-drift</a>.</p>
+    </aside>
+    <div class="field">
+      <label for="subject">Crew member</label>
+      <input id="subject" name="subject" value="AMANDA" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="field">
+      <label for="session-label">Flight day</label>
+      <input id="session-label" name="session" type="number" min="1" max="9999" step="1" value="1" inputmode="numeric" autocomplete="off">
+    </div>
+    <ol id="take-steps" class="steps">
+      <li class="step" data-take="vowel">
+        <span class="step-n">1</span>
+        <div class="step-body">
+          <p class="step-title">Sustained "ah" <span class="step-len">about 5 seconds</span></p>
+          <p id="vowel-instruction" class="instruction">Take a normal breath and hold 'ah' at a comfortable, steady pitch and volume until you run out of comfortable breath.</p>
+        </div>
+        <div class="step-side">
+          <span class="step-state">Not recorded</span>
+          <button type="button" class="secondary take-button" data-take="vowel">Record</button>
+        </div>
+      </li>
+      <li class="step" data-take="passage">
+        <span class="step-n">2</span>
+        <div class="step-body">
+          <p class="step-title">Fixed passage <span class="step-len">up to 30 seconds</span></p>
+          <p class="instruction">Read this aloud at your own pace. There is no need to rush. The text appears when this take begins.</p>
+          <div id="passage-text" class="passage" hidden>Commander's log, day forty. Sixteen sunrises today and I just caught three of them. The coffee floats and the plants are leaning toward the window again. We flushed the pump, checked the hatch seals, and measured the garden. The ship is in one piece and the stars are where we left them this evening. Signing off until tomorrow.</div>
+        </div>
+        <div class="step-side">
+          <span class="step-state">Not recorded</span>
+          <button type="button" class="secondary take-button" data-take="passage">Record</button>
+        </div>
+      </li>
+      <li class="step" data-take="free">
+        <span class="step-n">3</span>
+        <div class="step-body">
+          <p class="step-title">Free speech <span class="step-len">30 seconds</span></p>
+          <p id="free-prompt" class="instruction">Talk through these in your own words. There are no wrong answers.</p>
+          <ul class="prompts">
+            <li>How did you sleep?</li>
+            <li>Any cold, congestion, sore throat or coughing?</li>
+            <li>Any unusual pain or discomfort?</li>
+            <li>Anything else about how you are doing today?</li>
+          </ul>
+        </div>
+        <div class="step-side">
+          <span class="step-state">Not recorded</span>
+          <button type="button" class="secondary take-button" data-take="free">Record</button>
+        </div>
+      </li>
+    </ol>
+    <p id="record-error" class="error" role="alert" hidden></p>
+    <p id="take-status" role="status" aria-live="polite">Record each take with its own button, in any order. Save the session when you are done.</p>
+    <div id="level-meter" class="meter" role="meter" aria-label="Microphone level"
+         aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+    <div id="take-countdown" aria-live="assertive" hidden></div>
+    <div class="actions">
+      <button id="save-session" type="button" disabled>Save session</button>
+      <button id="to-checkin" type="button" class="secondary" disabled>Continue to check-in</button>
+    </div>
+    <div class="actions">
+      <button id="retry-upload" type="button" class="secondary" hidden>Retry upload</button>
+      <button id="replace-session" type="button" class="secondary" hidden>Replace saved session</button>
+    </div>
+  </section>
+  <section id="checkin" class="panel" hidden aria-labelledby="checkin-title">
+    <h2 id="checkin-title">Check-in</h2>
+    <p class="sub">Tick anything that applies today, or leave it all blank. Answers are context, not a diagnosis.</p>
+    <form id="checkin-form">
+      <fieldset class="checks">
+        <legend>Today I have</legend>
+        <label class="check"><input type="checkbox" data-field="cold_or_congestion" value="a cold"> A cold</label>
+        <label class="check"><input type="checkbox" data-field="cold_or_congestion" value="congestion"> Congestion</label>
+        <label class="check"><input type="checkbox" data-field="cold_or_congestion" value="a sore throat"> A sore throat</label>
+        <label class="check"><input type="checkbox" data-field="cough" value="coughing"> Coughing</label>
+        <label class="check"><input type="checkbox" id="pain-check" data-field="unusual_pain" value="unusual pain"> Unusual pain or discomfort</label>
+      </fieldset>
+      <div class="field" id="pain-where-field" hidden>
+        <label for="pain-where">Where is the pain?</label>
+        <input id="pain-where" autocomplete="off">
+      </div>
+      <fieldset class="checks">
+        <legend>Recording setup</legend>
+        <label class="check"><input type="checkbox" data-field="setup_changed" value="different"> Different microphone or room than usual</label>
+      </fieldset>
+      <fieldset class="checks">
+        <legend>Position while recording</legend>
+        <label class="check"><input type="radio" name="posture" data-field="posture" value="sitting"> Sitting</label>
+        <label class="check"><input type="radio" name="posture" data-field="posture" value="standing"> Standing</label>
+        <label class="check"><input type="radio" name="posture" data-field="posture" value="reclined"> Reclined</label>
+        <label class="check"><input type="radio" name="posture" data-field="posture" value="floating"> Floating</label>
+      </fieldset>
+      <div class="field">
+        <label for="sleep-hours">Hours of sleep last night</label>
+        <input id="sleep-hours" data-field="sleep_hours" type="number" min="0" max="24" step="0.5" inputmode="decimal" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="anything-else">Anything else worth recording</label>
+        <input id="anything-else" data-field="anything_else" autocomplete="off">
+      </div>
+      <div class="actions">
+        <button id="checkin-save" type="submit">Save check-in</button>
+        <button id="to-report" type="button" class="secondary" disabled>Open report</button>
+      </div>
+    </form>
+  </section>
+  <section id="report" class="panel" hidden aria-labelledby="report-title">
+    <h2 id="report-title">Report</h2>
+    <div id="report-headline" class="headline"></div>
+    <p id="baseline-note" class="sub"></p>
+    <div id="report-list" class="report-list"></div>
+    <div class="actions">
+      <button id="report-refresh" type="button" class="secondary">Refresh</button>
+    </div>
+  </section>
+  <section id="trends" class="panel" hidden aria-labelledby="trends-title">
+    <h2 id="trends-title">Trends</h2>
+    <p class="sub">Each measure over time, against your own baseline. Shaded band is one standard deviation around your baseline average.</p>
+    <div class="actions" role="group" aria-label="Group readings by">
+      <button type="button" class="secondary trend-group" data-group="session" aria-pressed="true">Every session</button>
+      <button type="button" class="secondary trend-group" data-group="week" aria-pressed="false">Weekly average</button>
+      <button type="button" class="secondary trend-group" data-group="month" aria-pressed="false">Monthly average</button>
+    </div>
+    <p id="trends-note" class="sub"></p>
+    <div id="trends-list" class="report-list"></div>
+  </section>
+  <div id="status" role="status" aria-live="polite"></div>
+  <footer class="footer">
+    <p class="sub">This describes what changed, not why. Nothing here is a diagnosis.</p>
+  </footer>
+</main>
+<script>window.BASELINE_DRIFT_STATIC = true;</script>
+<script src="app.js"></script>
+</body>
+</html>
