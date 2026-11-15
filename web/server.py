@@ -14,10 +14,12 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from web.context_builder import build_explains                  # noqa: E402
 from web.feature_merge import merge_session_features            # noqa: E402
 from web.session_store import (                                 # noqa: E402
     append_record, has_session, read_records, validate_id,
 )
+from pipeline.checkin_agent import QUESTIONS                    # noqa: E402
 
 MAX_UPLOAD_DEFAULT = 25 * 1024 * 1024
 
@@ -50,6 +52,28 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
     @app.get("/api/health")
     def health() -> dict:
         return {"ok": True, "offline": True}
+
+    @app.get("/api/questions")
+    def questions() -> list[dict]:
+        return [{"field": q["field"], "ask": q["ask"], "type": q["type"]}
+                for q in QUESTIONS]
+
+    @app.post("/api/context", status_code=201)
+    def create_context(payload: dict) -> dict:
+        try:
+            subject = validate_id(payload.get("subject"), "subject")
+            session = validate_id(payload.get("session"), "session")
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        answers = payload.get("answers")
+        if not isinstance(answers, dict):
+            raise HTTPException(status_code=422, detail="answers must be an object")
+        explains = build_explains(answers)
+        append_record(data / "context.jsonl", {
+            "subject": subject, "session": session,
+            "answers": answers, "explains": explains, "backend": "none",
+        })
+        return {"explains": explains}
 
     @app.get("/")
     def index() -> FileResponse:
