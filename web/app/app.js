@@ -8,9 +8,29 @@ const state = {
 
 const TAKES = [
   { key: "vowel", label: "sustained \"ah\"", seconds: 5 },
-  { key: "passage", label: "fixed passage", seconds: 30 },
+  { key: "passage", label: "fixed passage", seconds: 45 },
   { key: "free", label: "free speech", seconds: 60 },
 ];
+
+const COUNTDOWN_SECONDS = 3;
+const SUBJECT_RE = /^[A-Z0-9][A-Z0-9-]{1,15}$/;
+const SESSION_RE = /^[a-z0-9][a-z0-9-]{1,15}$/;
+
+// One place for recovery copy so static contract tests can pin every path.
+const ERROR_COPY = {
+  microphone: "Microphone access was blocked or no microphone was found. "
+    + "Allow microphone access in the browser, then press Start recording again.",
+  validation: "The local pipeline rejected these takes (422 validation error). "
+    + "The takes are still here; press Retry upload.",
+  duplicate: "This session already exists on this machine. Continue to check-in "
+    + "or open the report.",
+  server: "The local pipeline could not store this session. "
+    + "The takes are still here; press Retry upload.",
+  questions: "Could not load check-in questions. Check that the local server is "
+    + "running, then press Next or Skip to retry.",
+  context: "Check-in save failed. Press Retry save.",
+  report: "Could not build the report. Press Refresh to try again.",
+};
 
 function showState(name) {
   for (const id of ["record", "checkin", "report"]) {
@@ -22,9 +42,18 @@ function setStatus(text) {
   document.getElementById("status").textContent = text;
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 async function api(path, options) {
   const response = await fetch(path, options);
-  if (!response.ok) throw new Error(`${response.status} ${await response.text()}`);
+  if (!response.ok) {
+    const detail = await response.text();
+    const error = new Error(`${response.status} ${detail}`);
+    error.status = response.status;
+    throw error;
+  }
   return response.json();
 }
 
@@ -61,115 +90,285 @@ function encodeWav(channels, sampleRate) {
   return new Blob([view], { type: "audio/wav" });
 }
 
+function showRecordError(text) {
+  const error = document.getElementById("record-error");
+  error.textContent = text;
+  error.hidden = false;
+}
+
+function clearRecordError() {
+  const error = document.getElementById("record-error");
+  error.textContent = "";
+  error.hidden = true;
+}
+
+function readIds() {
+  const subjectInput = document.getElementById("subject");
+  const sessionInput = document.getElementById("session-label");
+  const subject = subjectInput.value.trim().toUpperCase();
+  const session = sessionInput.value.trim().toLowerCase();
+  clearRecordError();
+  if (!SUBJECT_RE.test(subject)) {
+    showRecordError("Crew member must be 2-16 characters: uppercase letters, digits, "
+      + "or hyphens, starting with a letter or digit (for example AMANDA or CDR-01).");
+    subjectInput.focus();
+    return null;
+  }
+  if (!SESSION_RE.test(session)) {
+    showRecordError("Mission day must be 2-16 characters: lowercase letters, digits, "
+      + "or hyphens, starting with a letter or digit (for example day1).");
+    sessionInput.focus();
+    return null;
+  }
+  return { subject, session };
+}
+
+async function runCountdown(seconds, label) {
+  const countdown = document.getElementById("take-countdown");
+  const status = document.getElementById("take-status");
+  countdown.hidden = false;
+  for (let remaining = seconds; remaining > 0; remaining -= 1) {
+    countdown.textContent = String(remaining);
+    status.textContent = `Starting ${label} in ${remaining}...`;
+    await sleep(1000);
+  }
+  countdown.textContent = "Recording";
+  await sleep(250);
+  countdown.hidden = true;
+}
+
+function setPassageVisible(visible) {
+  document.getElementById("passage-text").hidden = !visible;
+}
+
 async function recordTake(task, maxSeconds) {
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-  const context = new AudioContext();
-  const source = context.createMediaStreamSource(stream);
-  const analyser = context.createAnalyser();
-  analyser.fftSize = 2048;
-  source.connect(analyser);
-
-  const meter = document.querySelector("#level-meter span");
-  const meterRoot = document.getElementById("level-meter");
-  const data = new Uint8Array(analyser.fftSize);
+  let stream = null;
+  let context = null;
+  let recorder = null;
   let raf = 0;
-  const draw = () => {
-    analyser.getByteTimeDomainData(data);
-    let peak = 0;
-    for (const value of data) peak = Math.max(peak, Math.abs(value - 128) / 128);
-    const pct = Math.round(peak * 100);
-    meter.style.width = `${pct}%`;
-    meterRoot.setAttribute("aria-valuenow", String(pct));
-    raf = requestAnimationFrame(draw);
-  };
-  draw();
+  try {
+    // Request an unprocessed mono signal: the measured features are sensitive
+    // to browser speech cleanup. Browsers may ignore these constraints, so the
+    // report records that limitation rather than claiming compliance.
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        channelCount: 1,
+      },
+    });
+    context = new AudioContext();
+    const source = context.createMediaStreamSource(stream);
+    const analyser = context.createAnalyser();
+    analyser.fftSize = 2048;
+    source.connect(analyser);
 
-  const recorder = new MediaRecorder(stream);
-  const chunks = [];
-  recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
-  const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
-  recorder.start();
+    const meter = document.querySelector("#level-meter span");
+    const meterRoot = document.getElementById("level-meter");
+    const data = new Uint8Array(analyser.fftSize);
+    const draw = () => {
+      analyser.getByteTimeDomainData(data);
+      let peak = 0;
+      for (const value of data) peak = Math.max(peak, Math.abs(value - 128) / 128);
+      const pct = Math.round(peak * 100);
+      meter.style.width = `${pct}%`;
+      meterRoot.setAttribute("aria-valuenow", String(pct));
+      raf = requestAnimationFrame(draw);
+    };
+    draw();
 
-  await new Promise((resolve) => setTimeout(resolve, maxSeconds * 1000));
-  recorder.stop();
-  await stopped;
-  cancelAnimationFrame(raf);
-  stream.getTracks().forEach((track) => track.stop());
+    recorder = new MediaRecorder(stream);
+    const chunks = [];
+    recorder.ondataavailable = (event) => { if (event.data.size) chunks.push(event.data); };
+    const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
+    recorder.start();
 
-  const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
-  const audio = await context.decodeAudioData(await blob.arrayBuffer());
-  await context.close();
-  return encodeWav([audio.getChannelData(0)], audio.sampleRate);
+    await sleep(maxSeconds * 1000);
+    recorder.stop();
+    await stopped;
+
+    const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
+    const audio = await context.decodeAudioData(await blob.arrayBuffer());
+    return encodeWav([audio.getChannelData(0)], audio.sampleRate);
+  } finally {
+    // Every exit path must release the microphone and decode context, or a
+    // failed take leaves the browser holding the device.
+    if (raf) cancelAnimationFrame(raf);
+    if (recorder && recorder.state !== "inactive") recorder.stop();
+    if (stream) stream.getTracks().forEach((track) => track.stop());
+    if (context && context.state !== "closed") await context.close();
+  }
+}
+
+function clearTakes() {
+  state.takes = {};
+}
+
+async function uploadTakes() {
+  const form = new FormData();
+  form.append("subject", state.subject);
+  form.append("session", state.session);
+  for (const take of TAKES) {
+    if (!state.takes[take.key]) throw new Error(`missing ${take.key} take`);
+    form.append(take.key, state.takes[take.key], `${state.session}_${take.key}.wav`);
+  }
+  return api("/api/session", { method: "POST", body: form });
+}
+
+function handleUploadError(error) {
+  const retry = document.getElementById("retry-upload");
+  const checkinButton = document.getElementById("to-checkin");
+  const status = document.getElementById("take-status");
+  if (error.status === 409) {
+    retry.hidden = true;
+    checkinButton.disabled = false;
+    document.getElementById("to-report").disabled = false;
+    status.textContent = ERROR_COPY.duplicate;
+    return;
+  }
+  retry.hidden = false;
+  if (error.status === 422) {
+    status.textContent = ERROR_COPY.validation;
+  } else {
+    status.textContent = `${ERROR_COPY.server} (${error.status || "network error"})`;
+  }
+}
+
+function handleRecordingError(error) {
+  const status = document.getElementById("take-status");
+  const name = error && error.name;
+  if (name === "NotAllowedError" || name === "SecurityError"
+      || name === "NotFoundError" || name === "NotReadableError") {
+    status.textContent = ERROR_COPY.microphone;
+    return;
+  }
+  status.textContent = `Recording failed: ${error.message}. Check the microphone and `
+    + "press Start recording to try again.";
 }
 
 async function runSession() {
-  state.subject = document.getElementById("subject").value.trim().toUpperCase();
-  state.session = document.getElementById("session-label").value.trim().toLowerCase();
+  const ids = readIds();
+  if (!ids) return;
+  state.subject = ids.subject;
+  state.session = ids.session;
+  clearTakes();
   const status = document.getElementById("take-status");
   const button = document.getElementById("record-start");
+  const retry = document.getElementById("retry-upload");
   button.disabled = true;
+  retry.hidden = true;
+  status.textContent = "Get ready. You will record three takes.";
   try {
     for (const take of TAKES) {
-      status.textContent = `Recording ${take.label} (${take.seconds}s)…`;
+      setPassageVisible(take.key === "passage");
+      await runCountdown(COUNTDOWN_SECONDS, take.label);
+      status.textContent = `Recording ${take.label} (${take.seconds}s)...`;
       state.takes[take.key] = await recordTake(take.key, take.seconds);
       status.textContent = `Captured ${take.label}.`;
     }
-    status.textContent = "Uploading to the local pipeline…";
-    const form = new FormData();
-    form.append("subject", state.subject);
-    form.append("session", state.session);
-    for (const take of TAKES) {
-      form.append(take.key, state.takes[take.key], `${state.session}_${take.key}.wav`);
-    }
-    await api("/api/session", { method: "POST", body: form });
+  } catch (error) {
+    setPassageVisible(false);
+    handleRecordingError(error);
+    button.disabled = false;
+    return;
+  }
+  setPassageVisible(false);
+  status.textContent = "Uploading to the local pipeline...";
+  try {
+    await uploadTakes();
     status.textContent = "Session stored on this machine.";
     document.getElementById("to-checkin").disabled = false;
   } catch (error) {
-    status.textContent = `Recording failed: ${error.message}. Check microphone permission and try again.`;
+    handleUploadError(error);
+  } finally {
     button.disabled = false;
   }
 }
 
-const checkin = { questions: [], index: 0, answers: {} };
-
-function parseAnswer(type, raw) {
-  const text = raw.trim();
-  if (type === "yesno" || type === "yesno_inverted") {
-    let value = null;
-    if (/^(yes|yeah|yep|yup|true)/i.test(text)) value = true;
-    else if (/^(no|nope|nah|false|none)/i.test(text)) value = false;
-    if (type === "yesno_inverted" && value !== null) value = !value;
-    return value;
+async function retryUpload() {
+  if (!state.takes.vowel || !state.takes.passage) {
+    document.getElementById("take-status").textContent =
+      "No captured takes to upload. Press Start recording.";
+    return;
   }
-  if (type === "number") {
-    const match = text.match(/-?\d+(?:\.\d+)?/);
-    return match ? Number(match[0]) : null;
+  const retry = document.getElementById("retry-upload");
+  const status = document.getElementById("take-status");
+  retry.disabled = true;
+  status.textContent = "Retrying upload...";
+  try {
+    await uploadTakes();
+    retry.hidden = true;
+    status.textContent = "Session stored on this machine.";
+    document.getElementById("to-checkin").disabled = false;
+  } catch (error) {
+    handleUploadError(error);
+  } finally {
+    retry.disabled = false;
   }
-  return text || null;
 }
 
-function buildAnswers() {
-  return checkin.answers;
+const checkin = {
+  questions: [],
+  index: 0,
+  answers: {},
+  saveFailed: false,
+};
+
+function buildRaw() {
+  const raw = {};
+  for (const question of checkin.questions) {
+    raw[question.field] = Object.prototype.hasOwnProperty.call(checkin.answers,
+                                                               question.field)
+      ? checkin.answers[question.field]
+      : null;
+  }
+  return raw;
 }
 
 async function loadQuestions() {
-  checkin.questions = await api("/api/questions");
-  renderQuestion();
+  const next = document.getElementById("checkin-next");
+  const skip = document.getElementById("checkin-skip");
+  setStatus("Loading check-in questions...");
+  try {
+    checkin.questions = await api("/api/questions");
+    checkin.index = 0;
+    checkin.answers = {};
+    checkin.saveFailed = false;
+    next.textContent = "Next";
+    skip.disabled = false;
+    renderQuestion();
+    setStatus("");
+  } catch (error) {
+    checkin.questions = [];
+    checkin.index = 0;
+    document.getElementById("question-label").textContent = "Questions did not load.";
+    next.textContent = "Retry load";
+    next.disabled = false;
+    skip.disabled = false;
+    setStatus(`${ERROR_COPY.questions} (${error.message})`);
+  }
 }
 
 function renderQuestion() {
+  const next = document.getElementById("checkin-next");
+  const skip = document.getElementById("checkin-skip");
+  const answer = document.getElementById("answer");
   const question = checkin.questions[checkin.index];
+  next.textContent = "Next";
+  next.disabled = false;
+  skip.disabled = false;
+  answer.disabled = false;
   if (!question) {
     document.getElementById("question-label").textContent = "All questions answered.";
-    document.getElementById("answer").disabled = true;
-    document.getElementById("checkin-next").disabled = true;
-    document.getElementById("checkin-skip").disabled = true;
+    answer.disabled = true;
+    next.disabled = true;
+    skip.disabled = true;
     return;
   }
   document.getElementById("question-label").textContent = question.ask;
-  const answer = document.getElementById("answer");
   answer.value = "";
-  answer.type = question.type === "number" ? "text" : "text";
+  answer.type = "text";
   answer.focus();
 }
 
@@ -182,22 +381,48 @@ function advanceCheckin(value) {
 }
 
 async function finishCheckin() {
-  await api("/api/context", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      subject: state.subject, session: state.session, answers: buildAnswers(),
-    }),
-  });
-  document.getElementById("to-report").disabled = false;
-  setStatus("Check-in stored. Open the report when ready.");
+  const next = document.getElementById("checkin-next");
+  const skip = document.getElementById("checkin-skip");
+  next.disabled = true;
+  setStatus("Saving check-in...");
+  try {
+    await api("/api/context", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subject: state.subject, session: state.session, raw: buildRaw(),
+      }),
+    });
+    checkin.saveFailed = false;
+    next.textContent = "Next";
+    next.disabled = true;
+    skip.disabled = true;
+    document.getElementById("question-label").textContent = "All questions answered.";
+    document.getElementById("to-report").disabled = false;
+    setStatus("Check-in stored. Open the report when ready.");
+  } catch (error) {
+    checkin.saveFailed = true;
+    next.textContent = "Retry save";
+    next.disabled = false;
+    skip.disabled = true;
+    document.getElementById("question-label").textContent = "Check-in not saved yet.";
+    setStatus(`${ERROR_COPY.context} (${error.message})`);
+  }
 }
 
 async function submitCheckin() {
+  if (!checkin.questions.length) {
+    await loadQuestions();
+    return;
+  }
+  if (checkin.saveFailed) {
+    await finishCheckin();
+    return;
+  }
   const question = checkin.questions[checkin.index];
   if (!question) return;
   const raw = document.getElementById("answer").value;
-  const done = advanceCheckin(parseAnswer(question.type, raw));
+  const done = advanceCheckin(raw);
   if (done) await finishCheckin();
 }
 
@@ -288,6 +513,19 @@ function findingRow(finding) {
   return row;
 }
 
+function stableFeatures(data) {
+  if (!data.stable_features || !data.stable_features.length) return null;
+  const box = document.createElement("div");
+  box.className = "stable-list";
+  const heading = document.createElement("h3");
+  heading.textContent = "Stable this session";
+  const list = document.createElement("p");
+  list.className = "sub";
+  list.textContent = data.stable_features.map((item) => item.label).join(" · ");
+  box.append(heading, list);
+  return box;
+}
+
 function renderReport(data) {
   document.getElementById("report-headline").textContent = data.headline;
   document.getElementById("baseline-note").textContent = data.state === "baseline"
@@ -304,8 +542,7 @@ function renderReport(data) {
   }
   if (data.state === "baseline") {
     const pending = document.createElement("p");
-    pending.textContent = `Building your baseline — ${data.baseline_progress.have} of `
-      + `${data.baseline_progress.need} sessions. No findings are reported yet.`;
+    pending.textContent = `${data.headline} No findings are reported yet.`;
     list.appendChild(pending);
     return;
   }
@@ -313,11 +550,15 @@ function renderReport(data) {
     const stable = document.createElement("p");
     stable.textContent = "Nothing moved far enough from your baseline to report.";
     list.appendChild(stable);
+    const stableBox = stableFeatures(data);
+    if (stableBox) list.appendChild(stableBox);
     return;
   }
   for (const finding of data.findings) {
     list.appendChild(findingRow(finding));
   }
+  const stableBox = stableFeatures(data);
+  if (stableBox) list.appendChild(stableBox);
   const footer = document.createElement("p");
   footer.className = "sub";
   footer.textContent = "This describes what changed, not why. Ordinary causes are the "
@@ -327,10 +568,18 @@ function renderReport(data) {
 }
 
 async function loadReport() {
-  setStatus("Building your report…");
-  const data = await api(`/api/report?subject=${encodeURIComponent(state.subject)}`);
-  renderReport(data);
-  setStatus("");
+  const refresh = document.getElementById("report-refresh");
+  refresh.disabled = true;
+  setStatus("Building your report...");
+  try {
+    const data = await api(`/api/report?subject=${encodeURIComponent(state.subject)}`);
+    renderReport(data);
+    setStatus("");
+  } catch (error) {
+    setStatus(`${ERROR_COPY.report} (${error.message})`);
+  } finally {
+    refresh.disabled = false;
+  }
 }
 
 document.getElementById("report-refresh").addEventListener("click", loadReport);
@@ -339,12 +588,19 @@ document.getElementById("to-report").addEventListener("click", () => {
   loadReport();
 });
 document.getElementById("record-start").addEventListener("click", runSession);
+document.getElementById("retry-upload").addEventListener("click", retryUpload);
+document.getElementById("subject").addEventListener("input", clearRecordError);
+document.getElementById("session-label").addEventListener("input", clearRecordError);
 document.getElementById("checkin-form").addEventListener("submit", (event) => {
   event.preventDefault();
   submitCheckin();
 });
 document.getElementById("checkin-skip").addEventListener("click", async () => {
-  if (!checkin.questions.length) return;
+  if (!checkin.questions.length) {
+    await loadQuestions();
+    return;
+  }
+  if (checkin.saveFailed) return;
   const done = advanceCheckin(null);
   if (done) await finishCheckin();
 });

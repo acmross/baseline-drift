@@ -22,12 +22,24 @@
       <label for="session-label">Mission day</label>
       <input id="session-label" name="session" value="day1" autocomplete="off" spellcheck="false">
     </div>
+    <p id="vowel-instruction" class="instruction"><strong>Take 1 — sustained "ah":</strong>
+      Take a normal breath and hold 'ah' at a comfortable, steady pitch and volume until you run out of comfortable breath.</p>
+    <p class="instruction"><strong>Take 2 — fixed passage (45 seconds):</strong>
+      Read this aloud at your normal speaking pace. The text appears when this take begins.</p>
+    <div id="passage-text" class="passage" hidden>The quiet harbor fills with morning light before the first boats move. A low fog rests over the water, and the air holds the smell of salt and old rope. Someone is singing on the far dock, though the words are hard to catch. Three gulls argue above a crate of fish, then scatter when the engine coughs awake. By seven the channel is busy, the fog is thinning, and the long gray shape of the bridge begins to show against the sky.</div>
+    <p id="free-prompt" class="instruction"><strong>Take 3 — free speech (60 seconds):</strong>
+      Describe what you have done since your last check-in.</p>
+    <p id="record-error" class="error" role="alert" hidden></p>
     <p id="take-status" role="status" aria-live="polite">Ready. You will record three takes.</p>
     <div id="level-meter" class="meter" role="meter" aria-label="Microphone level"
          aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+    <div id="take-countdown" aria-live="assertive" hidden></div>
     <div class="actions">
       <button id="record-start" type="button">Start recording</button>
       <button id="to-checkin" type="button" class="secondary" disabled>Continue to check-in</button>
+    </div>
+    <div class="actions">
+      <button id="retry-upload" type="button" class="secondary" hidden>Retry upload</button>
     </div>
   </section>
   <section id="checkin" class="panel" hidden aria-labelledby="checkin-title">

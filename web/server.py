@@ -14,7 +14,9 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from web.context_builder import build_explains                  # noqa: E402
+from web.context_builder import (                                # noqa: E402
+    build_answers_from_raw, build_explains,
+)
 from web.feature_merge import merge_session_features            # noqa: E402
 from web.reporting import build_report                          # noqa: E402
 from web.session_store import (                                 # noqa: E402
@@ -66,9 +68,20 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
             session = validate_id(payload.get("session"), "session")
         except ValueError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
-        answers = payload.get("answers")
-        if not isinstance(answers, dict):
-            raise HTTPException(status_code=422, detail="answers must be an object")
+
+        # The browser sends raw text so the server can apply the CLI's parser
+        # and keep both the parsed value and the words the crew member used.
+        # Structured answers remain accepted for older clients and fixtures.
+        raw = payload.get("raw")
+        if raw is not None:
+            try:
+                answers = build_answers_from_raw(raw)
+            except ValueError as exc:
+                raise HTTPException(status_code=422, detail=str(exc)) from exc
+        else:
+            answers = payload.get("answers")
+            if not isinstance(answers, dict):
+                raise HTTPException(status_code=422, detail="answers must be an object")
         explains = build_explains(answers)
         append_record(data / "context.jsonl", {
             "subject": subject, "session": session,

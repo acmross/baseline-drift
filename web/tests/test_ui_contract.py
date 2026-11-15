@@ -8,7 +8,8 @@ APP = Path(__file__).resolve().parents[1] / "app"
 def test_record_ids_exist():
     html = (APP / "index.html").read_text(encoding="utf-8")
     for element_id in ("record", "record-start", "take-status", "level-meter",
-                       "session-label", "subject", "to-checkin"):
+                       "session-label", "subject", "to-checkin", "passage-text",
+                       "take-countdown", "retry-upload", "record-error"):
         assert f'id="{element_id}"' in html, element_id
 
 
@@ -24,11 +25,11 @@ def test_checkin_ids_and_labels():
                        "checkin-next", "checkin-skip", "to-report"):
         assert f'id="{element_id}"' in html, element_id
     js = (APP / "app.js").read_text(encoding="utf-8")
-    for token in ("/api/questions", "/api/context", "buildAnswers"):
+    for token in ("/api/questions", "/api/context", "buildRaw"):
         assert token in js, token
 
 
-def test_checkin_flow_completes_and_inverts_setup():
+def test_checkin_sends_raw_answers_and_skip_still_finalizes():
     # Structural guard: the repo has no DOM/JS harness, so pin the data flow in app.js.
     js = (APP / "app.js").read_text(encoding="utf-8")
 
@@ -39,10 +40,9 @@ def test_checkin_flow_completes_and_inverts_setup():
     assert "advanceCheckin(null)" in block, "skip must store null"
     assert "finishCheckin()" in block, "skip must finalize the check-in"
 
-    parser = re.search(r'function parseAnswer\(.*?\n\}', js, re.S)
-    assert parser, "parseAnswer not found"
-    assert re.search(r'"yesno_inverted".*?!\s*value', parser.group(0), re.S), \
-        "yesno_inverted must negate the parsed value"
+    assert "parseAnswer" not in js, "the client must not reimplement the CLI parser"
+    assert re.search(r"raw:\s*buildRaw\(\)", js), "context POST must send raw answers"
+    assert re.search(r"function buildRaw\(\)", js), "buildRaw must exist"
 
 
 def test_no_diagnostic_copy():
@@ -84,3 +84,58 @@ def test_report_band_contrast_and_text():
     assert tag and "--text-secondary" in tag.group(0), "explained tag needs AA contrast"
     js = (APP / "app.js").read_text(encoding="utf-8")
     assert "baseline band" in js
+
+
+def normalized(text):
+    return " ".join(text.split())
+
+
+def test_fixed_instructions_and_passage_are_embedded():
+    html = (APP / "index.html").read_text(encoding="utf-8")
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    protocol = (APP.parents[1] / "pipeline" / "recording_protocol.md").read_text(
+        encoding="utf-8")
+
+    assert ("Take a normal breath and hold 'ah' at a comfortable, steady pitch and "
+            "volume until you run out of comfortable breath.") in html
+    assert "Describe what you have done since your last check-in." in html
+
+    passage = re.search(r"> The quiet harbor.*?the sky\.", protocol, re.S)
+    assert passage, "passage not found in the recording protocol"
+    assert normalized(passage.group(0).replace(">", " ")) in normalized(html)
+
+    assert 'id="take-countdown"' in html
+    assert "COUNTDOWN_SECONDS = 3" in js
+    take = re.search(r'\{\s*key:\s*"passage".*?\}', js, re.S)
+    assert take, "passage take not found"
+    seconds = re.search(r"seconds:\s*(\d+)", take.group(0))
+    assert seconds and int(seconds.group(1)) >= 40, "passage take must allow the full read"
+
+
+def test_browser_audio_constraints_are_requested():
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    for token in ("echoCancellation: false", "noiseSuppression: false",
+                  "autoGainControl: false", "channelCount: 1"):
+        assert token in js, token
+
+
+def test_retry_upload_control_exists():
+    html = (APP / "index.html").read_text(encoding="utf-8")
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    assert 'id="retry-upload"' in html
+    assert "Retry upload" in html
+    for token in ("retryUpload", "state.takes", "/api/session"):
+        assert token in js, token
+
+
+def test_error_status_paths_are_wired():
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    for token in ("ERROR_COPY", "NotAllowedError", "status === 422", "status === 409",
+                  "Retry save", "Retry load", "Press Refresh"):
+        assert token in js, token
+
+
+def test_stable_features_are_rendered():
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    assert "stable_features" in js
+    assert "Stable this session" in js

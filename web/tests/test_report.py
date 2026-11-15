@@ -31,9 +31,27 @@ def test_baseline_state_reports_progress():
     assert report["baseline_progress"] == {"have": 2, "need": 3}
 
 
+def test_three_sessions_complete_the_baseline_without_scoring():
+    report = build_report(baseline_records(), {}, "AMANDA")
+    assert report["state"] == "baseline"
+    assert report["baseline_progress"] == {"have": 3, "need": 3}
+    assert "Baseline complete" in report["headline"]
+    assert report["findings"] == []
+
+
 def test_stable_state_when_nothing_moves():
     records = baseline_records() + [
         record("day4", intensity_db=85.0, pause_ratio=0.055, f0_mean_hz=120.0),
+    ]
+    report = build_report(records, {}, "AMANDA")
+    assert report["state"] == "stable"
+    assert report["findings"] == []
+
+
+def test_four_sessions_without_a_sustained_finding_are_stable():
+    # One isolated move must not survive the two-session persistence gate.
+    records = baseline_records() + [
+        record("day4", intensity_db=70.0, pause_ratio=0.055, f0_mean_hz=120.0),
     ]
     report = build_report(records, {}, "AMANDA")
     assert report["state"] == "stable"

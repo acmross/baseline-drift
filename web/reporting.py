@@ -69,10 +69,18 @@ def build_report(records, context, subject, n_baseline=3, z_threshold=2.0, min_r
     }
     if not subject_records:
         return base
-    if len(subject_records) < n_baseline:
+    if len(subject_records) <= n_baseline:
+        # The first n_baseline sessions define the reference distribution, so
+        # the session that completes it cannot also be scored against itself.
+        # Reporting "stable" here would claim movement was checked when no
+        # later session exists yet.
         base["state"] = "baseline"
-        base["headline"] = (f"Building your baseline — {len(subject_records)} "
-                            f"of {n_baseline} sessions")
+        if len(subject_records) == n_baseline:
+            base["headline"] = ("Baseline complete — scoring begins with your "
+                                "next session.")
+        else:
+            base["headline"] = (f"Building your baseline — {len(subject_records)} "
+                                f"of {n_baseline} sessions")
         return base
 
     stats, findings = analyse(subject_records, n_baseline, z_threshold, min_run)
