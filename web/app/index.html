@@ -157,6 +157,16 @@
     <div id="trends-list" class="report-list"></div>
   </section>
   <div id="status" role="status" aria-live="polite"></div>
+  <dialog id="confirm-delete" aria-labelledby="confirm-delete-title">
+    <form method="dialog">
+      <h2 id="confirm-delete-title">Delete this session?</h2>
+      <p id="confirm-delete-text"></p>
+      <div class="actions">
+        <button value="cancel" class="secondary" autofocus>Cancel</button>
+        <button value="delete" class="danger">Delete session</button>
+      </div>
+    </form>
+  </dialog>
   <footer class="footer">
     <p class="sub">This describes what changed, not why. Nothing here is a diagnosis.</p>
   </footer>

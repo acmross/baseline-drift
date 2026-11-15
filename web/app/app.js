@@ -749,6 +749,20 @@ function measuresSection(data, title) {
 
 // Every saved session with its date and a delete control. Deleting is
 // permanent, so it takes two presses: Delete, then Confirm delete.
+// Asks before a session is deleted. Resolves true only on "Delete session";
+// Cancel, Escape and closing the box all keep the session.
+function confirmDelete(name) {
+  const box = document.getElementById("confirm-delete");
+  document.getElementById("confirm-delete-text").textContent =
+    `Are you sure you want to delete ${name}? Its recording, measurements and `
+    + "check-in will be removed from this computer for good.";
+  return new Promise((resolve) => {
+    box.returnValue = "";
+    box.addEventListener("close", () => resolve(box.returnValue === "delete"), { once: true });
+    box.showModal();
+  });
+}
+
 // One saved session opened in place: its takes to listen to, the numbers
 // measured from it, and the check-in answers given with it.
 const TAKE_TITLES = { vowel: 'Sustained "ah"', passage: "Fixed passage", free: "Free speech" };
@@ -797,13 +811,20 @@ function sessionsSection(data) {
   heading.textContent = "Your sessions";
   const note = document.createElement("p");
   note.className = "sub";
-  note.textContent = `The first ${data.n_baseline} sessions are your baseline. Deleting `
-    + "a session removes its recording, measurements and check-in from this computer "
-    + "for good.";
+  note.textContent = `The first ${data.n_baseline} sessions are your baseline. Select a `
+    + "session to listen to it and see its measurements and check-in.";
   box.append(heading, note);
   data.sessions.forEach((session, index) => {
     const row = document.createElement("div");
     row.className = "session-row";
+    // The whole left side of the row opens the session; Delete sits alone.
+    const view = document.createElement("button");
+    view.type = "button";
+    view.className = "session-open";
+    view.setAttribute("aria-expanded", "false");
+    const arrow = document.createElement("span");
+    arrow.className = "session-arrow";
+    arrow.setAttribute("aria-hidden", "true");
     const name = document.createElement("span");
     name.className = "session-name";
     name.textContent = sessionName(session);
@@ -812,46 +833,7 @@ function sessionsSection(data) {
     const stamp = data.recorded_at && data.recorded_at[index];
     when.textContent = (stamp ? shortDate(new Date(stamp), true) : "no saved date")
       + (index < data.n_baseline ? " · baseline" : "");
-    const remove = document.createElement("button");
-    remove.type = "button";
-    remove.className = "secondary small";
-    remove.textContent = "Delete";
-    const cancel = document.createElement("button");
-    cancel.type = "button";
-    cancel.className = "secondary small";
-    cancel.textContent = "Cancel";
-    cancel.hidden = true;
-    cancel.addEventListener("click", () => {
-      remove.textContent = "Delete";
-      remove.classList.remove("danger");
-      cancel.hidden = true;
-    });
-    remove.addEventListener("click", async () => {
-      if (cancel.hidden) {                 // first press only arms the button
-        remove.textContent = "Confirm delete";
-        remove.classList.add("danger");
-        cancel.hidden = false;
-        return;
-      }
-      remove.disabled = true;
-      cancel.disabled = true;
-      try {
-        await api(`/api/session?subject=${encodeURIComponent(data.subject)}`
-          + `&session=${encodeURIComponent(session)}`, { method: "DELETE" });
-        await loadReport();
-        setStatus(`${sessionName(session)} deleted from this computer.`);
-        suggestFlightDay();
-      } catch (error) {
-        setStatus(`Could not delete ${sessionName(session)}. (${error.message})`);
-        remove.disabled = false;
-        cancel.disabled = false;
-      }
-    });
-    const view = document.createElement("button");
-    view.type = "button";
-    view.className = "secondary small";
-    view.textContent = "Open";
-    view.setAttribute("aria-expanded", "false");
+    view.append(arrow, name, when);
     const detail = document.createElement("div");
     detail.className = "session-detail";
     detail.hidden = true;
@@ -859,7 +841,6 @@ function sessionsSection(data) {
       if (!detail.hidden) {
         detail.hidden = true;
         detail.replaceChildren();          // also stops any audio playing
-        view.textContent = "Open";
         view.setAttribute("aria-expanded", "false");
         return;
       }
@@ -870,7 +851,6 @@ function sessionsSection(data) {
         const info = await api(`/api/session-detail?${query}`);
         detail.replaceChildren(sessionDetail(info, query));
         detail.hidden = false;
-        view.textContent = "Close";
         view.setAttribute("aria-expanded", "true");
       } catch (error) {
         setStatus(`Could not open ${sessionName(session)}. (${error.message})`);
@@ -878,7 +858,25 @@ function sessionsSection(data) {
         view.disabled = false;
       }
     });
-    row.append(name, when, view, remove, cancel);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "secondary small";
+    remove.textContent = "Delete";
+    remove.addEventListener("click", async () => {
+      if (!(await confirmDelete(sessionName(session)))) return;
+      remove.disabled = true;
+      try {
+        await api(`/api/session?subject=${encodeURIComponent(data.subject)}`
+          + `&session=${encodeURIComponent(session)}`, { method: "DELETE" });
+        await loadReport();
+        setStatus(`${sessionName(session)} deleted from this computer.`);
+        suggestFlightDay();
+      } catch (error) {
+        setStatus(`Could not delete ${sessionName(session)}. (${error.message})`);
+        remove.disabled = false;
+      }
+    });
+    row.append(view, remove);
     box.append(row, detail);
   });
   return box;

@@ -141,8 +141,8 @@ input {
 .privacy.sample .actions { margin-top: 10px; }
 
 .session-row { display: flex; align-items: center; gap: var(--space-3); padding: 10px 0; border-top: 1px solid var(--line); }
-.session-name { flex: 0 0 64px; font-weight: 600; }
-.session-when { flex: 1 1 auto; color: var(--text-secondary); font-size: 13px; }
+.session-name { flex: 0 0 64px; font-weight: 600; text-align: left; }
+.session-when { flex: 1 1 auto; color: var(--text-secondary); font-size: 13px; text-align: left; }
 button.small { min-height: 36px; padding: 0 12px; font-size: 13px; }
 button.danger { background: var(--accent); border-color: var(--accent); color: #fff; }
 
@@ -161,3 +161,12 @@ button.danger { background: var(--accent); border-color: var(--accent); color: #
 .detail-line .k { flex: 0 0 46%; color: var(--text-secondary); }
 .detail-line .v { flex: 1 1 auto; min-width: 0; }
 .detail-line .take-audio { margin-top: 0; }
+.session-open { flex: 1 1 auto; display: flex; align-items: center; gap: var(--space-3); min-height: 40px; padding: 0 var(--space-2); margin-left: calc(-1 * var(--space-2)); background: none; color: inherit; border: 0; border-radius: var(--radius); font: inherit; cursor: pointer; }
+.session-open:hover { background: var(--surface-2); }
+.session-arrow { flex: 0 0 auto; width: 7px; height: 7px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform 120ms; }
+.session-open[aria-expanded="true"] .session-arrow { transform: rotate(45deg); }
+.session-detail { padding-left: 31px; }
+dialog { max-width: 420px; padding: var(--space-4); background: var(--surface-1); color: var(--text-primary); border: 1px solid var(--line-strong); border-radius: 10px; }
+dialog::backdrop { background: rgba(0, 0, 0, 0.6); }
+dialog p { margin: 0 0 var(--space-3); color: var(--text-secondary); font-size: 14px; line-height: 1.5; }
+dialog .actions { justify-content: flex-end; }
