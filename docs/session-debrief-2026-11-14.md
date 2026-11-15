@@ -61,4 +61,5 @@ Follow `NEXT-SESSION.md`. The short version: real six-session recording, browser
 - Branch head at session close: `518a0b0`
 - Worktree: `D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui`
 - Exe: `D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui\dist\BaselineDrift.exe`
+- Release: https://github.com/acmross/baseline-drift/releases/tag/v0.1-demo-2026-11-14 (`BaselineDrift.exe`, 48.3 MB)
 - Execution ledger: `.worktrees\web-ui\.superpowers\sdd\2026-11-14-baseline-drift-web-ui\progress.md`

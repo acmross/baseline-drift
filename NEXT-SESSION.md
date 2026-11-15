@@ -45,7 +45,7 @@
 
 - [ ] Merge PR #1 into `main` after the P0 checks. Note: `main` moved during the session (`e25fe30`, teammate submission/pitch commits); the branch was merged with `main` (`518a0b0`) and the `.gitignore` conflict was resolved. Verify PR #1 is mergeable before merging.
 - [ ] Rebuild the exe from merged `main`: `.\build_exe.ps1`, then smoke-test `dist\BaselineDrift.exe`.
-- [ ] Optional: publish a GitHub release and attach the exe as a release asset (do not commit the 48 MB binary).
+- [x] Release `v0.1-demo-2026-11-14` already carries the exe asset; rebuild and replace it if source changes. Do not commit the 48 MB binary.
 - [ ] Push `main`; leave the worktree clean.
 
 ## P1 — optional improvements (only if time remains)
