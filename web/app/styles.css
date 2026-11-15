@@ -119,3 +119,6 @@ input {
 .privacy .privacy-title { margin-bottom: 4px; font-size: 14px; font-weight: 600; color: var(--text-primary); }
 
 .prompts { margin: 6px 0 0; padding-left: 18px; color: var(--text-primary); font-size: 14px; line-height: 1.6; }
+
+.row .hint { color: var(--text-muted); margin-top: 2px; }
+.stable-list .row:first-of-type { margin-top: var(--space-2); }

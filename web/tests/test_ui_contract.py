@@ -141,8 +141,9 @@ def test_error_status_paths_are_wired():
 
 def test_stable_features_are_rendered():
     js = (APP / "app.js").read_text(encoding="utf-8")
-    assert "stable_features" in js
-    assert "Stable this session" in js
+    assert "data.measures" in js
+    assert "Within your baseline" in js
+    assert "Your measures so far" in js
 
 
 def test_navigation_and_retake_controls_exist():

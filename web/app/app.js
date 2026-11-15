@@ -562,10 +562,10 @@ function findingRow(finding) {
   phrase.textContent = finding.phrase;
   const detail = document.createElement("div");
   detail.className = "detail";
-  detail.textContent = `${finding.value}${finding.unit} against your baseline of `
-    + `${finding.baseline_mean}${finding.unit} · ${finding.run_length} `
+  detail.textContent = `${finding.value_text} against your baseline of `
+    + `${finding.baseline_text} · ${finding.run_length} `
     + `session${finding.run_length === 1 ? "" : "s"} running`
-    + ` · baseline band ±${finding.baseline_sd}${finding.unit}`;
+    + ` · baseline band ±${finding.spread_text}`;
   const tag = document.createElement("span");
   tag.className = finding.explained.length ? "tag explained" : "tag open";
   tag.textContent = finding.explained.length
@@ -581,16 +581,58 @@ function findingRow(finding) {
   return row;
 }
 
-function stableFeatures(data) {
-  if (!data.stable_features || !data.stable_features.length) return null;
+// One row per measure with its numbers and trend, so a quiet report still
+// shows the data. Flagged measures are skipped here: they have a finding row.
+function measureRow(measure) {
+  const row = document.createElement("div");
+  row.className = "row";
+  const meta = document.createElement("div");
+  meta.className = "meta";
+  const label = document.createElement("div");
+  label.className = "label";
+  label.textContent = measure.label;
+  const phrase = document.createElement("div");
+  phrase.className = "phrase";
+  phrase.textContent = measure.latest_text;
+  const detail = document.createElement("div");
+  detail.className = "detail";
+  const parts = [];
+  if (measure.baseline_text) {
+    parts.push(measure.baseline_complete
+      ? `your baseline ${measure.baseline_text}`
+      : `average so far ${measure.baseline_text}`);
+  }
+  if (measure.spread_text) parts.push(`usual spread ±${measure.spread_text}`);
+  if (measure.baseline_complete && measure.change_text) parts.push(measure.change_text);
+  detail.textContent = parts.join(" · ");
+  const hint = document.createElement("div");
+  hint.className = "detail hint";
+  hint.textContent = measure.hint;
+  meta.append(label, phrase, detail, hint);
+  const spark = document.createElement("div");
+  spark.className = "spark";
+  if (measure.baseline_mean !== null) {
+    spark.appendChild(sparkline(measure.series, measure.baseline_mean,
+                                measure.baseline_sd || 0, []));
+  }
+  row.append(meta, spark);
+  return row;
+}
+
+function measuresSection(data, title) {
+  const rows = (data.measures || []).filter((measure) => !measure.flagged);
+  if (!rows.length) return null;
   const box = document.createElement("div");
   box.className = "stable-list";
   const heading = document.createElement("h3");
-  heading.textContent = "Stable this session";
-  const list = document.createElement("p");
-  list.className = "sub";
-  list.textContent = data.stable_features.map((item) => item.label).join(" · ");
-  box.append(heading, list);
+  heading.textContent = title;
+  const note = document.createElement("p");
+  note.className = "sub";
+  note.textContent = `Latest session${data.sessions && data.sessions.length
+    ? ` (${data.sessions[data.sessions.length - 1]})` : ""} of ${data.session_count}. `
+    + "The big number is your latest reading. Each dot on the chart is one session.";
+  box.append(heading, note);
+  for (const measure of rows) box.appendChild(measureRow(measure));
   return box;
 }
 
@@ -610,25 +652,17 @@ function renderReport(data) {
   }
   if (data.state === "baseline") {
     const pending = document.createElement("p");
-    // The headline already carries the baseline-progress sentence; repeating
-    // it here made the screen say the same thing twice.
     pending.textContent = "No findings are reported yet.";
     list.appendChild(pending);
-    return;
-  }
-  if (!data.findings.length) {
-    const stable = document.createElement("p");
-    stable.textContent = "Nothing moved far enough from your baseline to report.";
-    list.appendChild(stable);
-    const stableBox = stableFeatures(data);
-    if (stableBox) list.appendChild(stableBox);
+    const soFar = measuresSection(data, "Your measures so far");
+    if (soFar) list.appendChild(soFar);
     return;
   }
   for (const finding of data.findings) {
     list.appendChild(findingRow(finding));
   }
-  const stableBox = stableFeatures(data);
-  if (stableBox) list.appendChild(stableBox);
+  const within = measuresSection(data, "Within your baseline");
+  if (within) list.appendChild(within);
   const footer = document.createElement("p");
   footer.className = "sub";
   footer.textContent = "This describes what changed, not why. Ordinary causes are the "
