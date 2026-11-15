@@ -71,8 +71,11 @@ def _measures(records, n_baseline, flagged):
         else:
             delta = latest - mean
             direction = "above" if delta > 0 else "below"
-            change = ("same as your baseline" if abs(delta) < 1e-9 else
-                      f"{_fmt_spread(feature, abs(delta))} {direction} your baseline")
+            amount = _fmt_spread(feature, abs(delta))
+            # A difference that rounds to zero reads as "same", not "0.0 below".
+            shown = float("".join(c for c in amount.split()[0] if c.isdigit() or c == "."))
+            change = ("same as your baseline" if shown == 0 else
+                      f"{amount} {direction} your baseline")
         rows.append({
             "feature": feature,
             "label": LABEL.get(feature, feature),

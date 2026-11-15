@@ -541,7 +541,14 @@ async function submitCheckin() {
   }
 }
 
-function sparkline(values, mean, sd, flagged) {
+// The report charts show only the most recent sessions so each reading stays
+// readable; the Trends tab has the full history.
+const RECENT_SESSIONS = 12;
+
+function sparkline(allValues, mean, sd, allFlagged) {
+  const offset = Math.max(0, allValues.length - RECENT_SESSIONS);
+  const values = allValues.slice(offset);
+  const flagged = allFlagged.map((index) => index - offset).filter((index) => index >= 0);
   const width = 300;
   const height = 76;
   const pad = 10;
@@ -763,7 +770,10 @@ function renderReport(data) {
   document.getElementById("baseline-note").textContent = data.state === "baseline"
     ? `Your baseline is built from your first ${data.n_baseline} sessions.`
     : "Measured against your own baseline. Shaded band is one standard deviation; "
-      + "the dashed line is your baseline average.";
+      + "the dashed line is your baseline average."
+      + (data.session_count > RECENT_SESSIONS
+        ? ` Charts show your last ${RECENT_SESSIONS} sessions; the Trends tab has all `
+          + `${data.session_count}.` : "");
   const list = document.getElementById("report-list");
   list.replaceChildren();
   if (data.state === "empty") {
