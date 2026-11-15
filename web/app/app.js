@@ -1246,7 +1246,11 @@ document.getElementById("replace-session").addEventListener("click", () => saveS
 for (const button of document.querySelectorAll(".take-button")) {
   button.addEventListener("click", () => startTake(button.dataset.take));
 }
-document.getElementById("nav-record").addEventListener("click", () => showState("record"));
+document.getElementById("nav-record").addEventListener("click", () => {
+  // Recording is always about your own data, so leaving the sample is implied.
+  if (state.sample && !STATIC_PREVIEW) setSample(false);
+  showState("record");
+});
 document.getElementById("sample-on").addEventListener("click", () => {
   setSample(true);
   openReport();
