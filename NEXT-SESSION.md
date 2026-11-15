@@ -23,13 +23,17 @@ with every required field filled and every public link opened in a private windo
   `favicon.ico` 404s are gone.
 - `docs/INSTRUCTIONS.md` and the 2026-11-14 debrief corrected; README links the
   deck.
-- Suite: **92 passed**.
+- Privacy: the published real dataset uses the subject code `AMANDA` and dates
+  without clock times; `make_real_report.py` strips times by default and the
+  preview parses date-only stamps as local days. `.gitignore` now blocks
+  `.env`, private keys and local credential stores.
+- Suite: **96 passed**.
 
 ---
 
 ## State verified at 14:45 Pacific
 
-- Full suite: **92 passed** on `main` (`python -m pytest web/tests -q`).
+- Full suite: **96 passed** on `main` (`python -m pytest web/tests -q`).
 - Online preview: <https://acmross.github.io/baseline-drift/try/> → 200.
 - Hosted demo wake page: <https://acmross.github.io/baseline-drift/demo/> → 200.
 - Hosted demo health: <https://baseline-drift.onrender.com/api/health> → `{"ok":true}`.

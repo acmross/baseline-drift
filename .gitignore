@@ -14,3 +14,18 @@ web/data/
 build/
 dist/
 *.spec
+
+# Credentials and local secret stores: never commit these.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.npmrc
+.netrc
+.htpasswd
+id_rsa*
+id_ed25519*
+credentials*.json

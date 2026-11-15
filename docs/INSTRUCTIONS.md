@@ -33,7 +33,7 @@ Data is written under `web/data/` (gitignored):
 python -m pytest web/tests -v
 ```
 
-Expected: 92 passed, 1 known third-party warning. Do not weaken tests to make them pass.
+Expected: 96 passed, 1 known third-party warning. Do not weaken tests to make them pass.
 
 ## Demo dry run (synthetic)
 
@@ -102,7 +102,7 @@ cd D:\Ruben\2026.Nasa.Hackathon\.worktrees\web-ui
 - `web/context_builder.py` — raw answers to explains map (CLI parity).
 - `web/app/` — one-page UI.
 - `web/demo_dry_run.py` — synthetic demo and screenshots.
-- `web/tests/` — 92 tests.
+- `web/tests/` — 96 tests.
 - `baseline_drift_exe.py`, `build_exe.ps1` — packaged launcher and build.
 - `GroundState.PRD.md` — winning PRD.
 - `docs/superpowers/plans/2026-11-14-baseline-drift-web-ui.md` — implementation plan and task history.

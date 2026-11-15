@@ -3,7 +3,7 @@
 **Bottom line:** Baseline Drift's live surface was verified end to end, the last
 known pipeline bug was fixed, the hosted demo's privacy boundaries are now
 covered by tests, and the Windows release was rebuilt from `main`. The suite is
-92 passing tests, every public link responds, and the repository is clean and
+96 passing tests, every public link responds, and the repository is clean and
 pushed. Submission itself was parked; the team owns the form.
 
 ## What shipped
@@ -22,11 +22,11 @@ pushed. Submission itself was parked; the team owns the form.
 5. **Presentation fixes** — inline favicon on the app and wake page, `docs/try`
    rebuilt, README links the deck.
 6. **Handoff corrected** — `docs/INSTRUCTIONS.md`, the 2026-11-14 debrief and
-   `NEXT-SESSION.md` now describe the merged, 92-test state.
+   `NEXT-SESSION.md` now describe the merged, 96-test state.
 
 ## Results and evidence
 
-- `python -m pytest web/tests -q` → **92 passed**, one known third-party warning.
+- `python -m pytest web/tests -q` → **96 passed**, one known third-party warning.
 - Hosted pipeline, with synthetic audio through the public server: three uploads
   returned 201 with all eight features, the report reached `baseline` at three
   sessions, session detail listed all three takes, audio playback returned
@@ -44,9 +44,10 @@ pushed. Submission itself was parked; the team owns the form.
 
 ## Findings and risks
 
-- **Real data is four sessions, not six.** The published real dataset is Amanda's
-  four recorded check-ins and reports `stable`. The six-session "two unexplained
-  changes" story is the **synthetic fixture**; it must be labelled as such.
+- **Real data is four sessions, not six.** The published real dataset is one team
+  member's four recorded check-ins and reports `stable`. The six-session "two
+  unexplained changes" story is the **synthetic fixture**; it must be labelled as
+  such.
 - **The microphone path is still manual.** Automation proved the API and the
   rendered UI, not `MediaRecorder`: mic permission, level meter, a live take and
   an upload from the browser still need a human on the demo laptop.
@@ -83,3 +84,15 @@ pushed. Submission itself was parked; the team owns the form.
 - Release: <https://github.com/acmross/baseline-drift/releases/tag/v0.1-demo-2026-11-14>
 - Handoff: `NEXT-SESSION.md`, `docs/INSTRUCTIONS.md`, `SUBMISSION.md`
 - Verification screenshots: local temp `bd-verify-d70a3rat` (not committed)
+
+## Follow-up, 2026-11-15 (privacy)
+
+- The published real dataset now uses the subject code `AMANDA` instead of a
+  full name, and dates without clock times (and therefore without the laptop's
+  timezone). `make_real_report.py` strips times by default; `--with-times` is
+  the opt-in. The preview parses date-only stamps as local days, so the date
+  cannot shift west of Greenwich.
+- `.gitignore` now blocks `.env`, private keys and local credential stores.
+- New privacy tests bring the suite to **96 passing**.
+- The release exe was rebuilt again from these changes (48,362,771 bytes,
+  sha256 `9f18740b…`).

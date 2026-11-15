@@ -534,9 +534,9 @@ const BANNER_COPY = {
     + "across ten weeks, steady at first, then slower and more halting speech alongside "
     + "a reported cold. It is here so you can explore the Report and Trends views."],
   real: ["Real recordings from a team member.",
-    "These are real check-ins recorded by Amanda Ross of team Ground State on her own "
-    + "laptop, measured by the same pipeline. The numbers and dates are real. Her "
-    + "recordings and check-in answers are not published."],
+    "These are real check-ins recorded by a team member on her own laptop, measured "
+    + "by the same pipeline. The numbers and dates are real; dates are published "
+    + "without clock times. Her recordings and check-in answers are not published."],
 };
 
 function setDataset(name) {
@@ -815,9 +815,9 @@ function measuresSection(data, title) {
   const note = document.createElement("p");
   note.className = "sub";
   const last = data.sessions && data.sessions.length ? data.sessions.length - 1 : -1;
-  const stamp = last >= 0 && data.recorded_at && data.recorded_at[last]
-    ? `, recorded ${new Date(data.recorded_at[last]).toLocaleString([], {
-      month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}` : "";
+  const raw = last >= 0 && data.recorded_at && data.recorded_at[last];
+  const stamp = raw
+    ? `, recorded ${shortDate(parseStamp(raw), !dateOnly(raw))}` : "";
   note.textContent = `Latest session${last >= 0
     ? ` (${sessionName(data.sessions[last])}${stamp})` : ""} of ${data.session_count}. `
     + "The big number is your latest reading. Each dot on the chart is one session.";
@@ -931,7 +931,7 @@ function sessionsSection(data) {
     const when = document.createElement("span");
     when.className = "session-when";
     const stamp = data.recorded_at && data.recorded_at[index];
-    when.textContent = (stamp ? shortDate(new Date(stamp), true) : "no saved date")
+    when.textContent = (stamp ? shortDate(parseStamp(stamp), !dateOnly(stamp)) : "no saved date")
       + (index < data.n_baseline ? " · baseline" : "");
     view.append(arrow, name, when);
     const detail = document.createElement("div");
@@ -1052,6 +1052,18 @@ function shortDate(date, withTime) {
     : { month: "short", day: "numeric" });
 }
 
+// Published reports carry dates, not clock times. A bare "YYYY-MM-DD" parsed
+// by Date() is UTC midnight and can render as the previous day west of
+// Greenwich, so build those as local dates and leave the time off.
+function dateOnly(value) {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+function parseStamp(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value || "");
+  return match ? new Date(+match[1], +match[2] - 1, +match[3]) : new Date(value);
+}
+
 // Turn one measure's readings into chart points for the chosen grouping.
 // Weekly and monthly points are averages; sessions without a date cannot be
 // placed on a calendar, so they are left out of those two and counted.
@@ -1060,12 +1072,15 @@ function trendPoints(measure, data, group) {
   const finding = (data.findings || []).find((item) => item.feature === measure.feature);
   const flaggedSessions = new Set(finding
     ? finding.flagged_indices.map((index) => data.sessions[index]) : []);
-  const readings = measure.series.map((value, index) => ({
-    value,
-    session: data.sessions[index],
-    when: data.recorded_at && data.recorded_at[index]
-      ? new Date(data.recorded_at[index]) : null,
-  })).filter((reading) => reading.value !== null);
+  const readings = measure.series.map((value, index) => {
+    const raw = data.recorded_at && data.recorded_at[index];
+    return {
+      value,
+      session: data.sessions[index],
+      when: raw ? parseStamp(raw) : null,
+      hasTime: raw ? !dateOnly(raw) : false,
+    };
+  }).filter((reading) => reading.value !== null);
   if (group === "session") {
     return {
       undated: 0,
@@ -1074,7 +1089,7 @@ function trendPoints(measure, data, group) {
         flagged: flaggedSessions.has(reading.session),
         label: sessionName(reading.session),
         tip: `${sessionName(reading.session)}${reading.when
-          ? `, ${shortDate(reading.when, true)}` : ""}`,
+          ? `, ${shortDate(reading.when, reading.hasTime)}` : ""}`,
       })),
     };
   }

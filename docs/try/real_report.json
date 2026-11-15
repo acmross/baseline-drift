@@ -222,12 +222,12 @@
  "recorded_at": [
   null,
   null,
-  "2026-11-15T15:23:25-05:00",
-  "2026-11-15T15:48:42-05:00"
+  "2026-11-15",
+  "2026-11-15"
  ],
  "sample": true,
  "real": true,
- "display_name": "Amanda Ross",
+ "display_name": "AMANDA",
  "details": {
   "day5": {
    "subject": "AMANDA",
@@ -330,7 +330,7 @@
   "fd8": {
    "subject": "AMANDA",
    "session": "fd8",
-   "recorded_at": "2026-11-15T15:23:25-05:00",
+   "recorded_at": "2026-11-15",
    "measures": [
     {
      "feature": "f0_mean_hz",
@@ -379,7 +379,7 @@
   "fd9": {
    "subject": "AMANDA",
    "session": "fd9",
-   "recorded_at": "2026-11-15T15:48:42-05:00",
+   "recorded_at": "2026-11-15",
    "measures": [
     {
      "feature": "f0_mean_hz",

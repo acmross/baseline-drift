@@ -169,5 +169,8 @@ def test_trends_view_is_wired():
         assert f'id="{element_id}"' in html, element_id
     for group in ("session", "week", "month"):
         assert f'data-group="{group}"' in html, group
-    for token in ("openTrends", "trendPoints", "trendChart", "recorded_at"):
+    for token in ("openTrends", "trendPoints", "trendChart", "recorded_at",
+                  "dateOnly", "parseStamp"):
         assert token in js, token
+    # Published dates are parsed as local days, never as raw Date(recorded_at).
+    assert "new Date(data.recorded_at" not in js
