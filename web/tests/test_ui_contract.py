@@ -145,7 +145,7 @@ def test_navigation_and_retake_controls_exist():
     html = (APP / "index.html").read_text(encoding="utf-8")
     js = (APP / "app.js").read_text(encoding="utf-8")
     for element_id in ("nav-record", "nav-report", "review", "save-session",
-                       "replace-session"):
+                       "replace-session", "stop-take", "take-steps"):
         assert f'id="{element_id}"' in html, element_id
     for take in ("vowel", "passage", "free"):
         assert f'data-take="{take}"' in html, take

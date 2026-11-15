@@ -4,6 +4,7 @@ const state = {
   subject: "AMANDA",
   session: "day1",
   takes: {},
+  next: 0,          // index of the next take to record in this session
 };
 
 const TAKES = [
@@ -19,7 +20,7 @@ const SESSION_RE = /^[a-z0-9][a-z0-9-]{1,15}$/;
 // One place for recovery copy so static contract tests can pin every path.
 const ERROR_COPY = {
   microphone: "Microphone access was blocked or no microphone was found. "
-    + "Allow microphone access in the browser, then press Start recording again.",
+    + "Allow microphone access in the browser, then press the start button again.",
   validation: "The local pipeline rejected these takes (422 validation error). "
     + "The takes are still here; press Retry upload.",
   duplicate: "This session already exists on this machine. Press Replace saved "
@@ -161,7 +162,28 @@ function setPassageVisible(visible) {
   document.getElementById("passage-text").hidden = !visible;
 }
 
-async function recordTake(task, maxSeconds) {
+const STEP_TEXT = { idle: "Not recorded", next: "Up next", active: "Recording now",
+                    done: "Captured" };
+
+function setStep(key, stepState) {
+  const step = document.querySelector(`.step[data-take="${key}"]`);
+  if (!step) return;
+  step.classList.toggle("active", stepState === "active");
+  step.classList.toggle("done", stepState === "done");
+  step.querySelector(".step-state").textContent = STEP_TEXT[stepState] || STEP_TEXT.idle;
+}
+
+function refreshSteps() {
+  TAKES.forEach((take, index) => {
+    if (state.takes[take.key]) setStep(take.key, "done");
+    else setStep(take.key, index === state.next ? "next" : "idle");
+  });
+  const button = document.getElementById("record-start");
+  button.textContent = state.next < TAKES.length
+    ? `Start take ${state.next + 1}` : "Record all three again";
+}
+
+async function recordTake(task, maxSeconds, onTick) {
   let stream = null;
   let context = null;
   let recorder = null;
@@ -204,7 +226,26 @@ async function recordTake(task, maxSeconds) {
     const stopped = new Promise((resolve) => { recorder.onstop = resolve; });
     recorder.start();
 
-    await sleep(maxSeconds * 1000);
+    // The take ends when the time runs out or the crew member presses
+    // Finish take, whichever comes first.
+    const stopButton = document.getElementById("stop-take");
+    await new Promise((resolve) => {
+      const started = Date.now();
+      let timer = 0;
+      const finish = () => {
+        clearInterval(timer);
+        stopButton.removeEventListener("click", finish);
+        stopButton.hidden = true;
+        resolve();
+      };
+      timer = setInterval(() => {
+        const left = Math.max(0, maxSeconds - Math.floor((Date.now() - started) / 1000));
+        if (onTick) onTick(left);
+        if (left <= 0) finish();
+      }, 250);
+      stopButton.hidden = false;
+      stopButton.addEventListener("click", finish);
+    });
     recorder.stop();
     await stopped;
 
@@ -214,6 +255,7 @@ async function recordTake(task, maxSeconds) {
   } finally {
     // Every exit path must release the microphone and decode context, or a
     // failed take leaves the browser holding the device.
+    document.getElementById("stop-take").hidden = true;
     if (raf) cancelAnimationFrame(raf);
     if (recorder && recorder.state !== "inactive") recorder.stop();
     if (stream) stream.getTracks().forEach((track) => track.stop());
@@ -266,41 +308,62 @@ function handleRecordingError(error) {
     return;
   }
   status.textContent = `Recording failed: ${error.message}. Check the microphone and `
-    + "press Start recording to try again.";
+    + "press the start button to try again.";
 }
 
-async function runSession() {
-  const ids = readIds();
-  if (!ids) return;
-  state.subject = ids.subject;
-  state.session = ids.session;
-  clearTakes();
+// Records one take with a countdown, a live time-left readout, and the step
+// card marked as active, so it is never unclear which take is being captured.
+async function captureTake(take) {
   const status = document.getElementById("take-status");
-  const retry = document.getElementById("retry-upload");
-  setBusy(true);
-  showReview(false);
-  retry.hidden = true;
-  document.getElementById("replace-session").hidden = true;
-  status.textContent = "Get ready. You will record three takes.";
+  const number = TAKES.indexOf(take) + 1;
+  const name = `take ${number} of ${TAKES.length}: ${take.label}`;
+  setStep(take.key, "active");
+  setPassageVisible(take.key === "passage");
   try {
-    for (const take of TAKES) {
-      setPassageVisible(take.key === "passage");
-      await runCountdown(COUNTDOWN_SECONDS, take.label);
-      status.textContent = `Recording ${take.label} (${take.seconds}s)...`;
-      state.takes[take.key] = await recordTake(take.key, take.seconds);
-      status.textContent = `Captured ${take.label}.`;
+    await runCountdown(COUNTDOWN_SECONDS, name);
+    state.takes[take.key] = await recordTake(take.key, take.seconds, (left) => {
+      status.textContent = `Recording ${name}. ${left}s left. Press Finish take when done.`;
+    });
+  } finally {
+    setPassageVisible(false);
+  }
+}
+
+// Each press records exactly one take. Nothing is stored until Save session.
+async function runSession() {
+  const status = document.getElementById("take-status");
+  if (state.next >= TAKES.length) {       // "Record all three again"
+    clearTakes();
+    state.next = 0;
+  }
+  if (state.next === 0) {
+    const ids = readIds();
+    if (!ids) return;
+    state.subject = ids.subject;
+    state.session = ids.session;
+    clearTakes();
+    showReview(false);
+    document.getElementById("retry-upload").hidden = true;
+    document.getElementById("replace-session").hidden = true;
+  }
+  const take = TAKES[state.next];
+  setBusy(true);
+  try {
+    await captureTake(take);
+    state.next += 1;
+    if (state.next < TAKES.length) {
+      status.textContent = `Take ${state.next} captured. Press Start take `
+        + `${state.next + 1} when you are ready.`;
+    } else {
+      status.textContent = "Three takes captured. Save the session, or retake any take first.";
+      showReview(true);
     }
   } catch (error) {
-    setPassageVisible(false);
     handleRecordingError(error);
+  } finally {
+    refreshSteps();
     setBusy(false);
-    return;
   }
-  setPassageVisible(false);
-  // Nothing is stored until the crew member saves, so a bad take can be redone.
-  status.textContent = "Three takes captured. Save the session, or retake any take first.";
-  showReview(true);
-  setBusy(false);
 }
 
 async function retakeOne(key) {
@@ -309,15 +372,12 @@ async function retakeOne(key) {
   const status = document.getElementById("take-status");
   setBusy(true);
   try {
-    setPassageVisible(take.key === "passage");
-    await runCountdown(COUNTDOWN_SECONDS, take.label);
-    status.textContent = `Recording ${take.label} (${take.seconds}s)...`;
-    state.takes[take.key] = await recordTake(take.key, take.seconds);
-    status.textContent = `Retook ${take.label}. Save the session, or retake again.`;
+    await captureTake(take);
+    status.textContent = `Retook take ${TAKES.indexOf(take) + 1}. Save the session, or retake again.`;
   } catch (error) {
     handleRecordingError(error);
   } finally {
-    setPassageVisible(false);
+    refreshSteps();
     setBusy(false);
   }
 }
@@ -332,6 +392,8 @@ async function saveSession(replace) {
       ? "Session replaced on this machine. Continue to check-in."
       : "Session stored on this machine.";
     showReview(false);
+    state.next = 0;                       // the next press starts a new session
+    document.getElementById("record-start").textContent = "Start take 1";
     document.getElementById("replace-session").hidden = true;
     document.getElementById("retry-upload").hidden = true;
     document.getElementById("to-checkin").disabled = false;
@@ -360,7 +422,7 @@ function openReport() {
 async function retryUpload() {
   if (!state.takes.vowel || !state.takes.passage) {
     document.getElementById("take-status").textContent =
-      "No captured takes to upload. Press Start recording.";
+      "No captured takes to upload. Press Start take 1.";
     return;
   }
   const retry = document.getElementById("retry-upload");
@@ -690,3 +752,4 @@ document.getElementById("to-checkin").addEventListener("click", () => {
   if (!checkin.questions.length) loadQuestions();
 });
 showState("record");
+refreshSteps();

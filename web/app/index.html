@@ -26,20 +26,41 @@
       <label for="session-label">Mission day</label>
       <input id="session-label" name="session" value="day1" autocomplete="off" spellcheck="false">
     </div>
-    <p id="vowel-instruction" class="instruction"><strong>Take 1 — sustained "ah":</strong>
-      Take a normal breath and hold 'ah' at a comfortable, steady pitch and volume until you run out of comfortable breath.</p>
-    <p class="instruction"><strong>Take 2 — fixed passage (30 seconds):</strong>
-      Read this aloud at your normal speaking pace. The text appears when this take begins.</p>
-    <div id="passage-text" class="passage" hidden>Commander's log, day forty. Sixteen sunrises today and I just caught three of them. The coffee floats and the plants are leaning toward the window again. We flushed the pump, checked the hatch seals, and measured the garden. The ship is in one piece and the stars are where we left them this evening. Signing off until tomorrow.</div>
-    <p id="free-prompt" class="instruction"><strong>Take 3 — free speech (60 seconds):</strong>
-      Describe what you have done since your last check-in.</p>
+    <ol id="take-steps" class="steps">
+      <li class="step" data-take="vowel">
+        <span class="step-n">1</span>
+        <div class="step-body">
+          <p class="step-title">Sustained "ah" <span class="step-len">about 5 seconds</span></p>
+          <p id="vowel-instruction" class="instruction">Take a normal breath and hold 'ah' at a comfortable, steady pitch and volume until you run out of comfortable breath.</p>
+        </div>
+        <span class="step-state">Not recorded</span>
+      </li>
+      <li class="step" data-take="passage">
+        <span class="step-n">2</span>
+        <div class="step-body">
+          <p class="step-title">Fixed passage <span class="step-len">about 22 seconds</span></p>
+          <p class="instruction">Read this aloud at your normal speaking pace. The text appears when this take begins.</p>
+          <div id="passage-text" class="passage" hidden>Commander's log, day forty. Sixteen sunrises today and I just caught three of them. The coffee floats and the plants are leaning toward the window again. We flushed the pump, checked the hatch seals, and measured the garden. The ship is in one piece and the stars are where we left them this evening. Signing off until tomorrow.</div>
+        </div>
+        <span class="step-state">Not recorded</span>
+      </li>
+      <li class="step" data-take="free">
+        <span class="step-n">3</span>
+        <div class="step-body">
+          <p class="step-title">Free speech <span class="step-len">up to 60 seconds</span></p>
+          <p id="free-prompt" class="instruction">Describe what you have done since your last check-in.</p>
+        </div>
+        <span class="step-state">Not recorded</span>
+      </li>
+    </ol>
     <p id="record-error" class="error" role="alert" hidden></p>
-    <p id="take-status" role="status" aria-live="polite">Ready. You will record three takes.</p>
+    <p id="take-status" role="status" aria-live="polite">Ready. Three takes, one at a time. Each starts when you press the button.</p>
     <div id="level-meter" class="meter" role="meter" aria-label="Microphone level"
          aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
     <div id="take-countdown" aria-live="assertive" hidden></div>
     <div class="actions">
-      <button id="record-start" type="button">Start recording</button>
+      <button id="record-start" type="button">Start take 1</button>
+      <button id="stop-take" type="button" class="secondary" hidden>Finish take</button>
       <button id="to-checkin" type="button" class="secondary" disabled>Continue to check-in</button>
     </div>
     <div id="review" class="actions" hidden>

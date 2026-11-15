@@ -91,3 +91,15 @@ input {
 .dot { fill: var(--series-1); stroke: var(--surface-0); stroke-width: 2; }
 .dot.flag { fill: var(--accent); }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* One card per take, so it is always clear which take is live. */
+.steps { list-style: none; padding: 0; margin: var(--space-3) 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.step { display: flex; gap: var(--space-3); align-items: flex-start; padding: var(--space-3); border: 1px solid var(--line); border-radius: 8px; }
+.step.active { border-color: var(--series-1); }
+.step-n { flex: 0 0 28px; height: 28px; border-radius: 50%; background: var(--surface-2); display: grid; place-items: center; font-size: 13px; font-weight: 600; }
+.step.active .step-n, .step.done .step-n { background: var(--series-1); color: #fff; }
+.step-body { flex: 1 1 auto; min-width: 0; }
+.step-title { margin: 0 0 4px; font-weight: 600; }
+.step-len { margin-left: 8px; font-weight: 400; font-size: 13px; color: var(--text-secondary); }
+.step-state { flex: 0 0 auto; font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-secondary); }
+.step.active .step-state { color: var(--text-primary); }
