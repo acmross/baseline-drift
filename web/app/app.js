@@ -1256,8 +1256,13 @@ document.getElementById("sample-on").addEventListener("click", () => {
   openReport();
 });
 document.getElementById("sample-off").addEventListener("click", () => {
+  // Stay on the tab you were reading; only the data behind it changes.
+  const onTrends = !document.getElementById("trends").hidden;
+  const onReport = !document.getElementById("report").hidden;
   setSample(false);
-  showState("record");
+  if (onTrends) openTrends();
+  else if (onReport) openReport();
+  else showState("record");
 });
 for (const button of document.querySelectorAll(".dataset")) {
   button.addEventListener("click", () => {
