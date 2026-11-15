@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baseline Drift</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="masthead">
+    <h1>Baseline Drift</h1>
+    <p class="sub">Daily voice check-in · stays on this machine</p>
+  </header>
+  <section id="record" class="panel" aria-labelledby="record-title">
+    <h2 id="record-title">Record</h2>
+  </section>
+  <section id="checkin" class="panel" hidden aria-labelledby="checkin-title">
+    <h2 id="checkin-title">Check-in</h2>
+  </section>
+  <section id="report" class="panel" hidden aria-labelledby="report-title">
+    <h2 id="report-title">Report</h2>
+  </section>
+  <div id="status" role="status" aria-live="polite"></div>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
