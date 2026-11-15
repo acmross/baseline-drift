@@ -84,10 +84,13 @@
       </li>
     </ol>
     <p id="record-error" class="error" role="alert" hidden></p>
+    <div id="take-live">
     <p id="take-status" role="status" aria-live="polite">Record each take with its own button, in any order. Save the session when you are done.</p>
     <div id="level-meter" class="meter" role="meter" aria-label="Microphone level"
          aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
     <div id="take-countdown" aria-live="assertive" hidden></div>
+    <button id="take-stop" type="button" class="secondary">Stop take</button>
+    </div>
     <div class="actions">
       <button id="save-session" type="button" disabled>Save session</button>
       <button id="to-checkin" type="button" class="secondary" disabled>Continue to check-in</button>

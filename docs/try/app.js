@@ -68,6 +68,14 @@ function setStatus(text) {
   document.getElementById("status").textContent = text;
 }
 
+// Stop take abandons the take in progress. Nothing from it is kept, and a
+// take recorded earlier for the same card is left as it was.
+function takeStopped() {
+  const error = new Error("take stopped");
+  error.name = "TakeStopped";
+  return error;
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -176,11 +184,31 @@ async function runCountdown(seconds, label) {
   for (let remaining = seconds; remaining > 0; remaining -= 1) {
     countdown.textContent = String(remaining);
     status.textContent = `Starting ${label} in ${remaining}...`;
-    await sleep(1000);
+    for (let i = 0; i < 10; i += 1) {
+      await sleep(100);
+      if (state.stopTake) throw takeStopped();
+    }
   }
-  countdown.textContent = "Recording";
+  countdown.textContent = "Go";
   await sleep(250);
-  countdown.hidden = true;
+}
+
+// The countdown, time left and microphone level sit inside the card being
+// recorded, so nothing about the take in progress is off screen.
+function moveLive(key) {
+  const live = document.getElementById("take-live");
+  if (key) {
+    const card = document.querySelector(`.step[data-take="${key}"]`);
+    card.querySelector(".step-body").appendChild(live);
+    live.classList.add("in-card");
+    card.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  } else {
+    const steps = document.getElementById("take-steps");
+    const error = document.getElementById("record-error");
+    (error || steps).after(live);
+    live.classList.remove("in-card");
+    document.getElementById("take-countdown").hidden = true;
+  }
 }
 
 function setPassageVisible(visible) {
@@ -204,12 +232,39 @@ function setStep(key, stepState) {
 
 // Each card shows its own state and its own Record or Retake button. Saving
 // needs the two takes the measures come from; free speech is optional.
+// Each captured take can be played back from its own card before saving.
+// The player points at the audio held in this page; nothing leaves it.
+const playback = {};
+function showPlayback(key, blob) {
+  const body = document.querySelector(`.step[data-take="${key}"] .step-body`);
+  let audio = body.querySelector(".take-audio");
+  const current = playback[key];
+  if (current && current.blob === blob) return;
+  if (current) URL.revokeObjectURL(current.url);
+  delete playback[key];
+  if (!blob) {
+    if (audio) audio.remove();
+    return;
+  }
+  if (!audio) {
+    audio = document.createElement("audio");
+    audio.className = "take-audio";
+    audio.controls = true;
+    audio.setAttribute("aria-label", "Play this take back");
+    body.appendChild(audio);
+  }
+  const url = URL.createObjectURL(blob);
+  playback[key] = { blob, url };
+  audio.src = url;
+}
+
 function refreshSteps() {
   for (const take of TAKES) {
     const captured = Boolean(state.takes[take.key]);
     const stored = state.saved.includes(take.key);
     setStep(take.key, captured ? "done" : (stored ? "saved" : "idle"));
     takeButton(take.key).textContent = captured ? "Retake" : "Record";
+    showPlayback(take.key, state.takes[take.key]);
   }
   document.getElementById("save-session").disabled =
     !(state.takes.vowel && state.takes.passage);
@@ -274,7 +329,7 @@ async function recordTake(task, maxSeconds, onTick, stopButton) {
       timer = setInterval(() => {
         const left = Math.max(0, maxSeconds - Math.floor((Date.now() - started) / 1000));
         if (onTick) onTick(left);
-        if (left <= 0) finish();
+        if (left <= 0 || state.stopTake) finish();
       }, 250);
       if (stopButton) {
         stopButton.textContent = "Finish take";
@@ -284,6 +339,7 @@ async function recordTake(task, maxSeconds, onTick, stopButton) {
     });
     recorder.stop();
     await stopped;
+    if (state.stopTake) throw takeStopped();
 
     const blob = new Blob(chunks, { type: recorder.mimeType || "audio/webm" });
     const audio = await context.decodeAudioData(await blob.arrayBuffer());
@@ -360,16 +416,21 @@ async function captureTake(take, button) {
   const name = `take ${number}: ${take.label}`;
   setStep(take.key, "active");
   setPassageVisible(take.key === "passage");
+  state.stopTake = false;
+  moveLive(take.key);
+  const countdown = document.getElementById("take-countdown");
   button.textContent = "Starting...";
   try {
     await runCountdown(COUNTDOWN_SECONDS, name);
     if (take.fixedLength) button.textContent = "Recording...";
     state.takes[take.key] = await recordTake(take.key, take.seconds, (left) => {
+      countdown.textContent = `${left}s`;
       status.textContent = take.fixedLength
         ? `Recording ${name}. ${left}s left. Keep talking until the time runs out.`
         : `Recording ${name}. ${left}s left. Press Finish take when done.`;
     }, take.fixedLength ? null : button);
   } finally {
+    moveLive(null);
     setPassageVisible(false);
   }
 }
@@ -391,8 +452,13 @@ async function startTake(key) {
       + (ready ? " Save the session when you are ready, or retake any take."
                : " Record the remaining takes.");
   } catch (error) {
-    handleRecordingError(error);
+    if (error && error.name === "TakeStopped") {
+      status.textContent = `Take ${TAKES.indexOf(take) + 1} stopped. Nothing from it was kept.`;
+    } else {
+      handleRecordingError(error);
+    }
   } finally {
+    state.stopTake = false;
     state.recording = false;
     setBusy(false);
   }
@@ -1038,6 +1104,10 @@ document.getElementById("to-report").addEventListener("click", () => {
 });
 document.getElementById("save-session").addEventListener("click", () => saveSession(false));
 document.getElementById("replace-session").addEventListener("click", () => saveSession(true));
+document.getElementById("take-stop").addEventListener("click", () => {
+  if (state.recording) state.stopTake = true;
+});
+
 for (const button of document.querySelectorAll(".take-button")) {
   button.addEventListener("click", () => startTake(button.dataset.take));
 }
