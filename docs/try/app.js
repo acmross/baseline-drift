@@ -19,7 +19,8 @@ const STATIC_PREVIEW = Boolean(window.BASELINE_DRIFT_STATIC);
 // without installing anything. That is the one place a recording leaves the
 // device, so the privacy notice is replaced with exactly what happens to it.
 const HOSTED_MINUTES = Number(window.BASELINE_DRIFT_HOSTED) || 0;
-const WHERE = HOSTED_MINUTES ? "in your private demo space" : "on this machine";
+const WHERE = HOSTED_MINUTES
+  ? `in your private demo space (deleted within ${HOSTED_MINUTES / 60} hours)` : "on this machine";
 if (HOSTED_MINUTES) {
   const hours = HOSTED_MINUTES / 60;
   document.getElementById("masthead-sub").textContent =
@@ -27,13 +28,14 @@ if (HOSTED_MINUTES) {
   document.getElementById("subject").value = "GUEST";
   document.getElementById("privacy").classList.add("sample");
   document.getElementById("privacy-title").textContent =
-    "Hosted demo. This is the one version that sends your recording off your device.";
+    `Hosted demo. Everything you record here is deleted within ${hours} hours.`;
   document.getElementById("privacy-body").textContent =
-    "To measure your voice here, your recording is sent to our demo server. Your "
-    + "recordings, numbers and check-in answers are kept under a random ID that only "
-    + `this browser has, so you can play them back and delete them, and everything is `
-    + `deleted automatically after ${hours} hours without use. No one else can see or `
-    + "hear them. The real Baseline Drift runs on "
+    "This is the one version that sends your recording off your device: to measure "
+    + "your voice it goes to our demo server. Your recordings, numbers and check-in "
+    + "answers are kept under a random ID that only this browser has, so you can play "
+    + "them back and delete them yourself. No one else can see or hear them, and all of "
+    + `it is deleted automatically within ${hours} hours of when you started. The real `
+    + "Baseline Drift runs on "
     + "your own computer and never sends anything anywhere.";
 }
 
