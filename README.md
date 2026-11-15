@@ -15,10 +15,28 @@ own condition. Baseline Drift gives them a measurement instead.
 There are three ways in, from least to most effort.
 
 **1. Online preview, nothing to install.** Open
-<https://acmross.github.io/baseline-drift/try/> to explore the Report and Trends
-views with a sample crew member. The data there is simulated and labelled as
-such: 36 made-up check-ins across ten weeks. The preview cannot record, because
-measuring a voice needs the pipeline running on your own machine.
+<https://acmross.github.io/baseline-drift/try/>. There you can:
+
+- Explore the Report and Trends views for a sample crew member. That data is
+  simulated and labelled as such: 36 made-up check-ins across ten weeks.
+- Switch to real check-ins recorded by a team member on her own laptop. The
+  numbers and dates are real; her recordings and check-in answers are not
+  published.
+- Open any session to see its measurements, and delete one to see how that
+  works (it comes back when you reload).
+- Go through a check-in yourself: record the three takes, play them back and
+  answer the questions. The audio stays in your browser tab and is discarded.
+  Your voice is not measured there, because measuring needs the pipeline
+  running on your own machine.
+
+**Hosted demo, the real pipeline with nothing to install.** The hosted demo
+runs the same app and the same Praat measurements on a small demo server, so
+you can record a few check-ins and get your own numbers back. It is the one
+version that sends a recording off your device, and it says so on the page:
+your recordings, numbers and check-in answers sit under a random ID only your
+browser has, so you can play them back and delete them, and everything is
+deleted automatically after two hours without use. The server sleeps when idle, so the first load can take about a minute.
+`Dockerfile` and `render.yaml` are what it runs from.
 
 **2. The real app on macOS or Linux.** Needs Python 3.
 
@@ -75,7 +93,7 @@ the voice baseline logic, so the detector transfers directly.
 
 It also surfaced four data-quality problems worth knowing about, including an
 assay ceiling, a reference range that shifts mid-study for one subject, and
-three of four crew below the glucose reference range at R+45 — which is almost
+three of four crew below the glucose reference range at R+45, which is almost
 certainly sample handling, not physiology. The detector fired correctly and the
 cause was logistics. That is the argument for never naming a cause.
 

@@ -10,11 +10,11 @@
 <main class="wrap">
   <header class="masthead">
     <h1>Baseline Drift</h1>
-    <p class="sub">Daily voice check-in · stays on this machine</p>
+    <p id="masthead-sub" class="sub">Daily voice check-in · stays on this machine</p>
   </header>
-  <aside class="privacy" aria-label="Privacy">
-    <p class="privacy-title">Private. For your personal use only.</p>
-    <p>Your recordings, answers and results stay on this computer. Nothing is sent to mission control, a flight surgeon, your crewmates or anyone else. Nothing is shared unless you choose to share it yourself.</p>
+  <aside id="privacy" class="privacy" aria-label="Privacy">
+    <p id="privacy-title" class="privacy-title">Private. For your personal use only.</p>
+    <p id="privacy-body">Your recordings, answers and results stay on this computer. Nothing is sent to mission control, a flight surgeon, your crewmates or anyone else. Nothing is shared unless you choose to share it yourself.</p>
   </aside>
   <nav class="tabs" aria-label="Sections">
     <button id="nav-record" type="button" class="secondary" aria-current="page">Record</button>
@@ -23,15 +23,19 @@
     <button id="sample-on" type="button" class="secondary sample-link">See a sample report</button>
   </nav>
   <aside id="sample-banner" class="privacy sample" aria-label="Sample data" hidden>
-    <p class="privacy-title">Sample data. Not a real person.</p>
-    <p>You are looking at a simulated crew member with made-up readings: 36 check-ins across ten weeks, steady at first, then slower and more halting speech alongside a reported cold. It is here so you can explore the Report and Trends views.</p>
+    <div id="dataset-switch" class="actions" role="group" aria-label="Whose data to show" hidden>
+      <button type="button" class="secondary small dataset" data-dataset="sample" aria-pressed="true">Sample crew member</button>
+      <button type="button" class="secondary small dataset" data-dataset="real" aria-pressed="false">Amanda, real recordings</button>
+    </div>
+    <p id="sample-title" class="privacy-title">Sample data. Not a real person.</p>
+    <p id="sample-body">You are looking at a simulated crew member with made-up readings: 36 check-ins across ten weeks, steady at first, then slower and more halting speech alongside a reported cold. It is here so you can explore the Report and Trends views.</p>
     <div class="actions"><button id="sample-off" type="button" class="secondary">Back to my own data</button></div>
   </aside>
   <section id="record" class="panel" aria-labelledby="record-title">
     <h2 id="record-title">Record</h2>
     <aside class="privacy" aria-label="About this preview">
-      <p class="privacy-title">This online preview cannot record.</p>
-      <p>Measuring a voice needs Baseline Drift running on your own computer, which is also what keeps recordings private. This page shows the sample report only. To record your own voice, follow the steps at <a href="https://github.com/acmross/baseline-drift#try-it">https://github.com/acmross/baseline-drift</a>.</p>
+      <p class="privacy-title">Try the check-in here. Your voice is not measured or kept.</p>
+      <p>You can record the three takes, play them back and fill in the check-in. The audio never leaves this browser tab and is discarded. Measuring a voice needs Baseline Drift running on your own computer, which is also what keeps recordings private, so the report you see afterwards is the sample. To measure your own voice, follow the steps at <a href="https://github.com/acmross/baseline-drift#try-it">https://github.com/acmross/baseline-drift</a>.</p>
     </aside>
     <div class="field">
       <label for="subject">Crew member</label>

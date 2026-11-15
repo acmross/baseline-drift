@@ -6,12 +6,36 @@ const state = {
   takes: {},
   recording: false, // true while the microphone is in use
   saved: [],        // takes stored by the last save, until a new take is recorded
-  sample: false,    // true while the simulated crew member is on screen
+  sample: false,    // true while a read-only dataset is on screen
+  dataset: "sample", // which read-only dataset: "sample" or "real"
 };
 
-// The online preview is the same page with no local pipeline behind it: it can
-// show the sample report but cannot record.
+// The online preview is the same page with no local pipeline behind it. A
+// visitor can go through recording and the check-in, which stay in their
+// browser and are not measured, and explore the read-only datasets.
 const STATIC_PREVIEW = Boolean(window.BASELINE_DRIFT_STATIC);
+
+// The hosted demo runs the real pipeline on a demo server so it can be tried
+// without installing anything. That is the one place a recording leaves the
+// device, so the privacy notice is replaced with exactly what happens to it.
+const HOSTED_MINUTES = Number(window.BASELINE_DRIFT_HOSTED) || 0;
+const WHERE = HOSTED_MINUTES ? "in your private demo space" : "on this machine";
+if (HOSTED_MINUTES) {
+  const hours = HOSTED_MINUTES / 60;
+  document.getElementById("masthead-sub").textContent =
+    "Daily voice check-in · hosted demo";
+  document.getElementById("subject").value = "GUEST";
+  document.getElementById("privacy").classList.add("sample");
+  document.getElementById("privacy-title").textContent =
+    "Hosted demo. This is the one version that sends your recording off your device.";
+  document.getElementById("privacy-body").textContent =
+    "To measure your voice here, your recording is sent to our demo server. Your "
+    + "recordings, numbers and check-in answers are kept under a random ID that only "
+    + `this browser has, so you can play them back and delete them, and everything is `
+    + `deleted automatically after ${hours} hours without use. No one else can see or `
+    + "hear them. The real Baseline Drift runs on "
+    + "your own computer and never sends anything anywhere.";
+}
 
 const TAKES = [
   { key: "vowel", label: "sustained \"ah\"", seconds: 5 },
@@ -42,6 +66,11 @@ const ERROR_COPY = {
 function showState(name) {
   for (const id of ["record", "checkin", "report", "trends"]) {
     document.getElementById(id).hidden = id !== name;
+  }
+  if (STATIC_PREVIEW) {
+    // In the preview the dataset banner belongs to the Report and Trends views.
+    document.getElementById("sample-banner").hidden =
+      !(name === "report" || name === "trends");
   }
   // Check-in belongs to a recording session, so it sits under the Record tab.
   const current = name === "report" ? "nav-report"
@@ -138,6 +167,10 @@ function sessionName(session) {
 async function suggestFlightDay() {
   const subject = document.getElementById("subject").value.trim().toUpperCase();
   if (!SUBJECT_RE.test(subject) || state.recording) return;
+  if (STATIC_PREVIEW) {
+    document.getElementById("session-label").value = "1";
+    return;
+  }
   try {
     const next = await api(`/api/next-session?subject=${encodeURIComponent(subject)}`);
     document.getElementById("session-label").value = String(next.flight_day);
@@ -453,12 +486,17 @@ async function saveSession(replace) {
   state.session = ids.session;
   const status = document.getElementById("take-status");
   setBusy(true);
-  status.textContent = "Saving to this machine...";
+  status.textContent = HOSTED_MINUTES ? "Measuring your voice..." : "Saving to this machine...";
   try {
-    await uploadTakes(replace);
-    status.textContent = replace
-      ? `${sessionName(state.session)} replaced on this machine. Continue to check-in.`
-      : `${sessionName(state.session)} saved on this machine. Continue to check-in.`;
+    if (STATIC_PREVIEW) await sleep(400);     // nothing is uploaded or measured
+    else await uploadTakes(replace);
+    status.textContent = STATIC_PREVIEW
+      ? "In the full app your voice would be measured now, on your own computer. "
+        + "In this preview your recording stayed in this browser tab and has been "
+        + "discarded. Continue to check-in."
+      : replace
+      ? `${sessionName(state.session)} replaced ${WHERE}. Continue to check-in.`
+      : `${sessionName(state.session)} saved ${WHERE}. Continue to check-in.`;
     state.saved = Object.keys(state.takes);
     clearTakes();
     state.recording = false;
@@ -475,13 +513,44 @@ async function saveSession(replace) {
 
 // One place decides where a report comes from: the sample file, or this
 // machine's own sessions.
+const readOnly = {};
 async function fetchReport() {
-  if (state.sample) return api("sample_report.json");
+  if (state.sample) {
+    // Kept in memory so a preview deletion lasts until the page is reloaded.
+    if (!readOnly[state.dataset]) {
+      readOnly[state.dataset] = await api(
+        state.dataset === "real" ? "real_report.json" : "sample_report.json");
+    }
+    return readOnly[state.dataset];
+  }
   return api(`/api/report?subject=${encodeURIComponent(state.subject)}`);
+}
+
+const BANNER_COPY = {
+  sample: ["Sample data. Not a real person.",
+    "You are looking at a simulated crew member with made-up readings: 36 check-ins "
+    + "across ten weeks, steady at first, then slower and more halting speech alongside "
+    + "a reported cold. It is here so you can explore the Report and Trends views."],
+  real: ["Real recordings from a team member.",
+    "These are real check-ins recorded by Amanda Ross of team Ground State on her own "
+    + "laptop, measured by the same pipeline. The numbers and dates are real. Her "
+    + "recordings and check-in answers are not published."],
+};
+
+function setDataset(name) {
+  state.dataset = name;
+  const [title, body] = BANNER_COPY[name];
+  document.getElementById("sample-title").textContent = title;
+  document.getElementById("sample-body").textContent = body;
+  for (const button of document.querySelectorAll(".dataset")) {
+    button.setAttribute("aria-pressed", String(button.dataset.dataset === name));
+  }
 }
 
 function setSample(on) {
   state.sample = on;
+  if (on && !STATIC_PREVIEW) setDataset("sample");
+  document.getElementById("dataset-switch").hidden = !STATIC_PREVIEW;
   document.getElementById("sample-banner").hidden = !on;
   document.getElementById("sample-on").hidden = on || STATIC_PREVIEW;
   document.getElementById("sample-off").hidden = STATIC_PREVIEW;
@@ -523,7 +592,7 @@ async function retryUpload() {
     state.saved = Object.keys(state.takes);
     clearTakes();
     refreshSteps();
-    status.textContent = "Session saved on this machine.";
+    status.textContent = `Session saved ${WHERE}.`;
     document.getElementById("to-checkin").disabled = false;
   } catch (error) {
     handleUploadError(error);
@@ -571,6 +640,14 @@ async function submitCheckin() {
   save.disabled = true;
   setStatus("Saving check-in...");
   try {
+    if (STATIC_PREVIEW) {
+      await sleep(300);
+      save.textContent = "Save check-in";
+      document.getElementById("to-report").disabled = false;
+      setStatus("Check-in noted. In this preview nothing is stored or sent anywhere. "
+        + "Open the report to see what a crew member gets back.");
+      return;
+    }
     await api("/api/context", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -749,13 +826,32 @@ function measuresSection(data, title) {
 
 // Every saved session with its date and a delete control. Deleting is
 // permanent, so it takes two presses: Delete, then Confirm delete.
+// Read-only data has no pipeline behind it, so a deletion only removes the
+// session from what is on screen: its row and its point on every chart.
+function dropFromReadOnly(data, index) {
+  const [session] = data.sessions.splice(index, 1);
+  if (data.recorded_at) data.recorded_at.splice(index, 1);
+  if (data.details) delete data.details[session];
+  const shift = (list) => list.filter((i) => i !== index).map((i) => (i > index ? i - 1 : i));
+  for (const measure of data.measures || []) measure.series.splice(index, 1);
+  for (const finding of data.findings || []) {
+    if (finding.series) finding.series.splice(index, 1);
+    if (finding.flagged_indices) finding.flagged_indices = shift(finding.flagged_indices);
+  }
+  data.session_count = data.sessions.length;
+}
+
 // Asks before a session is deleted. Resolves true only on "Delete session";
 // Cancel, Escape and closing the box all keep the session.
 function confirmDelete(name) {
   const box = document.getElementById("confirm-delete");
   document.getElementById("confirm-delete-text").textContent =
-    `Are you sure you want to delete ${name}? Its recording, measurements and `
-    + "check-in will be removed from this computer for good.";
+    state.sample
+      ? `Are you sure you want to delete ${name}? In the full app this removes its `
+        + "recording, measurements and check-in for good. Here it only lasts until "
+        + "you reload the page."
+      : `Are you sure you want to delete ${name}? Its recording, measurements and `
+        + `check-in will be removed ${HOSTED_MINUTES ? "from the demo server" : "from this computer"} for good.`;
   return new Promise((resolve) => {
     box.returnValue = "";
     box.addEventListener("close", () => resolve(box.returnValue === "delete"), { once: true });
@@ -786,7 +882,7 @@ function sessionDetail(info, query) {
     wrap.appendChild(line);
   };
   part("Listen");
-  if (!info.takes.length) pair("Audio", "No audio saved for this session.");
+  if (!info.takes.length) pair("Audio", info.audio_note || "No audio saved for this session.");
   for (const take of info.takes) {
     const audio = document.createElement("audio");
     audio.className = "take-audio";
@@ -798,13 +894,13 @@ function sessionDetail(info, query) {
   part("Measurements");
   for (const measure of info.measures) pair(measure.label, measure.value_text);
   part("Check-in");
-  if (!info.checkin) pair("Check-in", "No check-in saved for this session.");
+  if (!info.checkin) pair("Check-in", info.checkin_note || "No check-in saved for this session.");
   else for (const item of info.checkin) pair(item.ask, item.answer);
   return wrap;
 }
 
 function sessionsSection(data) {
-  if (state.sample || !data.sessions || !data.sessions.length) return null;
+  if (!data.sessions || !data.sessions.length) return null;
   const box = document.createElement("div");
   box.className = "stable-list";
   const heading = document.createElement("h3");
@@ -814,7 +910,9 @@ function sessionsSection(data) {
   note.textContent = `The first ${data.n_baseline} sessions are your baseline. Select a `
     + "session to listen to it and see its measurements and check-in.";
   box.append(heading, note);
-  data.sessions.forEach((session, index) => {
+  // Newest first; index still points at the session's place in time.
+  const newestFirst = data.sessions.map((session, index) => ({ session, index })).reverse();
+  newestFirst.forEach(({ session, index }) => {
     const row = document.createElement("div");
     row.className = "session-row";
     // The whole left side of the row opens the session; Delete sits alone.
@@ -848,7 +946,10 @@ function sessionsSection(data) {
       try {
         const query = `subject=${encodeURIComponent(data.subject)}`
           + `&session=${encodeURIComponent(session)}`;
-        const info = await api(`/api/session-detail?${query}`);
+        const info = state.sample
+          ? { ...data.details[session], audio_note: data.audio_note,
+              checkin_note: data.checkin_note }
+          : await api(`/api/session-detail?${query}`);
         detail.replaceChildren(sessionDetail(info, query));
         detail.hidden = false;
         view.setAttribute("aria-expanded", "true");
@@ -864,12 +965,19 @@ function sessionsSection(data) {
     remove.textContent = "Delete";
     remove.addEventListener("click", async () => {
       if (!(await confirmDelete(sessionName(session)))) return;
+      if (state.sample) {
+        dropFromReadOnly(data, index);
+        renderReport(data);
+        setStatus(`${sessionName(session)} removed from this view. In the full app the `
+          + "report is rebuilt after a deletion; here it comes back when you reload.");
+        return;
+      }
       remove.disabled = true;
       try {
         await api(`/api/session?subject=${encodeURIComponent(data.subject)}`
           + `&session=${encodeURIComponent(session)}`, { method: "DELETE" });
         await loadReport();
-        setStatus(`${sessionName(session)} deleted from this computer.`);
+        setStatus(`${sessionName(session)} deleted.`);
         suggestFlightDay();
       } catch (error) {
         setStatus(`Could not delete ${sessionName(session)}. (${error.message})`);
@@ -1150,6 +1258,7 @@ async function loadReport() {
 
 document.getElementById("report-refresh").addEventListener("click", loadReport);
 document.getElementById("to-report").addEventListener("click", () => {
+  if (STATIC_PREVIEW) setDataset("sample");   // the walkthrough ends on the sample
   showState("report");
   loadReport();
 });
@@ -1159,15 +1268,30 @@ document.getElementById("replace-session").addEventListener("click", () => saveS
 for (const button of document.querySelectorAll(".take-button")) {
   button.addEventListener("click", () => startTake(button.dataset.take));
 }
-document.getElementById("nav-record").addEventListener("click", () => showState("record"));
+document.getElementById("nav-record").addEventListener("click", () => {
+  // Recording is always about your own data, so leaving the sample is implied.
+  if (state.sample && !STATIC_PREVIEW) setSample(false);
+  showState("record");
+});
 document.getElementById("sample-on").addEventListener("click", () => {
   setSample(true);
   openReport();
 });
 document.getElementById("sample-off").addEventListener("click", () => {
+  // Stay on the tab you were reading; only the data behind it changes.
+  const onTrends = !document.getElementById("trends").hidden;
+  const onReport = !document.getElementById("report").hidden;
   setSample(false);
-  showState("record");
+  if (onTrends) openTrends();
+  else if (onReport) openReport();
+  else showState("record");
 });
+for (const button of document.querySelectorAll(".dataset")) {
+  button.addEventListener("click", () => {
+    setDataset(button.dataset.dataset);
+    if (document.getElementById("trends").hidden) openReport(); else openTrends();
+  });
+}
 document.getElementById("nav-report").addEventListener("click", openReport);
 document.getElementById("nav-trends").addEventListener("click", openTrends);
 for (const button of document.querySelectorAll(".trend-group")) {
@@ -1194,9 +1318,12 @@ document.getElementById("to-checkin").addEventListener("click", () => {
 showState("record");
 refreshSteps();
 if (STATIC_PREVIEW) {
-  // No local pipeline here: open straight onto the sample and lock recording.
+  // No local pipeline here: open on the sample report. Recording and the
+  // check-in can still be tried; they stay in this browser tab.
+  document.getElementById("subject").value = "GUEST";
+  suggestFlightDay();
+  setDataset("sample");
   setSample(true);
-  for (const button of document.querySelectorAll(".take-button")) button.disabled = true;
   openReport();
 } else {
   suggestFlightDay();

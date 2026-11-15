@@ -1,0 +1,10 @@
+.git
+web/data
+web/tests
+docs
+validation
+**/__pycache__
+*.pyc
+.venv*
+build
+dist
