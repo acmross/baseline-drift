@@ -84,6 +84,30 @@ baseline; everything after is scored against it.
 - **Calibrate before trusting.** The `MIN_CHANGE` thresholds shipped here are
   placeholders. Measure your own session-to-session noise floor first.
 
+## Use of AI tools
+
+Declared per NASA Space Apps requirements.
+
+**In building this project.** Claude (Anthropic) was used substantially: it
+wrote most of the Python in `pipeline/` and `validation/`, drafted this README
+and `FRONTEND.md`, drafted the slide deck, and was used to find and summarise
+the literature and NASA datasets cited here. Every figure quoted from a paper
+or dataset was checked against the primary source, and the OSD-575 results in
+`validation/` were produced by running the committed code on the committed
+data, not written by hand. Design decisions, scope, and the project direction
+are the team's.
+
+**Inside the product.** `checkin_agent.py` can optionally use a small local
+language model through Ollama to phrase the check-in questions and extract
+structured answers from free text. It runs on the local machine with no
+network access, it is given no interpretive role, and the tool works fully
+without it (`--backend none`).
+
+**Not used.** No AI-generated images, audio or video appear in this project.
+No NASA branding or design elements were generated or modified. The synthetic
+audio in `make_test_audio.py` is procedurally generated signal, not a
+generative model, and is clearly labelled as a test fixture rather than speech.
+
 ## Data
 
 NASA Open Science Data Repository, [OSD-575](https://osdr.nasa.gov/bio/repo/data/studies/OSD-575):
