@@ -122,3 +122,15 @@ input {
 
 .row .hint { color: var(--text-muted); margin-top: 2px; }
 .stable-list .row:first-of-type { margin-top: var(--space-2); }
+
+/* Trends: one wide chart per measure. */
+.trend-group[aria-pressed="true"] { background: var(--series-1); border-color: var(--series-1); color: #fff; }
+.trend { padding: var(--space-3) 0; border-top: 1px solid var(--line); }
+.trend-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); margin-bottom: 6px; }
+.trend-head .label { white-space: nowrap; font-size: 12px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+.trend-head .latest { font-size: 16px; font-weight: 600; }
+.trend-head .range { font-size: 13px; color: var(--text-secondary); }
+.trend svg { display: block; width: 100%; height: auto; }
+.trend .axis { fill: var(--text-muted); font-size: 11px; }
+.trend .series { fill: none; stroke: var(--series-1); stroke-width: 2; }
+.trend .dot { fill: var(--series-1); stroke: var(--surface-1); stroke-width: 2; }

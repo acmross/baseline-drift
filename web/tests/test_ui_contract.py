@@ -160,3 +160,14 @@ def test_navigation_and_retake_controls_exist():
     # Recording a take never stores anything: only Save session uploads.
     start = re.search(r"async function startTake\(key\).*?\n}\n", js, re.S)
     assert start and "uploadTakes" not in start.group(0)
+
+
+def test_trends_view_is_wired():
+    html = (APP / "index.html").read_text(encoding="utf-8")
+    js = (APP / "app.js").read_text(encoding="utf-8")
+    for element_id in ("nav-trends", "trends", "trends-list", "trends-note"):
+        assert f'id="{element_id}"' in html, element_id
+    for group in ("session", "week", "month"):
+        assert f'data-group="{group}"' in html, group
+    for token in ("openTrends", "trendPoints", "trendChart", "recorded_at"):
+        assert token in js, token

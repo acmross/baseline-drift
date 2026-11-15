@@ -77,6 +77,10 @@ def _measures(records, n_baseline, flagged):
             "feature": feature,
             "label": LABEL.get(feature, feature),
             "hint": HINT.get(feature, ""),
+            "format": ("percent2" if feature in ("jitter_local", "shimmer_local")
+                       else "percent1" if feature == "pause_ratio"
+                       else "rate" if feature == "voiced_rate_hz"
+                       else "hz" if feature.endswith("_hz") else "db"),
             "series": series,
             "latest": latest,
             "baseline_mean": mean,

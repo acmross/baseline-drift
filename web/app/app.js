@@ -35,12 +35,13 @@ const ERROR_COPY = {
 };
 
 function showState(name) {
-  for (const id of ["record", "checkin", "report"]) {
+  for (const id of ["record", "checkin", "report", "trends"]) {
     document.getElementById(id).hidden = id !== name;
   }
   // Check-in belongs to a recording session, so it sits under the Record tab.
-  const current = name === "report" ? "nav-report" : "nav-record";
-  for (const id of ["nav-record", "nav-report"]) {
+  const current = name === "report" ? "nav-report"
+    : name === "trends" ? "nav-trends" : "nav-record";
+  for (const id of ["nav-record", "nav-report", "nav-trends"]) {
     const tab = document.getElementById(id);
     if (id === current) tab.setAttribute("aria-current", "page");
     else tab.removeAttribute("aria-current");
@@ -50,8 +51,8 @@ function showState(name) {
 // While the microphone is in use nothing else may start or navigate away.
 // While the microphone or an upload is in use nothing else may start.
 function setBusy(busy) {
-  for (const id of ["save-session", "nav-record", "nav-report", "replace-session",
-                    "retry-upload"]) {
+  for (const id of ["save-session", "nav-record", "nav-report", "nav-trends",
+                    "replace-session", "retry-upload"]) {
     document.getElementById(id).disabled = busy;
   }
   for (const button of document.querySelectorAll(".take-button")) button.disabled = busy;
@@ -697,6 +698,200 @@ function renderReport(data) {
   list.appendChild(footer);
 }
 
+// ---- Trends: every measure over time, by session, week or month ----------
+
+const trends = { data: null, group: "session" };
+
+function formatValue(format, value) {
+  if (value === null || value === undefined) return "not measured";
+  if (format === "percent2") return `${(value * 100).toFixed(2)}%`;
+  if (format === "percent1") return `${(value * 100).toFixed(1)}%`;
+  if (format === "rate") return `${value.toFixed(1)}/s`;
+  return `${value.toFixed(1)} ${format === "hz" ? "Hz" : "dB"}`;
+}
+
+function shortDate(date, withTime) {
+  return date.toLocaleString([], withTime
+    ? { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }
+    : { month: "short", day: "numeric" });
+}
+
+// Turn one measure's readings into chart points for the chosen grouping.
+// Weekly and monthly points are averages; sessions without a date cannot be
+// placed on a calendar, so they are left out of those two and counted.
+function trendPoints(measure, data, group) {
+  const readings = measure.series.map((value, index) => ({
+    value,
+    session: data.sessions[index],
+    when: data.recorded_at && data.recorded_at[index]
+      ? new Date(data.recorded_at[index]) : null,
+  })).filter((reading) => reading.value !== null);
+  if (group === "session") {
+    return {
+      undated: 0,
+      points: readings.map((reading) => ({
+        value: reading.value,
+        label: sessionName(reading.session),
+        tip: `${sessionName(reading.session)}${reading.when
+          ? `, ${shortDate(reading.when, true)}` : ""}`,
+      })),
+    };
+  }
+  const buckets = new Map();
+  let undated = 0;
+  for (const reading of readings) {
+    if (!reading.when) { undated += 1; continue; }
+    const start = new Date(reading.when);
+    start.setHours(0, 0, 0, 0);
+    if (group === "week") start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+    else start.setDate(1);
+    const key = start.getTime();
+    if (!buckets.has(key)) buckets.set(key, { start, values: [] });
+    buckets.get(key).values.push(reading.value);
+  }
+  const points = Array.from(buckets.values())
+    .sort((left, right) => left.start - right.start)
+    .map((bucket) => {
+      const label = group === "week"
+        ? `Week of ${shortDate(bucket.start, false)}`
+        : bucket.start.toLocaleString([], { month: "short", year: "numeric" });
+      const count = bucket.values.length;
+      return {
+        value: bucket.values.reduce((sum, value) => sum + value, 0) / count,
+        label,
+        tip: `${label}, average of ${count} session${count === 1 ? "" : "s"}`,
+      };
+    });
+  return { undated, points };
+}
+
+function trendChart(points, measure) {
+  const ns = "http://www.w3.org/2000/svg";
+  const width = 640;
+  const height = 132;
+  const pad = { left: 10, right: 10, top: 12, bottom: 24 };
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", `${measure.label} over time against the baseline band`);
+  const values = points.map((point) => point.value);
+  const mean = measure.baseline_mean;
+  const sd = measure.baseline_sd || 0;
+  const hasBaseline = measure.baseline_complete && mean !== null;
+  const lo = Math.min(...values, hasBaseline ? mean - 2.5 * sd : Infinity);
+  const hi = Math.max(...values, hasBaseline ? mean + 2.5 * sd : -Infinity);
+  const span = hi - lo || 1;
+  const innerW = width - pad.left - pad.right;
+  const innerH = height - pad.top - pad.bottom;
+  const x = (index) => pad.left + (points.length === 1
+    ? innerW / 2 : index * innerW / (points.length - 1));
+  const y = (value) => pad.top + innerH - (value - lo) * innerH / span;
+  const add = (name, attrs, text) => {
+    const node = document.createElementNS(ns, name);
+    for (const [key, value] of Object.entries(attrs)) node.setAttribute(key, String(value));
+    if (text) node.textContent = text;
+    svg.appendChild(node);
+    return node;
+  };
+  if (hasBaseline) {
+    add("rect", { x: 0, width, y: Math.min(y(mean + sd), y(mean - sd)),
+                  height: Math.max(Math.abs(y(mean - sd) - y(mean + sd)), 1),
+                  class: "band" });
+    add("line", { x1: 0, x2: width, y1: y(mean), y2: y(mean), class: "meanline" });
+  }
+  if (points.length > 1) {
+    add("polyline", { class: "series",
+                      points: points.map((point, index) =>
+                        `${x(index).toFixed(1)},${y(point.value).toFixed(1)}`).join(" ") });
+  }
+  points.forEach((point, index) => {
+    const dot = add("circle", { cx: x(index), cy: y(point.value), r: 4, class: "dot" });
+    const title = document.createElementNS(ns, "title");
+    title.textContent = `${point.tip}: ${formatValue(measure.format, point.value)}`;
+    dot.appendChild(title);
+  });
+  add("text", { x: pad.left, y: height - 6, class: "axis" }, points[0].label);
+  if (points.length > 1) {
+    add("text", { x: width - pad.right, y: height - 6, class: "axis",
+                  "text-anchor": "end" }, points[points.length - 1].label);
+  }
+  return svg;
+}
+
+function renderTrends() {
+  const data = trends.data;
+  const list = document.getElementById("trends-list");
+  const note = document.getElementById("trends-note");
+  list.replaceChildren();
+  note.textContent = "";
+  for (const button of document.querySelectorAll(".trend-group")) {
+    button.setAttribute("aria-pressed", String(button.dataset.group === trends.group));
+  }
+  if (!data || !data.measures || !data.measures.length) {
+    note.textContent = "No sessions yet. Record your first check-in to begin.";
+    return;
+  }
+  let undated = 0;
+  for (const measure of data.measures) {
+    const result = trendPoints(measure, data, trends.group);
+    undated = Math.max(undated, result.undated);
+    if (!result.points.length) continue;
+    const box = document.createElement("div");
+    box.className = "trend";
+    const head = document.createElement("div");
+    head.className = "trend-head";
+    const label = document.createElement("span");
+    label.className = "label";
+    label.textContent = measure.label;
+    const latest = document.createElement("span");
+    latest.className = "latest";
+    latest.textContent = formatValue(measure.format,
+                                     result.points[result.points.length - 1].value);
+    const values = result.points.map((point) => point.value);
+    const range = document.createElement("span");
+    range.className = "range";
+    range.textContent = `lowest ${formatValue(measure.format, Math.min(...values))}`
+      + ` · highest ${formatValue(measure.format, Math.max(...values))}`
+      + (measure.baseline_complete && measure.baseline_text
+        ? ` · baseline ${measure.baseline_text}` : "");
+    head.append(label, latest, range);
+    box.append(head, trendChart(result.points, measure));
+    list.appendChild(box);
+  }
+  const count = data.session_count;
+  const parts = [`${count} session${count === 1 ? "" : "s"} for ${data.subject}.`,
+                 "Hover over a point for its date and value."];
+  if (undated) {
+    parts.push(`${undated} earlier session${undated === 1 ? " has" : "s have"} no saved `
+      + "date, so weekly and monthly averages leave "
+      + `${undated === 1 ? "it" : "them"} out.`);
+  }
+  if (!list.children.length) parts.push("Nothing to chart for this grouping yet.");
+  note.textContent = parts.join(" ");
+}
+
+async function openTrends() {
+  const input = document.getElementById("subject");
+  const subject = input.value.trim().toUpperCase();
+  if (!SUBJECT_RE.test(subject)) {
+    showState("record");
+    showRecordError("Enter a crew member to open their trends (for example AMANDA).");
+    input.focus();
+    return;
+  }
+  clearRecordError();
+  state.subject = subject;
+  showState("trends");
+  setStatus("Loading your trends...");
+  try {
+    trends.data = await api(`/api/report?subject=${encodeURIComponent(subject)}`);
+    renderTrends();
+    setStatus("");
+  } catch (error) {
+    setStatus(`${ERROR_COPY.report} (${error.message})`);
+  }
+}
+
 async function loadReport() {
   const refresh = document.getElementById("report-refresh");
   refresh.disabled = true;
@@ -724,6 +919,13 @@ for (const button of document.querySelectorAll(".take-button")) {
 }
 document.getElementById("nav-record").addEventListener("click", () => showState("record"));
 document.getElementById("nav-report").addEventListener("click", openReport);
+document.getElementById("nav-trends").addEventListener("click", openTrends);
+for (const button of document.querySelectorAll(".trend-group")) {
+  button.addEventListener("click", () => {
+    trends.group = button.dataset.group;
+    renderTrends();
+  });
+}
 document.getElementById("retry-upload").addEventListener("click", retryUpload);
 document.getElementById("subject").addEventListener("input", clearRecordError);
 document.getElementById("subject").addEventListener("change", suggestFlightDay);
