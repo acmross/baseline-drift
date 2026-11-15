@@ -29,9 +29,20 @@ def test_checkin_ids_and_labels():
 
 
 def test_checkin_flow_completes_and_inverts_setup():
+    # Structural guard: the repo has no DOM/JS harness, so pin the data flow in app.js.
     js = (APP / "app.js").read_text(encoding="utf-8")
-    for token in ("finishCheckin", "yesno_inverted"):
-        assert token in js, token
+
+    skip = re.search(r'getElementById\("checkin-skip"\)\.addEventListener\(.*?\}\);',
+                     js, re.S)
+    assert skip, "checkin-skip listener not found"
+    block = skip.group(0)
+    assert "advanceCheckin(null)" in block, "skip must store null"
+    assert "finishCheckin()" in block, "skip must finalize the check-in"
+
+    parser = re.search(r'function parseAnswer\(.*?\n\}', js, re.S)
+    assert parser, "parseAnswer not found"
+    assert re.search(r'"yesno_inverted".*?!\s*value', parser.group(0), re.S), \
+        "yesno_inverted must negate the parsed value"
 
 
 def test_no_diagnostic_copy():
