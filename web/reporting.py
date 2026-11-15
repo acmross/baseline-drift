@@ -159,10 +159,10 @@ def build_report(records, context, subject, n_baseline=3, z_threshold=2.0, min_r
         # later session exists yet.
         base["state"] = "baseline"
         if len(subject_records) == n_baseline:
-            base["headline"] = ("Baseline complete — scoring begins with your "
+            base["headline"] = ("Baseline complete: scoring begins with your "
                                 "next session.")
         else:
-            base["headline"] = (f"Building your baseline — {len(subject_records)} "
+            base["headline"] = (f"Building your baseline: {len(subject_records)} "
                                 f"of {n_baseline} sessions")
         return base
 

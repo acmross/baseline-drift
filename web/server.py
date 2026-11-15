@@ -3,10 +3,20 @@ Baseline Drift local server.
 
 Serves the one-page crew UI and the pipeline endpoints on 127.0.0.1 only.
 No network calls leave this process; the browser page loads no external assets.
+
+Hosted demo mode (BASELINE_DRIFT_HOSTED=1) is the one exception, and exists
+only so someone can try the real pipeline without installing it. There each
+visitor gets a private, temporary space keyed by a random cookie, the audio is
+deleted as soon as it has been measured, and everything else is deleted after
+RETENTION_SECONDS. The page says all of this in place of the privacy notice.
 """
+import contextvars
 import os
 import re
+import secrets
+import shutil
 import sys
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -28,6 +38,75 @@ from web.session_store import (                                 # noqa: E402
 from pipeline.checkin_agent import QUESTIONS                    # noqa: E402
 
 MAX_UPLOAD_DEFAULT = 25 * 1024 * 1024
+RETENTION_SECONDS = 2 * 60 * 60
+MAX_VISITORS = 300
+VISITOR_COOKIE = "bd_visitor"
+VISITOR_RE = re.compile(r"^[A-Za-z0-9_-]{16,64}$")
+_visitor: contextvars.ContextVar[str] = contextvars.ContextVar("visitor", default="shared")
+
+
+class VisitorData:
+    """Stands in for the data directory in hosted mode: every path resolves
+    inside the current visitor's own folder, so visitors never see each other."""
+
+    def __init__(self, base: Path):
+        self.base = base
+
+    def current(self) -> Path:
+        folder = self.base / _visitor.get()
+        folder.mkdir(parents=True, exist_ok=True)
+        os.utime(folder, None)                      # activity keeps it alive
+        return folder
+
+    def __truediv__(self, other) -> Path:
+        return self.current() / other
+
+    def sweep(self) -> None:
+        """Delete visitor folders past retention, oldest first past the cap."""
+        now = time.time()
+        folders = sorted((p for p in self.base.iterdir() if p.is_dir()),
+                         key=lambda p: p.stat().st_mtime)
+        excess = len(folders) - MAX_VISITORS
+        for index, folder in enumerate(folders):
+            if index < excess or now - folder.stat().st_mtime > RETENTION_SECONDS:
+                shutil.rmtree(folder, ignore_errors=True)
+
+
+class VisitorMiddleware:
+    """Gives each browser a random id cookie and scopes the request to it."""
+
+    def __init__(self, app, store: VisitorData):
+        self.app = app
+        self.store = store
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            await self.app(scope, receive, send)
+            return
+        token = None
+        for key, value in scope.get("headers", []):
+            if key == b"cookie":
+                for part in value.decode("latin-1").split(";"):
+                    name, _, found = part.strip().partition("=")
+                    if name == VISITOR_COOKIE and VISITOR_RE.match(found):
+                        token = found
+        fresh_visitor = token is None
+        if fresh_visitor:
+            token = secrets.token_urlsafe(24)
+            self.store.sweep()
+        reset = _visitor.set(token)
+
+        async def send_with_cookie(message):
+            if fresh_visitor and message["type"] == "http.response.start":
+                cookie = (f"{VISITOR_COOKIE}={token}; Path=/; Max-Age={RETENTION_SECONDS}; "
+                          "HttpOnly; SameSite=Lax; Secure")
+                message.setdefault("headers", []).append((b"set-cookie", cookie.encode()))
+            await send(message)
+
+        try:
+            await self.app(scope, receive, send_with_cookie)
+        finally:
+            _visitor.reset(reset)
 
 
 def default_data_dir() -> Path:
@@ -62,14 +141,21 @@ def read_upload(upload: UploadFile, max_bytes: int) -> bytes:
 
 
 def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
-               max_upload_bytes: int = MAX_UPLOAD_DEFAULT) -> FastAPI:
+               max_upload_bytes: int = MAX_UPLOAD_DEFAULT,
+               hosted: bool | None = None) -> FastAPI:
     """Build the app. Tests pass temp paths; production uses the data dir above."""
-    data = Path(data_dir or default_data_dir())
+    if hosted is None:
+        hosted = os.environ.get("BASELINE_DRIFT_HOSTED") == "1"
+    base = Path(data_dir or default_data_dir())
     static = Path(static_dir or (Path(__file__).parent / "app"))
-    data.mkdir(parents=True, exist_ok=True)
+    base.mkdir(parents=True, exist_ok=True)
+    data = VisitorData(base) if hosted else base
 
     app = FastAPI(title="Baseline Drift", docs_url=None, redoc_url=None)
-    app.state.data_dir = data
+    if hosted:
+        app.add_middleware(VisitorMiddleware, store=data)
+    app.state.hosted = hosted
+    app.state.data_dir = base
     app.state.static_dir = static
 
     @app.get("/api/health")
@@ -149,6 +235,11 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
         html = (static / "index.html").read_text(encoding="utf-8")
         html = html.replace('href="/styles.css"', f'href="/styles.css?v={stamp}"')
         html = html.replace('src="/app.js"', f'src="/app.js?v={stamp}"')
+        if hosted:
+            minutes = RETENTION_SECONDS // 60
+            html = html.replace(
+                "<script src=",
+                f"<script>window.BASELINE_DRIFT_HOSTED = {minutes};</script>\n<script src=", 1)
         return HTMLResponse(html, headers=fresh)
 
     @app.get("/sample_report.json")
@@ -220,6 +311,10 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
             "features": features,
         }
         append_record(sessions_path, record)
+        if hosted:
+            # The demo server keeps the numbers, never the voice.
+            for name in saved.values():
+                (recording_dir / name).unlink(missing_ok=True)
         return {"subject": subject, "session": session, "features": features,
                 "recorded_at": record["recorded_at"]}
 
@@ -249,6 +344,8 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
         detail = build_detail(record, answers, QUESTIONS)
         detail["takes"] = [t for t in TAKE_NAMES
                            if (recording_dir / f"{session}_{t}.wav").exists()]
+        if hosted:
+            detail["audio_note"] = "The demo server deletes audio once it is measured."
         return detail
 
     @app.get("/api/audio")

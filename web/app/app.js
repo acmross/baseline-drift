@@ -15,6 +15,27 @@ const state = {
 // browser and are not measured, and explore the read-only datasets.
 const STATIC_PREVIEW = Boolean(window.BASELINE_DRIFT_STATIC);
 
+// The hosted demo runs the real pipeline on a demo server so it can be tried
+// without installing anything. That is the one place a recording leaves the
+// device, so the privacy notice is replaced with exactly what happens to it.
+const HOSTED_MINUTES = Number(window.BASELINE_DRIFT_HOSTED) || 0;
+const WHERE = HOSTED_MINUTES ? "in your private demo space" : "on this machine";
+if (HOSTED_MINUTES) {
+  const hours = HOSTED_MINUTES / 60;
+  document.getElementById("masthead-sub").textContent =
+    "Daily voice check-in · hosted demo";
+  document.getElementById("subject").value = "GUEST";
+  document.getElementById("privacy").classList.add("sample");
+  document.getElementById("privacy-title").textContent =
+    "Hosted demo. This is the one version that sends your recording off your device.";
+  document.getElementById("privacy-body").textContent =
+    "To measure your voice here, your recording is sent to our demo server, measured, "
+    + "and the audio is deleted straight away. Your numbers and check-in answers are "
+    + `kept under a random ID that only this browser has, and are deleted after ${hours} `
+    + "hours without use. No one else can see them. The real Baseline Drift runs on "
+    + "your own computer and never sends anything anywhere.";
+}
+
 const TAKES = [
   { key: "vowel", label: "sustained \"ah\"", seconds: 5 },
   { key: "passage", label: "fixed passage", seconds: 30 },
@@ -464,7 +485,7 @@ async function saveSession(replace) {
   state.session = ids.session;
   const status = document.getElementById("take-status");
   setBusy(true);
-  status.textContent = "Saving to this machine...";
+  status.textContent = HOSTED_MINUTES ? "Measuring your voice..." : "Saving to this machine...";
   try {
     if (STATIC_PREVIEW) await sleep(400);     // nothing is uploaded or measured
     else await uploadTakes(replace);
@@ -473,8 +494,8 @@ async function saveSession(replace) {
         + "In this preview your recording stayed in this browser tab and has been "
         + "discarded. Continue to check-in."
       : replace
-      ? `${sessionName(state.session)} replaced on this machine. Continue to check-in.`
-      : `${sessionName(state.session)} saved on this machine. Continue to check-in.`;
+      ? `${sessionName(state.session)} replaced ${WHERE}. Continue to check-in.`
+      : `${sessionName(state.session)} saved ${WHERE}. Continue to check-in.`;
     state.saved = Object.keys(state.takes);
     clearTakes();
     state.recording = false;
@@ -570,7 +591,7 @@ async function retryUpload() {
     state.saved = Object.keys(state.takes);
     clearTakes();
     refreshSteps();
-    status.textContent = "Session saved on this machine.";
+    status.textContent = `Session saved ${WHERE}.`;
     document.getElementById("to-checkin").disabled = false;
   } catch (error) {
     handleUploadError(error);
@@ -829,7 +850,7 @@ function confirmDelete(name) {
         + "recording, measurements and check-in for good. Here it only lasts until "
         + "you reload the page."
       : `Are you sure you want to delete ${name}? Its recording, measurements and `
-        + "check-in will be removed from this computer for good.";
+        + `check-in will be removed ${HOSTED_MINUTES ? "from the demo server" : "from this computer"} for good.`;
   return new Promise((resolve) => {
     box.returnValue = "";
     box.addEventListener("close", () => resolve(box.returnValue === "delete"), { once: true });
@@ -955,7 +976,7 @@ function sessionsSection(data) {
         await api(`/api/session?subject=${encodeURIComponent(data.subject)}`
           + `&session=${encodeURIComponent(session)}`, { method: "DELETE" });
         await loadReport();
-        setStatus(`${sessionName(session)} deleted from this computer.`);
+        setStatus(`${sessionName(session)} deleted.`);
         suggestFlightDay();
       } catch (error) {
         setStatus(`Could not delete ${sessionName(session)}. (${error.message})`);

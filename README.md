@@ -29,6 +29,15 @@ There are three ways in, from least to most effort.
   Your voice is not measured there, because measuring needs the pipeline
   running on your own machine.
 
+**Hosted demo, the real pipeline with nothing to install.** The hosted demo
+runs the same app and the same Praat measurements on a small demo server, so
+you can record a few check-ins and get your own numbers back. It is the one
+version that sends a recording off your device, and it says so on the page:
+the audio is deleted as soon as it is measured, your numbers sit under a
+random ID only your browser has, and they are deleted after two hours without
+use. The server sleeps when idle, so the first load can take about a minute.
+`Dockerfile` and `render.yaml` are what it runs from.
+
 **2. The real app on macOS or Linux.** Needs Python 3.
 
     git clone https://github.com/acmross/baseline-drift.git
@@ -84,7 +93,7 @@ the voice baseline logic, so the detector transfers directly.
 
 It also surfaced four data-quality problems worth knowing about, including an
 assay ceiling, a reference range that shifts mid-study for one subject, and
-three of four crew below the glucose reference range at R+45 — which is almost
+three of four crew below the glucose reference range at R+45, which is almost
 certainly sample handling, not physiology. The detector fired correctly and the
 cause was logistics. That is the argument for never naming a cause.
 
