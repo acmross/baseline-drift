@@ -541,7 +541,14 @@ async function submitCheckin() {
   }
 }
 
-function sparkline(values, mean, sd, flagged) {
+// The report charts show only the most recent sessions so each reading stays
+// readable; the Trends tab has the full history.
+const RECENT_SESSIONS = 12;
+
+function sparkline(allValues, mean, sd, allFlagged) {
+  const offset = Math.max(0, allValues.length - RECENT_SESSIONS);
+  const values = allValues.slice(offset);
+  const flagged = allFlagged.map((index) => index - offset).filter((index) => index >= 0);
   const width = 300;
   const height = 76;
   const pad = 10;
@@ -692,12 +699,81 @@ function measuresSection(data, title) {
   return box;
 }
 
+// Every saved session with its date and a delete control. Deleting is
+// permanent, so it takes two presses: Delete, then Confirm delete.
+function sessionsSection(data) {
+  if (state.sample || !data.sessions || !data.sessions.length) return null;
+  const box = document.createElement("div");
+  box.className = "stable-list";
+  const heading = document.createElement("h3");
+  heading.textContent = "Your sessions";
+  const note = document.createElement("p");
+  note.className = "sub";
+  note.textContent = `The first ${data.n_baseline} sessions are your baseline. Deleting `
+    + "a session removes its recording, measurements and check-in from this computer "
+    + "for good.";
+  box.append(heading, note);
+  data.sessions.forEach((session, index) => {
+    const row = document.createElement("div");
+    row.className = "session-row";
+    const name = document.createElement("span");
+    name.className = "session-name";
+    name.textContent = sessionName(session);
+    const when = document.createElement("span");
+    when.className = "session-when";
+    const stamp = data.recorded_at && data.recorded_at[index];
+    when.textContent = (stamp ? shortDate(new Date(stamp), true) : "no saved date")
+      + (index < data.n_baseline ? " · baseline" : "");
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "secondary small";
+    remove.textContent = "Delete";
+    const cancel = document.createElement("button");
+    cancel.type = "button";
+    cancel.className = "secondary small";
+    cancel.textContent = "Cancel";
+    cancel.hidden = true;
+    cancel.addEventListener("click", () => {
+      remove.textContent = "Delete";
+      remove.classList.remove("danger");
+      cancel.hidden = true;
+    });
+    remove.addEventListener("click", async () => {
+      if (cancel.hidden) {                 // first press only arms the button
+        remove.textContent = "Confirm delete";
+        remove.classList.add("danger");
+        cancel.hidden = false;
+        return;
+      }
+      remove.disabled = true;
+      cancel.disabled = true;
+      try {
+        await api(`/api/session?subject=${encodeURIComponent(data.subject)}`
+          + `&session=${encodeURIComponent(session)}`, { method: "DELETE" });
+        await loadReport();
+        setStatus(`${sessionName(session)} deleted from this computer.`);
+        suggestFlightDay();
+      } catch (error) {
+        setStatus(`Could not delete ${sessionName(session)}. (${error.message})`);
+        remove.disabled = false;
+        cancel.disabled = false;
+      }
+    });
+    row.append(name, when, remove, cancel);
+    box.appendChild(row);
+  });
+  return box;
+}
+
 function renderReport(data) {
   document.getElementById("report-headline").textContent = data.headline;
   document.getElementById("baseline-note").textContent = data.state === "baseline"
     ? `Your baseline is built from your first ${data.n_baseline} sessions.`
     : "Measured against your own baseline. Shaded band is one standard deviation; "
-      + "the dashed line is your baseline average.";
+      + "the dashed line is your baseline average."
+      + (data.session_count > RECENT_SESSIONS
+        ? ` Charts show your last ${RECENT_SESSIONS} sessions; the Trends tab has all `
+          + `${data.session_count}.` : "");
   const list = document.getElementById("report-list");
   list.replaceChildren();
   if (data.state === "empty") {
@@ -712,6 +788,8 @@ function renderReport(data) {
     list.appendChild(pending);
     const soFar = measuresSection(data, "Your measures so far");
     if (soFar) list.appendChild(soFar);
+    const sessionList = sessionsSection(data);
+    if (sessionList) list.appendChild(sessionList);
     return;
   }
   for (const finding of data.findings) {
@@ -719,6 +797,8 @@ function renderReport(data) {
   }
   const within = measuresSection(data, "Within your baseline");
   if (within) list.appendChild(within);
+  const sessionList = sessionsSection(data);
+  if (sessionList) list.appendChild(sessionList);
   const footer = document.createElement("p");
   footer.className = "sub";
   footer.textContent = "This describes what changed, not why. Ordinary causes are the "
@@ -749,6 +829,10 @@ function shortDate(date, withTime) {
 // Weekly and monthly points are averages; sessions without a date cannot be
 // placed on a calendar, so they are left out of those two and counted.
 function trendPoints(measure, data, group) {
+  // Sessions the report flagged for this measure are drawn in the flag colour.
+  const finding = (data.findings || []).find((item) => item.feature === measure.feature);
+  const flaggedSessions = new Set(finding
+    ? finding.flagged_indices.map((index) => data.sessions[index]) : []);
   const readings = measure.series.map((value, index) => ({
     value,
     session: data.sessions[index],
@@ -760,6 +844,7 @@ function trendPoints(measure, data, group) {
       undated: 0,
       points: readings.map((reading) => ({
         value: reading.value,
+        flagged: flaggedSessions.has(reading.session),
         label: sessionName(reading.session),
         tip: `${sessionName(reading.session)}${reading.when
           ? `, ${shortDate(reading.when, true)}` : ""}`,
@@ -828,6 +913,10 @@ function trendChart(points, measure) {
                   class: "band" });
     add("line", { x1: 0, x2: width, y1: y(mean), y2: y(mean), class: "meanline" });
   }
+  // Fewer points get bigger dots; a long history gets small ones so the
+  // shape of the line stays readable.
+  const radius = points.length <= 16 ? 5.5 : points.length <= 30 ? 4
+    : points.length <= 60 ? 3 : 2.2;
   if (points.length > 1) {
     add("polyline", { class: "series",
                       points: points.map((point, index) =>
@@ -835,9 +924,12 @@ function trendChart(points, measure) {
   }
   points.forEach((point, index) => {
     const isLatest = index === points.length - 1;
-    const dot = add("circle", { cx: x(index), cy: y(point.value),
-                                r: isLatest ? 6.5 : 5.5,
-                                class: isLatest ? "dot latest" : "dot" });
+    const dot = add("circle", {
+      cx: x(index), cy: y(point.value),
+      r: point.flagged || isLatest ? radius + 1 : radius,
+      "stroke-width": radius < 4 ? 1 : 2,
+      class: point.flagged ? "dot flag" : (isLatest ? "dot latest" : "dot"),
+    });
     const title = document.createElementNS(ns, "title");
     title.textContent = `${point.tip}: ${formatValue(measure.format, point.value)}`;
     dot.appendChild(title);
