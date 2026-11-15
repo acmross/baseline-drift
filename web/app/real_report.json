@@ -1,0 +1,431 @@
+{
+ "subject": "AMANDA",
+ "state": "stable",
+ "session_count": 4,
+ "n_baseline": 3,
+ "baseline_progress": {
+  "have": 3,
+  "need": 3
+ },
+ "headline": "Nothing moved far enough from your baseline to report",
+ "findings": [],
+ "stable_features": [
+  {
+   "feature": "f0_mean_hz",
+   "label": "Pitch"
+  },
+  {
+   "feature": "f0_sd_hz",
+   "label": "Pitch variation"
+  },
+  {
+   "feature": "intensity_db",
+   "label": "Loudness"
+  },
+  {
+   "feature": "jitter_local",
+   "label": "Pitch steadiness"
+  },
+  {
+   "feature": "shimmer_local",
+   "label": "Loudness steadiness"
+  },
+  {
+   "feature": "hnr_db",
+   "label": "Voice clarity"
+  },
+  {
+   "feature": "pause_ratio",
+   "label": "Pausing"
+  },
+  {
+   "feature": "voiced_rate_hz",
+   "label": "Speaking rate"
+  }
+ ],
+ "measures": [
+  {
+   "feature": "f0_mean_hz",
+   "label": "Pitch",
+   "hint": "How high or low your voice is.",
+   "format": "hz",
+   "series": [
+    183.02946254608545,
+    192.58050776157228,
+    177.51916370094943,
+    163.679725422868
+   ],
+   "latest": 163.679725422868,
+   "baseline_mean": 184.37637800286905,
+   "baseline_sd": 7.620476176979145,
+   "baseline_complete": true,
+   "latest_text": "163.7 Hz",
+   "baseline_text": "184.4 Hz",
+   "spread_text": "7.6 Hz",
+   "change_text": "20.7 Hz below your baseline",
+   "flagged": false
+  },
+  {
+   "feature": "f0_sd_hz",
+   "label": "Pitch variation",
+   "hint": "How much your pitch moves as you speak.",
+   "format": "hz",
+   "series": [
+    40.51640230781676,
+    54.69965503934255,
+    40.568897388496346,
+    39.31947092582967
+   ],
+   "latest": 39.31947092582967,
+   "baseline_mean": 45.261651578551884,
+   "baseline_sd": 8.173592902010494,
+   "baseline_complete": true,
+   "latest_text": "39.3 Hz",
+   "baseline_text": "45.3 Hz",
+   "spread_text": "8.2 Hz",
+   "change_text": "5.9 Hz below your baseline",
+   "flagged": false
+  },
+  {
+   "feature": "intensity_db",
+   "label": "Loudness",
+   "hint": "How loud your voice is.",
+   "format": "db",
+   "series": [
+    53.49633023190225,
+    51.728002940997094,
+    50.00645934419125,
+    48.77171625703223
+   ],
+   "latest": 48.77171625703223,
+   "baseline_mean": 51.74359750569686,
+   "baseline_sd": 1.744987706563952,
+   "baseline_complete": true,
+   "latest_text": "48.8 dB",
+   "baseline_text": "51.7 dB",
+   "spread_text": "1.7 dB",
+   "change_text": "3.0 dB below your baseline",
+   "flagged": false
+  },
+  {
+   "feature": "jitter_local",
+   "label": "Pitch steadiness",
+   "hint": "Tiny wobble in pitch from one cycle to the next. Lower is steadier.",
+   "format": "percent2",
+   "series": [
+    0.0055305719322472574,
+    0.005139235517021351,
+    0.005175659375508256,
+    0.004713751524084886
+   ],
+   "latest": 0.004713751524084886,
+   "baseline_mean": 0.005281822274925622,
+   "baseline_sd": 0.0002161919711274958,
+   "baseline_complete": true,
+   "latest_text": "0.47%",
+   "baseline_text": "0.53%",
+   "spread_text": "0.02 points",
+   "change_text": "0.06 points below your baseline",
+   "flagged": false
+  },
+  {
+   "feature": "shimmer_local",
+   "label": "Loudness steadiness",
+   "hint": "Tiny wobble in loudness from one cycle to the next. Lower is steadier.",
+   "format": "percent2",
+   "series": [
+    0.03688248784644002,
+    0.03883459948299683,
+    0.04878693897147463,
+    0.047982616905258166
+   ],
+   "latest": 0.047982616905258166,
+   "baseline_mean": 0.041501342100303824,
+   "baseline_sd": 0.0063845615579541165,
+   "baseline_complete": true,
+   "latest_text": "4.80%",
+   "baseline_text": "4.15%",
+   "spread_text": "0.64 points",
+   "change_text": "0.65 points above your baseline",
+   "flagged": false
+  },
+  {
+   "feature": "hnr_db",
+   "label": "Voice clarity",
+   "hint": "How clear the voice is against breath and noise. Higher is clearer.",
+   "format": "db",
+   "series": [
+    17.118938549924742,
+    21.589204604415986,
+    19.760149849436022,
+    18.556653715005
+   ],
+   "latest": 18.556653715005,
+   "baseline_mean": 19.489431001258918,
+   "baseline_sd": 2.247395419269367,
+   "baseline_complete": true,
+   "latest_text": "18.6 dB",
+   "baseline_text": "19.5 dB",
+   "spread_text": "2.2 dB",
+   "change_text": "0.9 dB below your baseline",
+   "flagged": false
+  },
+  {
+   "feature": "pause_ratio",
+   "label": "Pausing",
+   "hint": "Share of the reading spent silent.",
+   "format": "percent1",
+   "series": [
+    0.2334,
+    0.2915,
+    0.2682,
+    0.3526
+   ],
+   "latest": 0.3526,
+   "baseline_mean": 0.26436666666666664,
+   "baseline_sd": 0.029239072032698522,
+   "baseline_complete": true,
+   "latest_text": "35.3%",
+   "baseline_text": "26.4%",
+   "spread_text": "2.92 points",
+   "change_text": "8.82 points above your baseline",
+   "flagged": false
+  },
+  {
+   "feature": "voiced_rate_hz",
+   "label": "Speaking rate",
+   "hint": "How much voiced sound per second. Higher is faster.",
+   "format": "rate",
+   "series": [
+    58.336,
+    55.381,
+    51.848,
+    44.254
+   ],
+   "latest": 44.254,
+   "baseline_mean": 55.18833333333333,
+   "baseline_sd": 3.248288215865909,
+   "baseline_complete": true,
+   "latest_text": "44.3 per second",
+   "baseline_text": "55.2 per second",
+   "spread_text": "3.2",
+   "change_text": "10.9 below your baseline",
+   "flagged": false
+  }
+ ],
+ "sessions": [
+  "day5",
+  "day7",
+  "fd8",
+  "fd9"
+ ],
+ "recorded_at": [
+  null,
+  null,
+  "2026-11-15T15:23:25-05:00",
+  "2026-11-15T15:48:42-05:00"
+ ],
+ "sample": true,
+ "real": true,
+ "display_name": "Amanda Ross",
+ "details": {
+  "day5": {
+   "subject": "AMANDA",
+   "session": "day5",
+   "recorded_at": null,
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "183.0 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "40.5 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "53.5 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "0.55%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "3.69%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.1 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "23.3%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "58.3 per second"
+    }
+   ],
+   "checkin": null,
+   "takes": []
+  },
+  "day7": {
+   "subject": "AMANDA",
+   "session": "day7",
+   "recorded_at": null,
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "192.6 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "54.7 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "51.7 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "0.51%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "3.88%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "21.6 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "29.1%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "55.4 per second"
+    }
+   ],
+   "checkin": null,
+   "takes": []
+  },
+  "fd8": {
+   "subject": "AMANDA",
+   "session": "fd8",
+   "recorded_at": "2026-11-15T15:23:25-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "177.5 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "40.6 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "50.0 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "0.52%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "4.88%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "19.8 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "26.8%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.8 per second"
+    }
+   ],
+   "checkin": null,
+   "takes": []
+  },
+  "fd9": {
+   "subject": "AMANDA",
+   "session": "fd9",
+   "recorded_at": "2026-11-15T15:48:42-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "163.7 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "39.3 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "48.8 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "0.47%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "4.80%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "18.6 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "35.3%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "44.3 per second"
+    }
+   ],
+   "checkin": null,
+   "takes": []
+  }
+ },
+ "audio_note": "Recordings are not published in this preview.",
+ "checkin_note": "Check-in answers are not published in this preview."
+}

@@ -843,5 +843,3068 @@
   "2026-11-08T11:07:00-05:00",
   "2026-11-10T13:05:00-05:00"
  ],
- "sample": true
+ "sample": true,
+ "details": {
+  "fd1": {
+   "subject": "SAMPLE",
+   "session": "fd1",
+   "recorded_at": "2026-09-01T11:56:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "194.9 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "32.8 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.8 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.05%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "4.97%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.0 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.5%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "53.3 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd2": {
+   "subject": "SAMPLE",
+   "session": "fd2",
+   "recorded_at": "2026-09-03T12:24:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "196.9 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "31.0 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.1 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "0.90%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.30%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "16.6 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "13.0%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.0 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd3": {
+   "subject": "SAMPLE",
+   "session": "fd3",
+   "recorded_at": "2026-09-05T11:13:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "196.9 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "31.2 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "69.0 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.11%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.74%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.1 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.0%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "52.3 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd4": {
+   "subject": "SAMPLE",
+   "session": "fd4",
+   "recorded_at": "2026-09-07T13:13:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "201.0 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "32.5 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.5 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.10%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.54%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.6 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.7%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "50.7 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd5": {
+   "subject": "SAMPLE",
+   "session": "fd5",
+   "recorded_at": "2026-09-09T12:51:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "200.1 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "29.4 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.8 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.17%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.46%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.2 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.1%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "50.8 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd6": {
+   "subject": "SAMPLE",
+   "session": "fd6",
+   "recorded_at": "2026-09-11T11:39:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "198.9 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "35.0 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.1 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.15%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "6.39%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.5 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.3%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.7 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd7": {
+   "subject": "SAMPLE",
+   "session": "fd7",
+   "recorded_at": "2026-09-13T10:18:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "195.0 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "29.5 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.0 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.14%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "4.99%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "18.1 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.0%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.4 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd8": {
+   "subject": "SAMPLE",
+   "session": "fd8",
+   "recorded_at": "2026-09-15T10:53:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "197.6 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "29.7 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.2 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.07%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.27%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "15.5 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "13.8%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "52.2 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd9": {
+   "subject": "SAMPLE",
+   "session": "fd9",
+   "recorded_at": "2026-09-17T10:08:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "199.9 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "33.4 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.1 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.18%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "6.21%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "16.8 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "13.3%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "54.4 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd10": {
+   "subject": "SAMPLE",
+   "session": "fd10",
+   "recorded_at": "2026-09-19T10:53:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "205.6 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "29.9 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.4 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.15%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.56%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "16.9 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.1%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "50.3 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd11": {
+   "subject": "SAMPLE",
+   "session": "fd11",
+   "recorded_at": "2026-09-21T11:18:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "199.0 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "32.4 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.5 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.06%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.19%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "16.7 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "11.6%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "52.9 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd12": {
+   "subject": "SAMPLE",
+   "session": "fd12",
+   "recorded_at": "2026-09-23T11:36:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "196.8 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "29.9 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.7 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.07%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.77%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "16.4 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "13.0%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "52.9 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd13": {
+   "subject": "SAMPLE",
+   "session": "fd13",
+   "recorded_at": "2026-09-25T10:16:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "200.0 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "36.6 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.8 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.01%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.33%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.1 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "16.5%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "52.7 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd14": {
+   "subject": "SAMPLE",
+   "session": "fd14",
+   "recorded_at": "2026-09-27T12:02:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "195.5 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "28.2 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.8 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "0.98%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.53%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "18.2 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "12.8%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "53.0 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd15": {
+   "subject": "SAMPLE",
+   "session": "fd15",
+   "recorded_at": "2026-09-29T09:30:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "200.1 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "29.8 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.7 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.32%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.52%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.1 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "13.9%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "53.3 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd16": {
+   "subject": "SAMPLE",
+   "session": "fd16",
+   "recorded_at": "2026-10-01T09:50:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "198.6 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "26.7 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.6 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.15%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.62%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "16.6 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.3%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.8 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd17": {
+   "subject": "SAMPLE",
+   "session": "fd17",
+   "recorded_at": "2026-10-03T09:32:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "193.2 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "29.6 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.3 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.11%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.46%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.1 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "13.7%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.7 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd18": {
+   "subject": "SAMPLE",
+   "session": "fd18",
+   "recorded_at": "2026-10-05T13:09:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "195.8 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "32.8 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.0 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "0.94%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.31%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.7 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "13.0%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.4 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd19": {
+   "subject": "SAMPLE",
+   "session": "fd19",
+   "recorded_at": "2026-10-07T09:18:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "197.4 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "32.7 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.7 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.11%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "6.10%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "16.1 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "15.2%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "52.3 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd20": {
+   "subject": "SAMPLE",
+   "session": "fd20",
+   "recorded_at": "2026-10-09T12:23:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "196.3 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "29.6 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.5 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.23%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.78%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "18.0 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "13.9%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.8 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd21": {
+   "subject": "SAMPLE",
+   "session": "fd21",
+   "recorded_at": "2026-10-11T09:20:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "197.0 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "29.9 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.0 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.13%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.02%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "16.9 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "13.8%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "52.5 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd22": {
+   "subject": "SAMPLE",
+   "session": "fd22",
+   "recorded_at": "2026-10-13T09:58:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "201.8 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "29.2 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.0 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.17%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.35%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.4 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.1%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.6 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd23": {
+   "subject": "SAMPLE",
+   "session": "fd23",
+   "recorded_at": "2026-10-15T12:40:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "198.1 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "30.2 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.9 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.05%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.52%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.5 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.0%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "53.7 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd24": {
+   "subject": "SAMPLE",
+   "session": "fd24",
+   "recorded_at": "2026-10-17T12:17:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "192.8 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "33.4 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.5 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.02%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.33%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.4 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.9%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "53.2 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd25": {
+   "subject": "SAMPLE",
+   "session": "fd25",
+   "recorded_at": "2026-10-19T11:28:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "204.4 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "34.2 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.2 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.06%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "4.60%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.2 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.5%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.0 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd26": {
+   "subject": "SAMPLE",
+   "session": "fd26",
+   "recorded_at": "2026-10-21T11:41:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "198.1 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "35.0 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "66.1 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.06%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.55%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "18.0 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.4%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "53.8 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd27": {
+   "subject": "SAMPLE",
+   "session": "fd27",
+   "recorded_at": "2026-10-23T12:34:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "195.8 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "34.3 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "66.9 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.04%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.29%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.2 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.1%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.1 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd28": {
+   "subject": "SAMPLE",
+   "session": "fd28",
+   "recorded_at": "2026-10-25T11:16:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "198.6 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "30.5 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.4 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.00%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.08%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.4 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "11.6%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.7 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd29": {
+   "subject": "SAMPLE",
+   "session": "fd29",
+   "recorded_at": "2026-10-27T11:28:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "197.8 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "35.2 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "68.0 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "0.98%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.78%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.1 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "14.2%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "50.5 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd30": {
+   "subject": "SAMPLE",
+   "session": "fd30",
+   "recorded_at": "2026-10-29T10:05:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "198.0 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "34.1 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "69.3 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.08%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.23%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "16.1 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "15.1%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.0 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd31": {
+   "subject": "SAMPLE",
+   "session": "fd31",
+   "recorded_at": "2026-10-31T12:01:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "194.1 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "28.9 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "67.3 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.19%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "6.02%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "16.4 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "15.0%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "51.5 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd32": {
+   "subject": "SAMPLE",
+   "session": "fd32",
+   "recorded_at": "2026-11-02T12:37:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "197.9 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "34.4 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "66.9 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.15%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.41%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "17.0 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "15.0%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "52.9 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "no"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd33": {
+   "subject": "SAMPLE",
+   "session": "fd33",
+   "recorded_at": "2026-11-04T10:25:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "185.8 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "31.4 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "63.5 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.08%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.39%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "13.8 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "21.9%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "44.1 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "yes: a cold"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd34": {
+   "subject": "SAMPLE",
+   "session": "fd34",
+   "recorded_at": "2026-11-06T11:27:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "184.0 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "32.3 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "63.2 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.12%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.27%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "13.4 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "24.0%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "43.4 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "yes: a cold"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd35": {
+   "subject": "SAMPLE",
+   "session": "fd35",
+   "recorded_at": "2026-11-08T11:07:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "186.5 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "30.6 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "63.1 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "1.00%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.88%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "13.3 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "21.9%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "41.1 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "yes: a cold"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  },
+  "fd36": {
+   "subject": "SAMPLE",
+   "session": "fd36",
+   "recorded_at": "2026-11-10T13:05:00-05:00",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "183.7 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "31.6 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "62.4 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "0.91%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "5.39%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "13.4 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "22.2%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "41.3 per second"
+    }
+   ],
+   "checkin": [
+    {
+     "field": "cold_or_congestion",
+     "ask": "Do you have a cold, congestion, or a sore throat today?",
+     "answer": "yes: a cold"
+    },
+    {
+     "field": "cough",
+     "ask": "Any coughing?",
+     "answer": "no"
+    },
+    {
+     "field": "sleep_hours",
+     "ask": "Roughly how many hours did you sleep?",
+     "answer": "7.5"
+    },
+    {
+     "field": "unusual_pain",
+     "ask": "Any unusual pain or discomfort today? If so, where?",
+     "answer": "no"
+    },
+    {
+     "field": "posture",
+     "ask": "Were you sitting, standing, reclined, or floating?",
+     "answer": "sitting"
+    },
+    {
+     "field": "setup_changed",
+     "ask": "Are you using the same microphone and the same place as usual?",
+     "answer": "yes"
+    },
+    {
+     "field": "anything_else",
+     "ask": "Anything else about how you're doing today that's worth recording?",
+     "answer": "Not answered"
+    }
+   ],
+   "takes": []
+  }
+ },
+ "audio_note": "Sample data has no audio."
 }

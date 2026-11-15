@@ -23,8 +23,12 @@
     <button id="sample-on" type="button" class="secondary sample-link">See a sample report</button>
   </nav>
   <aside id="sample-banner" class="privacy sample" aria-label="Sample data" hidden>
-    <p class="privacy-title">Sample data. Not a real person.</p>
-    <p>You are looking at a simulated crew member with made-up readings: 36 check-ins across ten weeks, steady at first, then slower and more halting speech alongside a reported cold. It is here so you can explore the Report and Trends views.</p>
+    <div id="dataset-switch" class="actions" role="group" aria-label="Whose data to show" hidden>
+      <button type="button" class="secondary small dataset" data-dataset="sample" aria-pressed="true">Sample crew member</button>
+      <button type="button" class="secondary small dataset" data-dataset="real" aria-pressed="false">Amanda, real recordings</button>
+    </div>
+    <p id="sample-title" class="privacy-title">Sample data. Not a real person.</p>
+    <p id="sample-body">You are looking at a simulated crew member with made-up readings: 36 check-ins across ten weeks, steady at first, then slower and more halting speech alongside a reported cold. It is here so you can explore the Report and Trends views.</p>
     <div class="actions"><button id="sample-off" type="button" class="secondary">Back to my own data</button></div>
   </aside>
   <section id="record" class="panel" aria-labelledby="record-title">

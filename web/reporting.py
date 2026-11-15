@@ -194,3 +194,22 @@ def build_report(records, context, subject, n_baseline=3, z_threshold=2.0, min_r
     else:
         base["headline"] = "Everything that moved has a reported explanation"
     return base
+
+
+def session_detail(record, answers, questions):
+    """One session for the Your sessions list: its numbers and check-in answers.
+
+    answers is the stored check-in (parsed values plus the words used), or None
+    when no check-in was saved with the session.
+    """
+    features = record.get("features", {})
+    measures = [{"feature": f, "label": LABEL.get(f, f),
+                 "value_text": _fmt(f, features.get(f))} for f in MIN_CHANGE]
+    checkin = None
+    if answers is not None:
+        checkin = [{"field": q["field"], "ask": q["ask"],
+                    "answer": answers.get(q["field"] + "_raw") or "Not answered"}
+                   for q in questions]
+    return {"subject": record.get("subject"), "session": record.get("session"),
+            "recorded_at": record.get("recorded_at"),
+            "measures": measures, "checkin": checkin}

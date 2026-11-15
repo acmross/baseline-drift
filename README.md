@@ -15,10 +15,19 @@ own condition. Baseline Drift gives them a measurement instead.
 There are three ways in, from least to most effort.
 
 **1. Online preview, nothing to install.** Open
-<https://acmross.github.io/baseline-drift/try/> to explore the Report and Trends
-views with a sample crew member. The data there is simulated and labelled as
-such: 36 made-up check-ins across ten weeks. The preview cannot record, because
-measuring a voice needs the pipeline running on your own machine.
+<https://acmross.github.io/baseline-drift/try/>. There you can:
+
+- Explore the Report and Trends views for a sample crew member. That data is
+  simulated and labelled as such: 36 made-up check-ins across ten weeks.
+- Switch to real check-ins recorded by a team member on her own laptop. The
+  numbers and dates are real; her recordings and check-in answers are not
+  published.
+- Open any session to see its measurements, and delete one to see how that
+  works (it comes back when you reload).
+- Go through a check-in yourself: record the three takes, play them back and
+  answer the questions. The audio stays in your browser tab and is discarded.
+  Your voice is not measured there, because measuring needs the pipeline
+  running on your own machine.
 
 **2. The real app on macOS or Linux.** Needs Python 3.
 

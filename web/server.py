@@ -239,29 +239,17 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
     @app.get("/api/session-detail")
     def session_detail(subject: str, session: str) -> dict:
         """One saved session: its measurements, check-in answers and takes."""
-        from web.reporting import LABEL, _fmt
-        from pipeline.voice_drift import MIN_CHANGE
+        from web.reporting import session_detail as build_detail
         subject, session, record = _find_session(subject, session)
-        features = record.get("features", {})
-        measures = [{"feature": f, "label": LABEL.get(f, f),
-                     "value_text": _fmt(f, features.get(f))} for f in MIN_CHANGE]
         answers = None
         for entry in read_records(data / "context.jsonl"):
             if entry.get("subject") == subject and entry.get("session") == session:
                 answers = entry.get("answers", {})
-        checkin = None
-        if answers is not None:
-            checkin = []
-            for question in QUESTIONS:
-                field = question["field"]
-                text = answers.get(field + "_raw") or "Not answered"
-                checkin.append({"field": field, "ask": question["ask"], "answer": text})
         recording_dir = data / "recordings" / subject
-        takes = [t for t in TAKE_NAMES
-                 if (recording_dir / f"{session}_{t}.wav").exists()]
-        return {"subject": subject, "session": session,
-                "recorded_at": record.get("recorded_at"),
-                "measures": measures, "checkin": checkin, "takes": takes}
+        detail = build_detail(record, answers, QUESTIONS)
+        detail["takes"] = [t for t in TAKE_NAMES
+                           if (recording_dir / f"{session}_{t}.wav").exists()]
+        return detail
 
     @app.get("/api/audio")
     def session_audio(subject: str, session: str, take: str) -> FileResponse:

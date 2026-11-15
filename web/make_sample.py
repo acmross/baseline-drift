@@ -21,7 +21,8 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from web.context_builder import build_explains          # noqa: E402
-from web.reporting import build_report                   # noqa: E402
+from pipeline.checkin_agent import QUESTIONS             # noqa: E402
+from web.reporting import build_report, session_detail   # noqa: E402
 
 SUBJECT = "SAMPLE"
 SESSIONS = 36
@@ -40,7 +41,7 @@ LATE = {"pause_ratio": 0.085, "voiced_rate_hz": -9.0, "f0_mean_hz": -14.0,
 def build():
     rng = random.Random(11)
     start = datetime(2026, 9, 1, 9, 15, tzinfo=timezone(timedelta(hours=-5)))
-    records, context = [], {}
+    records, context, details = [], {}, {}
     for index in range(SESSIONS):
         features = {name: value + rng.gauss(0, NOISE[name]) for name, value in BASE.items()}
         late = index >= SESSIONS - 4
@@ -59,8 +60,15 @@ def build():
         answers = {"cold_or_congestion": late, "cough": False, "sleep_hours": 7.5,
                    "unusual_pain": "no", "posture": "sitting", "setup_changed": False}
         context[(SUBJECT, session)] = build_explains(answers)
+        said = {"cold_or_congestion_raw": "yes: a cold" if late else "no",
+                "cough_raw": "no", "sleep_hours_raw": "7.5", "unusual_pain_raw": "no",
+                "posture_raw": "sitting", "setup_changed_raw": "yes"}
+        details[session] = session_detail(records[-1], said, QUESTIONS)
+        details[session]["takes"] = []
     report = build_report(records, context, SUBJECT)
     report["sample"] = True
+    report["details"] = details
+    report["audio_note"] = "Sample data has no audio."
     return report
 
 

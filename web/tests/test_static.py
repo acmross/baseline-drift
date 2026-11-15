@@ -73,7 +73,7 @@ def test_online_preview_builds_and_matches_the_app(tmp_path):
     html = (out / "index.html").read_text(encoding="utf-8")
     assert "window.BASELINE_DRIFT_STATIC = true" in html
     assert 'src="app.js"' in html and 'href="styles.css"' in html
-    assert "This online preview cannot record." in html
+    assert "Your voice is not measured or kept." in html
     for name in ("app.js", "styles.css", "sample_report.json"):
         assert (out / name).read_bytes() == (APP / name).read_bytes(), name
     # The committed preview must not fall behind the app it mirrors.
