@@ -100,7 +100,9 @@ def test_fixed_instructions_and_passage_are_embedded():
 
     assert ("Take a normal breath and hold 'ah' at a comfortable, steady pitch and "
             "volume until you run out of comfortable breath.") in html
-    assert "Describe what you have done since your last check-in." in html
+    for prompt in ("How did you sleep?", "Any cold, congestion, sore throat or coughing?",
+                   "Any unusual pain or discomfort?"):
+        assert prompt in html, prompt
 
     passage = re.search(r"> Commander's log.*?until tomorrow\.", protocol, re.S)
     assert passage, "passage not found in the recording protocol"

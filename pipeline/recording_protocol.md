@@ -52,13 +52,19 @@ Save as `<session>_passage.wav`.
 
 ## Task 3: free speech (about 30 seconds)
 
-Answer the same prompt every session:
+Talk through the same four questions every session, in your own words:
 
-> Describe what you have done since your last check-in.
+> - How did you sleep?
+> - Any cold, congestion, sore throat or coughing?
+> - Any unusual pain or discomfort?
+> - Anything else about how you are doing today?
 
-Talk continuously for roughly half a minute. Content does not matter; continuity
-does. This is the ecological sample, and it is where the check-in conversation
-sits once the agent is wired in.
+An open prompt with nothing to say produces stalling, and stalling shows up as
+pauses that are about the task, not the speaker. These questions give the
+crew member real things to say, and they are the check-in questions, so the
+tick form afterwards takes a few seconds. Content does not matter; continuity
+does. This is the ecological sample, and it is where a spoken check-in sits
+once local transcription is wired in.
 
 Save as `<session>_free.wav`.
 
