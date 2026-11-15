@@ -1,0 +1,16 @@
+Skipped 0 analyte(s) at an assay limit:
+
+Gate 1 only (|z| >= 2.0): 65 flags
+Gate 1 AND outside reference range: 11 flags
+
+   C001 R+194  urea_nitrogen_bun        z= +2.1  value=28.0  range=(7.0, 25.0)
+   C002 R+45   glucose                  z= -6.3  value=44.0  range=(65.0, 99.0)
+   C003 R+1    glucose                  z= +3.9  value=103.0  range=(65.0, 99.0)
+   C003 R+1    potassium                z= -2.5  value=3.0  range=(3.5, 5.3)
+   C003 R+45   chloride                 z= -2.4  value=97.0  range=(98.0, 110.0)
+   C003 R+45   glucose                  z= -4.3  value=36.0  range=(65.0, 99.0)
+   C004 R+1    ast                      z= +2.1  value=48.0  range=(10.0, 40.0)
+   C004 R+1    urea_nitrogen_bun        z= +3.5  value=26.0  range=(7.0, 25.0)
+   C004 R+45   potassium                z= +6.5  value=5.9  range=(3.5, 5.3)
+   C004 R+194  carbon_dioxide           z= -8.1  value=19.0  range=(20.0, 32.0)
+   C004 R+194  urea_nitrogen_bun        z= +4.0  value=27.0  range=(7.0, 25.0)

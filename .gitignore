@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+sessions.jsonl
+context.jsonl
+report.html
+recordings/
+audio/
+.DS_Store
