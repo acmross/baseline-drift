@@ -7,8 +7,8 @@ No network calls leave this process; the browser page loads no external assets.
 Hosted demo mode (BASELINE_DRIFT_HOSTED=1) is the one exception, and exists
 only so someone can try the real pipeline without installing it. There each
 visitor gets a private, temporary space keyed by a random cookie, and all of
-it (recordings, measurements, check-in answers) is deleted after
-RETENTION_SECONDS without use. The page says all of this in place of the privacy notice.
+it (recordings, measurements, check-in answers) is deleted within
+RETENTION_SECONDS of that visitor's first request. The page says all of this in place of the privacy notice.
 """
 import contextvars
 import os
@@ -51,24 +51,34 @@ class VisitorData:
 
     def __init__(self, base: Path):
         self.base = base
+        self.last_sweep = 0.0
 
     def current(self) -> Path:
         folder = self.base / _visitor.get()
-        folder.mkdir(parents=True, exist_ok=True)
-        os.utime(folder, None)                      # activity keeps it alive
+        if not folder.exists():
+            folder.mkdir(parents=True, exist_ok=True)
+            (folder / ".started").touch()           # the clock starts here
         return folder
 
     def __truediv__(self, other) -> Path:
         return self.current() / other
 
     def sweep(self) -> None:
-        """Delete visitor folders past retention, oldest first past the cap."""
+        """Delete every visitor space older than the retention time, counted
+        from that visitor's first request, and the oldest ones past the cap."""
         now = time.time()
-        folders = sorted((p for p in self.base.iterdir() if p.is_dir()),
-                         key=lambda p: p.stat().st_mtime)
+        if now - self.last_sweep < 60:
+            return
+        self.last_sweep = now
+
+        def started(folder: Path) -> float:
+            marker = folder / ".started"
+            return (marker if marker.exists() else folder).stat().st_mtime
+
+        folders = sorted((p for p in self.base.iterdir() if p.is_dir()), key=started)
         excess = len(folders) - MAX_VISITORS
         for index, folder in enumerate(folders):
-            if index < excess or now - folder.stat().st_mtime > RETENTION_SECONDS:
+            if index < excess or now - started(folder) > RETENTION_SECONDS:
                 shutil.rmtree(folder, ignore_errors=True)
 
 
@@ -93,7 +103,7 @@ class VisitorMiddleware:
         fresh_visitor = token is None
         if fresh_visitor:
             token = secrets.token_urlsafe(24)
-            self.store.sweep()
+        self.store.sweep()                 # every request, at most once a minute
         reset = _visitor.set(token)
 
         async def send_with_cookie(message):

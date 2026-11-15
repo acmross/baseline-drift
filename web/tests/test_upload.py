@@ -229,12 +229,13 @@ def test_hosted_demo_keeps_visitors_apart_and_expires(tmp_path):
     assert second.cookies["bd_visitor"] != first.cookies["bd_visitor"]
     assert second.get("/api/audio", params={**where, "take": "vowel"}).status_code == 404
 
-    # Past retention, the next new visitor's arrival sweeps the old space away.
+    # Past retention, the next request from anyone sweeps the old space away.
     import os, time
     from web.server import RETENTION_SECONDS
     for folder in data.iterdir():
         old = time.time() - RETENTION_SECONDS - 60
-        os.utime(folder, (old, old))
+        os.utime(folder / ".started", (old, old))
+    app.user_middleware[0].kwargs["store"].last_sweep = 0
     TestClient(app, base_url="https://testserver").get("/")
     assert not list(data.rglob("*.wav")) and not list(data.rglob("sessions.jsonl"))
     assert "BASELINE_DRIFT_HOSTED" in second.get("/").text
