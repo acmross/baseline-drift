@@ -25,3 +25,16 @@ Open http://127.0.0.1:8765. One page, three states: record, check-in, report.
 
 The end-to-end test generates synthetic sessions, so it proves the wiring without
 needing real recordings. Real recordings still matter for the demo.
+
+## Demo dry run (synthetic)
+
+With the server running, seed a six-session demo and capture screenshots:
+
+    python web/demo_dry_run.py --reset --capture
+
+This posts three baseline sessions and three drifting sessions, records a day-6
+cold check-in (normal sleep, same setup), prints the report summary, and writes
+`docs/demo/record.png`, `docs/demo/report-baseline.png`, and
+`docs/demo/report-findings.png`. The synthetic audio is a source-model buzz, not
+speech; the run proves the demo path and the offline/no-external-request claim.
+

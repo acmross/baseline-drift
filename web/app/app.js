@@ -542,7 +542,9 @@ function renderReport(data) {
   }
   if (data.state === "baseline") {
     const pending = document.createElement("p");
-    pending.textContent = `${data.headline} No findings are reported yet.`;
+    // The headline already carries the baseline-progress sentence; repeating
+    // it here made the screen say the same thing twice.
+    pending.textContent = "No findings are reported yet.";
     list.appendChild(pending);
     return;
   }
