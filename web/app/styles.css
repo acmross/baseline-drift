@@ -320,3 +320,13 @@ dialog { border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
 .month > summary .badge { margin-left: auto; }
 .month > summary .month-count { margin-left: 12px; }
 .month > summary .month-name + .month-count { margin-left: auto; }
+
+/* Where the baseline is, why the first week is a poor one, and how to restart it. */
+.baseline-card { margin: 18px 0 6px; padding: 16px 18px; border: 1px solid var(--line); border-left: 4px solid var(--series-1); border-radius: 12px; background: rgba(27, 31, 41, 0.55); }
+.baseline-card[hidden] { display: none; }
+.baseline-card.warn { border-color: rgba(217, 89, 38, 0.6); border-left-color: var(--accent); background: rgba(217, 89, 38, 0.07); }
+.baseline-card p { margin: 0 0 8px; font-size: 14px; line-height: 1.55; color: var(--text-secondary); }
+.baseline-card .baseline-title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+.baseline-card .actions { margin-top: 12px; align-items: center; }
+select { min-height: 44px; padding: 0 12px; background: #0f1218; color: var(--text-primary); border: 1px solid var(--line); border-radius: 9px; font: inherit; }
+select:focus { outline: 2px solid var(--series-1); outline-offset: 1px; }

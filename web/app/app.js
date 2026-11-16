@@ -1154,8 +1154,97 @@ function renderStats(data) {
   }
 }
 
+// In the first week of spaceflight fluid shifts toward the head and most crew
+// are congested, which changes the voice. A baseline recorded then is a
+// congested baseline, so the app says so plainly and makes restarting it one
+// press. The crew member decides when; nothing moves by itself.
+const SETTLE_DAY = 8;
+function flightDay(session) {
+  const found = /(\d+)$/.exec(session || "");
+  return found ? Number(found[1]) : null;
+}
+
+function renderBaselineCard(data) {
+  const card = document.getElementById("baseline-card");
+  card.replaceChildren();
+  card.className = "baseline-card";
+  card.hidden = !data.sessions || !data.sessions.length;
+  if (card.hidden) return;
+  const baseline = data.sessions.slice(0, data.n_baseline);
+  const days = baseline.map(flightDay);
+  const early = days.some((day) => day !== null && day < SETTLE_DAY);
+
+  const title = document.createElement("p");
+  title.className = "baseline-title";
+  title.textContent = `Your baseline: ${baseline.map(sessionName).join(", ")}`
+    + (baseline.length < data.n_baseline ? ` (${baseline.length} of ${data.n_baseline} so far)` : "");
+  card.appendChild(title);
+
+  if (early) {
+    card.classList.add("warn");
+    const why = document.createElement("p");
+    why.textContent = `This baseline includes sessions from before flight day ${SETTLE_DAY}. `
+      + "In the first week of spaceflight, fluid shifts toward the head and about three in "
+      + "four crew are congested, which changes how a voice sounds. A first-week baseline "
+      + "is a congested baseline, so later sessions can look like a change when you are "
+      + "only settling. Restart your baseline once you feel like your normal self in "
+      + `space, on flight day ${SETTLE_DAY} or later.`;
+    card.appendChild(why);
+  } else {
+    const ok = document.createElement("p");
+    ok.textContent = "Every later session is compared with these. You can restart your "
+      + "baseline whenever you feel it no longer sounds like your normal self in space, "
+      + "for example after a spacewalk or an illness.";
+    card.appendChild(ok);
+  }
+
+  const everySession = (data.earlier || []).map((e) => e.session).concat(data.sessions);
+  const settled = everySession.find((s) => flightDay(s) !== null && flightDay(s) >= SETTLE_DAY);
+  const actions = document.createElement("div");
+  actions.className = "actions";
+  if (state.sample) {
+    const note = document.createElement("p");
+    note.className = "sub";
+    note.textContent = "In your own data, one press here restarts the baseline from any session.";
+    card.appendChild(note);
+    return;
+  }
+  if (early && settled) {
+    const quick = document.createElement("button");
+    quick.type = "button";
+    quick.textContent = `Restart my baseline from ${sessionName(settled)}`;
+    quick.addEventListener("click", () => moveBaseline(data.subject, settled));
+    actions.appendChild(quick);
+  } else if (early) {
+    const wait = document.createElement("p");
+    wait.className = "sub";
+    wait.textContent = `Once you have a session from flight day ${SETTLE_DAY} or later, a `
+      + "button will appear here to restart your baseline from it.";
+    card.appendChild(wait);
+  }
+  if (everySession.length > 1) {
+    const pick = document.createElement("select");
+    pick.setAttribute("aria-label", "Session to start the baseline from");
+    for (const session of everySession.slice().reverse()) {
+      const option = document.createElement("option");
+      option.value = session;
+      option.textContent = sessionName(session);
+      if (session === data.baseline_start) option.selected = true;
+      pick.appendChild(option);
+    }
+    const go = document.createElement("button");
+    go.type = "button";
+    go.className = "secondary";
+    go.textContent = "Start my baseline here";
+    go.addEventListener("click", () => moveBaseline(data.subject, pick.value));
+    actions.append(pick, go);
+  }
+  if (actions.children.length) card.appendChild(actions);
+}
+
 function renderReport(data) {
   renderStats(data);
+  renderBaselineCard(data);
   document.getElementById("report-headline").textContent = data.headline;
   document.getElementById("baseline-note").textContent = data.state === "baseline"
     ? `Your baseline is built from your first ${data.n_baseline} sessions.`
