@@ -41,7 +41,8 @@ this repository.
 
 **What it does.** Baseline Drift turns a daily voice check-in into a health
 signal the crew member can act on. Each session has three fixed tasks: a
-sustained vowel, a fixed passage read aloud, and a minute of free speech. The
+sustained vowel, a fixed passage read aloud, and thirty seconds of free speech
+answering the same four questions. The
 tool extracts eight acoustic measures (mean fundamental frequency and its
 variability, intensity, jitter, shimmer, harmonic-to-noise ratio, pause ratio
 and speaking rate), compares them to that person's own baseline, and reports
@@ -65,20 +66,22 @@ from 10.1 to 9.8 and scored z = -3.0, which is clinically meaningless. Adding
 gate 2 cut 52 flags to 11. On synthetic voice data where nothing changed, gates
 1 and 2 still fired on one isolated session, which is what gate 3 removes.
 
-**The conversation, and why it matters.** A short check-in runs alongside the
-recording, optionally driven by a small language model on the same machine. It
-asks about congestion, cough, sleep, unusual pain, posture and whether the
-recording setup changed. Each question declares which acoustic features a "yes" could plausibly
+**The check-in, and why it matters.** A short check-in follows the recording: a
+tick form in the app, or in the command-line version an optional small language
+model on the same machine. It asks about congestion, cough, sleep, unusual pain,
+posture and whether the recording setup changed. Each question declares which acoustic features a "yes" could plausibly
 account for: upper respiratory symptoms are well established as affecting voice
 quality, so a reported cold licenses movement in F0, harmonic-to-noise ratio,
 jitter, shimmer and intensity. Unusual pain licenses nothing, because it has no
 established acoustic signature, so it is recorded in the crew member's own
 words but never used to suppress a finding.
 
-What falls out is the useful part. In our test run, a speaker reporting a cold
+What falls out is the useful part. In our simulated sample run, a speaker
+reporting a cold
 has three of five changes accounted for, while "more pausing" and "speaking
 slower" survive unexplained. Those two are precisely the fatigue markers in the
-aviation literature, and a cold does not explain them.
+aviation literature, and what a 2026 sleep-deprivation study (SOMVOICE) found
+in tired speakers. A cold does not explain them.
 
 **Why two channels.** Self-report fails when someone will not say, and the
 National Academies has documented that astronauts face real pressure to withhold
@@ -119,12 +122,21 @@ not reported a cold."
 
 **Built with.** Python, with Praat through parselmouth for acoustic feature
 extraction, the same toolchain used to derive features for NIH's Bridge2AI-Voice
-dataset. The report renders as a self-contained HTML file with inline SVG
-sparklines, no server and no network. The optional conversational layer runs a
-small local model through Ollama and falls back to scripted prompts when no
-model is present. There are no external dependencies at runtime and no network
-calls anywhere, because the entire premise is that it works with mission control
-unreachable.
+dataset. The crew-facing app is one page of plain HTML, CSS and JavaScript
+served by a small FastAPI process bound to 127.0.0.1 on the crew laptop, with
+inline SVG charts and no external assets. It has three views: Record, Report
+and Trends over days, weeks and months. A crew member can play back, open and
+delete any of their own sessions. There are no network calls at runtime,
+because the entire premise is that it works with mission control unreachable.
+
+**Try it.** Three ways, all public and sign-in free. The hosted demo
+(https://acmross.github.io/baseline-drift/demo/) runs the real pipeline so a
+judge can record check-ins and get their own measurements back. It is the one
+version that sends a recording off the device, it says so on the page, and
+everything recorded there is deleted within two hours. The online preview
+(https://acmross.github.io/baseline-drift/try/) opens instantly on a simulated
+crew member's ten weeks of check-ins, plus real check-ins from a team member.
+The repository has the app itself for macOS, Linux and Windows.
 
 **On Earth.** The same tool fits low-bandwidth telehealth: a check-in that runs
 offline on existing hardware, tracks a person against their own history rather
@@ -189,6 +201,8 @@ corpus. Both require credentialed access.
 |---|---|
 | Praat (Boersma & Weenink), via the parselmouth Python library | https://parselmouth.readthedocs.io |
 | python-soundfile | https://python-soundfile.readthedocs.io |
+| FastAPI (local web server for the crew-facing app) | https://fastapi.tiangolo.com |
+| SOMVOICE sleep-deprivation speech study (Martin et al., LREC 2026) | https://aclanthology.org/2026.lrec-1.438/ |
 | Ollama (optional local language model runtime) | https://ollama.com |
 | Safe Passage: Astronaut Care for Exploration Missions, National Academies | https://www.nationalacademies.org/read/10218/chapter/8 |
 | FAA field study, cepstrum speech analysis for fatigue in cabin crew | https://rosap.ntl.bts.gov/view/dot/26637 |
