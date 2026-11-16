@@ -39,6 +39,7 @@
     <button id="nav-record" type="button" class="secondary" aria-current="page">Record</button>
     <button id="nav-report" type="button" class="secondary">Report</button>
     <button id="nav-trends" type="button" class="secondary">Trends</button>
+    <button id="nav-sessions" type="button" class="secondary">Sessions</button>
     <button id="sample-on" type="button" class="secondary sample-link">See a sample report</button>
   </nav>
   <aside id="sample-banner" class="privacy sample" aria-label="Sample data" hidden>
@@ -165,11 +166,17 @@
     <div id="report-stats" class="stats" hidden></div>
     <div id="report-headline" class="headline"></div>
     <p id="baseline-note" class="sub"></p>
-    <div id="baseline-card" class="baseline-card" hidden></div>
+    <div id="baseline-strip" class="baseline-strip" hidden></div>
     <div id="report-list" class="report-list"></div>
     <div class="actions">
       <button id="report-refresh" type="button" class="secondary">Refresh</button>
     </div>
+  </section>
+  <section id="sessions" class="panel" hidden aria-labelledby="sessions-title">
+    <h2 id="sessions-title">Sessions and baseline</h2>
+    <p class="sub">Every check-in you have saved, and the sessions your baseline is built from.</p>
+    <div id="baseline-card" class="baseline-card" hidden></div>
+    <div id="sessions-list"></div>
   </section>
   <section id="trends" class="panel" hidden aria-labelledby="trends-title">
     <h2 id="trends-title">Trends</h2>
