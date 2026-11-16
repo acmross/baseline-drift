@@ -7,11 +7,17 @@ web/app/real_report.json. Measurements and dates are included; clock times are
 not, unless --with-times is given, because a published report only needs the
 day. Use initials or the subject code for --name, never a full name. Check-in
 answers are left out unless --with-checkin is given, because they are the
-crew member's own and publishing them is their decision. Audio is never copied.
+crew member's own and publishing them is their decision.
+
+Audio is published only when --audio-dir is given, and only the files already
+in that folder, named <session>_<take>.mp3. Put there what the person has
+agreed to publish and nothing else. The free-speech take answers the health
+questions out loud, so it is left out unless they ask for it.
 
 Usage:
     python web/make_real_report.py SESSIONS.jsonl CONTEXT.jsonl \
-        --subject AMANDA --name "A. R." [--with-checkin] [--with-times]
+        --subject AMANDA --name "A. R." [--with-checkin] [--with-times] \
+        [--audio-dir web/app/real_audio]
 """
 import argparse
 import json
@@ -36,7 +42,8 @@ def public_stamp(value):
     return match.group(1) if match else value
 
 
-def build(sessions_path, context_path, subject, name, with_checkin, with_times=False):
+def build(sessions_path, context_path, subject, name, with_checkin, with_times=False,
+          audio_dir=None):
     records = [r for r in read_records(Path(sessions_path)) if r.get("subject") == subject]
     entries = [r for r in read_records(Path(context_path)) if r.get("subject") == subject]
     context = {(r["subject"], r["session"]): r.get("explains", {}) for r in entries}
@@ -50,8 +57,16 @@ def build(sessions_path, context_path, subject, name, with_checkin, with_times=F
         detail = session_detail(
             record, answers.get(record["session"]) if with_checkin else None, QUESTIONS)
         detail["takes"] = []
+        if audio_dir is not None:
+            detail["takes"] = [take for take in ("vowel", "passage", "free")
+                               if (Path(audio_dir) / f"{record['session']}_{take}.mp3").exists()]
         report["details"][record["session"]] = detail
-    report["audio_note"] = "Recordings are not published in this preview."
+    if audio_dir is not None and any(d["takes"] for d in report["details"].values()):
+        # Served beside the report in the online preview, with consent.
+        report["audio_base"] = "real_audio/"
+        report["audio_note"] = "No recording is published for this session."
+    else:
+        report["audio_note"] = "Recordings are not published in this preview."
     if not with_times:
         # The published report needs the day, not the clock time. Dropping the
         # time also drops the timezone the laptop recorded it in.
@@ -73,9 +88,11 @@ def main() -> int:
     parser.add_argument("--with-checkin", action="store_true")
     parser.add_argument("--with-times", action="store_true",
                         help="publish clock times too (default: dates only)")
+    parser.add_argument("--audio-dir",
+                        help="folder of <session>_<take>.mp3 files the person agreed to publish")
     args = parser.parse_args()
     report = build(args.sessions, args.context, args.subject, args.name,
-                   args.with_checkin, args.with_times)
+                   args.with_checkin, args.with_times, args.audio_dir)
     target = ROOT / "web" / "app" / "real_report.json"
     target.write_text(json.dumps(report, indent=1) + "\n", encoding="utf-8")
     print(f"wrote {target.relative_to(ROOT)}: {report['session_count']} sessions")
