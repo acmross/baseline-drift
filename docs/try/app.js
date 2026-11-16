@@ -1062,15 +1062,6 @@ function sessionsSection(data) {
               checkin_note: data.checkin_note }
           : await api(`/api/session-detail?${query}`);
         detail.replaceChildren(sessionDetail(info, query));
-        if (!state.sample && index !== 0) {
-          // Re-setting the baseline deletes nothing; earlier sessions stay saved.
-          const move = document.createElement("button");
-          move.type = "button";
-          move.className = "secondary small baseline-move";
-          move.textContent = "Start my baseline from this session";
-          move.addEventListener("click", () => moveBaseline(data.subject, session));
-          detail.appendChild(move);
-        }
         detail.hidden = false;
         view.setAttribute("aria-expanded", "true");
       } catch (error) {
@@ -1104,7 +1095,19 @@ function sessionsSection(data) {
         remove.disabled = false;
       }
     });
-    row.append(view, remove);
+    row.appendChild(view);
+    if (!state.sample && index !== 0) {
+      // Always in view on the row, so it can be found again later. Re-setting
+      // the baseline deletes nothing; earlier sessions stay saved.
+      const move = document.createElement("button");
+      move.type = "button";
+      move.className = "secondary small baseline-move";
+      move.textContent = "Start baseline here";
+      move.title = `Make ${sessionName(session)} the first session of your baseline`;
+      move.addEventListener("click", () => moveBaseline(data.subject, session));
+      row.appendChild(move);
+    }
+    row.appendChild(remove);
     const entry = groupFor(stamp);
     entry.group.append(row, detail);
     entry.n += 1;
@@ -1214,7 +1217,10 @@ function renderBaselineCard(data) {
     quick.type = "button";
     quick.textContent = `Restart my baseline from ${sessionName(settled)}`;
     quick.addEventListener("click", () => moveBaseline(data.subject, settled));
-    actions.appendChild(quick);
+    const quickRow = document.createElement("div");
+    quickRow.className = "actions";
+    quickRow.appendChild(quick);
+    card.appendChild(quickRow);
   } else if (early) {
     const wait = document.createElement("p");
     wait.className = "sub";
@@ -1223,19 +1229,32 @@ function renderBaselineCard(data) {
     card.appendChild(wait);
   }
   if (everySession.length > 1) {
+    const change = document.createElement("div");
+    change.className = "baseline-change";
+    const heading = document.createElement("p");
+    heading.className = "baseline-title";
+    heading.textContent = "Change my baseline";
+    const how = document.createElement("p");
+    how.textContent = "Choose the session where you felt most like your normal self in "
+      + "space. Your baseline becomes that session and the two after it. You can change "
+      + "it again at any time, here or with \"Start baseline here\" beside any session "
+      + "in the list below. Nothing is deleted.";
+    change.append(heading, how);
+    card.appendChild(change);
     const pick = document.createElement("select");
+    pick.id = "baseline-pick";
     pick.setAttribute("aria-label", "Session to start the baseline from");
     for (const session of everySession.slice().reverse()) {
       const option = document.createElement("option");
       option.value = session;
-      option.textContent = sessionName(session);
+      option.textContent = sessionName(session)
+        + (session === data.baseline_start ? " (current start)" : "");
       if (session === data.baseline_start) option.selected = true;
       pick.appendChild(option);
     }
     const go = document.createElement("button");
     go.type = "button";
-    go.className = "secondary";
-    go.textContent = "Start my baseline here";
+    go.textContent = "Change my baseline";
     go.addEventListener("click", () => moveBaseline(data.subject, pick.value));
     actions.append(pick, go);
   }
