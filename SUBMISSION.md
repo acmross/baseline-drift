@@ -30,11 +30,12 @@ interpretation to the crew member. That discipline is also what makes the tool
 useful: when a reported head cold accounts for the change, the report says so,
 and what remains unexplained is the part worth reading.
 
-We validated the detection method on NASA OSD-575, the Inspiration4 blood serum
-panel, before applying it to voice. A z-score alone flagged 65 of 272
-comparisons. Adding a clinical reference range gate cut that to 11. That result
-shaped the final three-gate design and is reproducible from the code and data in
-this repository.
+Before applying it to voice, we tested the method on real astronaut data:
+NASA's OSD-575 blood tests from the four Inspiration4 crew. Checking only
+whether a reading was unusual for that person flagged 65 of 272 readings, far
+too many to be real. Adding a second check, that the change is large enough to
+matter, cut that to 11. That result is why Baseline Drift has three checks, and
+it can be reproduced from the code and data in our repository.
 
 ---
 
