@@ -950,6 +950,11 @@ function sessionDetail(info, query) {
       : `/api/audio?${query}&take=${take}`;
     pair(TAKE_TITLES[take] || take, audio);
   }
+  // Published recordings leave the free-speech take out, so say so plainly
+  // instead of letting the row be silently missing.
+  if (info.audio_base && info.takes.length && !info.takes.includes("free")) {
+    pair(TAKE_TITLES.free, "Not published in this preview.");
+  }
   part("Measurements");
   for (const measure of info.measures) pair(measure.label, measure.value_text);
   part("Check-in");
