@@ -7,7 +7,7 @@ visitor can also go through recording and the check-in: the audio stays in
 their browser tab and is not measured, because measuring a voice needs the
 local pipeline, and the page says so. If web/app/real_report.json exists (see
 make_real_report.py) it is offered as a second, real dataset. Output goes to
-docs/try/, which GitHub Pages can serve.
+docs/example/, which GitHub Pages can serve.
 
 Usage:
     python web/build_static_demo.py [output_dir]
@@ -67,5 +67,5 @@ def build(out: Path) -> Path:
 
 
 if __name__ == "__main__":
-    target = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "docs" / "try"
+    target = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "docs" / "example"
     print(f"wrote {build(target)}")

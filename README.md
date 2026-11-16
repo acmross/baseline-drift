@@ -19,7 +19,7 @@ problem, the three gates, the NASA validation, and what we have not shown.
 There are three ways in, from least to most effort.
 
 **1. Online preview, nothing to install.** Open
-<https://acmross.github.io/baseline-drift/try/>. There you can:
+<https://acmross.github.io/baseline-drift/example/>. There you can:
 
 - Explore the Report and Trends views for a sample crew member. That data is
   simulated and labelled as such: 36 made-up check-ins across ten weeks.

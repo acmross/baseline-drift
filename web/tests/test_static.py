@@ -69,7 +69,7 @@ def test_sample_report_is_served_and_labelled(tmp_path):
 def test_online_preview_builds_and_matches_the_app(tmp_path):
     from web.build_static_demo import build
 
-    out = build(tmp_path / "try")
+    out = build(tmp_path / "example")
     html = (out / "index.html").read_text(encoding="utf-8")
     assert "window.BASELINE_DRIFT_STATIC = true" in html
     # Each file name carries a content hash so browsers pick up new versions.
@@ -79,6 +79,6 @@ def test_online_preview_builds_and_matches_the_app(tmp_path):
     for name in ("app.js", "styles.css", "sample_report.json"):
         assert (out / name).read_bytes() == (APP / name).read_bytes(), name
     # The committed preview must not fall behind the app it mirrors.
-    committed = APP.parents[1] / "docs" / "try"
+    committed = APP.parents[1] / "docs" / "example"
     for name in ("index.html", "app.js", "styles.css", "sample_report.json"):
         assert (committed / name).read_bytes() == (out / name).read_bytes(), name

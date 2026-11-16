@@ -54,6 +54,6 @@ def test_times_are_kept_only_when_explicitly_requested(tmp_path):
 
 def test_committed_real_report_has_no_clock_times():
     """Both published copies of the real dataset carry dates, not times."""
-    for name in ("web/app/real_report.json", "docs/try/real_report.json"):
+    for name in ("web/app/real_report.json", "docs/example/real_report.json"):
         data = json.loads((ROOT / name).read_text(encoding="utf-8"))
         assert all("T" not in (value or "") for value in data.get("recorded_at", [])), name

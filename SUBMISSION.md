@@ -140,7 +140,7 @@ because the entire premise is that it works with mission control unreachable.
 judge can record check-ins and get their own measurements back. It is the one
 version that sends a recording off the device, it says so on the page, and
 everything recorded there is deleted within two hours. The online preview
-(https://acmross.github.io/baseline-drift/try/) opens instantly on a simulated
+(https://acmross.github.io/baseline-drift/example/) opens instantly on a simulated
 crew member's ten weeks of check-ins, plus real check-ins from a team member.
 The repository has the app itself for macOS, Linux and Windows.
 
