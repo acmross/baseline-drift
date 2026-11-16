@@ -12,6 +12,7 @@ docs/try/, which GitHub Pages can serve.
 Usage:
     python web/build_static_demo.py [output_dir]
 """
+import hashlib
 import shutil
 import sys
 from pathlib import Path
@@ -42,10 +43,18 @@ def build(out: Path) -> Path:
         for clip in sorted(audio.glob("*.mp3")):
             shutil.copyfile(clip, out / audio.name / clip.name)
     html = (APP / "index.html").read_text(encoding="utf-8")
+    # A short content hash on each file name makes a browser fetch the new
+    # script and styles after an update instead of pairing a cached old script
+    # with new data.
+    def stamp(name: str) -> str:
+        digest = hashlib.sha256((APP / name).read_bytes()).hexdigest()[:10]
+        return f"{name}?v={digest}"
+
     replacements = [
-        ('href="/styles.css"', 'href="styles.css"'),
+        ('href="/styles.css"', f'href="{stamp("styles.css")}"'),
         ('<script src="/app.js"></script>',
-         '<script>window.BASELINE_DRIFT_STATIC = true;</script>\n<script src="app.js"></script>'),
+         '<script>window.BASELINE_DRIFT_STATIC = true;</script>\n'
+         f'<script src="{stamp("app.js")}"></script>'),
         ('    <h2 id="record-title">Record</h2>\n',
          '    <h2 id="record-title">Record</h2>\n' + NOTE),
     ]

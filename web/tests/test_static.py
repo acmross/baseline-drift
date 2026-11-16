@@ -72,7 +72,9 @@ def test_online_preview_builds_and_matches_the_app(tmp_path):
     out = build(tmp_path / "try")
     html = (out / "index.html").read_text(encoding="utf-8")
     assert "window.BASELINE_DRIFT_STATIC = true" in html
-    assert 'src="app.js"' in html and 'href="styles.css"' in html
+    # Each file name carries a content hash so browsers pick up new versions.
+    assert 'src="app.js?v=' in html and 'href="styles.css?v=' in html
+    assert 'src="/app.js"' not in html and 'href="/styles.css"' not in html
     assert "Your voice is not measured or kept." in html
     for name in ("app.js", "styles.css", "sample_report.json"):
         assert (out / name).read_bytes() == (APP / name).read_bytes(), name
