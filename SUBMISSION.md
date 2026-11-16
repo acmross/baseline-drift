@@ -67,22 +67,21 @@ dramatic. One crew member's calcium went from 10.1 to 9.8, a normal change, and
 still got flagged. Adding the second check cut 65 flags to 11. On test voice
 recordings where nothing had changed, the first two checks still raised one false alarm, on a single session. The third check ignores a change that appears only once.
 
-**The health questions, and why they matter.** A few health questions follow the recording: a
-tick form in the app, or in the command-line version an optional small language
-model on the same machine. It asks about congestion, cough, sleep, unusual pain,
-posture and whether the recording setup changed. Each question declares which acoustic features a "yes" could plausibly
-account for: upper respiratory symptoms are well established as affecting voice
-quality, so a reported cold licenses movement in F0, harmonic-to-noise ratio,
-jitter, shimmer and intensity. Unusual pain licenses nothing, because it has no
-established acoustic signature, so it is recorded in the crew member's own
-words but never used to suppress a finding.
+**The health survey, and why it matters.** A short health survey follows the
+recording: a tick form in the app (the command-line version can use a small
+language model on the same machine instead). It asks about congestion, cough,
+sleep, unusual pain, posture and whether the recording setup changed. Each
+answer is tied to the voice changes it could explain. A cold is known to affect
+how a voice sounds, so a reported cold can explain changes in pitch, loudness,
+steadiness and breathiness. Unusual pain has no known effect on the voice, so it
+is recorded in the crew member's own words but never used to explain away a
+change.
 
-What falls out is the useful part. In our simulated sample run, a speaker
-reporting a cold
-has three of five changes accounted for, while "more pausing" and "speaking
-slower" survive unexplained. Those two are precisely the fatigue markers in the
-aviation literature, and what a 2026 sleep-deprivation study (SOMVOICE) found
-in tired speakers. A cold does not explain them.
+What is left over is the useful part. In our simulated sample run, a speaker
+reports a cold. The cold explains three of the five changes. Two are left
+unexplained: more pausing and slower speech. Those are the same signs of fatigue
+described in aviation research, and the same ones a 2026 sleep-deprivation study
+(SOMVOICE) found in tired speakers. A cold does not explain them.
 
 **Why two channels.** Self-report fails when someone will not say, and the
 National Academies has documented that astronauts face real pressure to withhold
