@@ -320,6 +320,8 @@ async function recordTake(task, maxSeconds, onTick, stopButton) {
     const meter = document.querySelector("#level-meter span");
     const meterRoot = document.getElementById("level-meter");
     const data = new Uint8Array(analyser.fftSize);
+    const scope = document.getElementById("scope");
+    const pen = scope.getContext("2d");
     const draw = () => {
       analyser.getByteTimeDomainData(data);
       let peak = 0;
@@ -327,6 +329,24 @@ async function recordTake(task, maxSeconds, onTick, stopButton) {
       const pct = Math.round(peak * 100);
       meter.style.width = `${pct}%`;
       meterRoot.setAttribute("aria-valuenow", String(pct));
+      // Live trace of the voice, so it is obvious the microphone is hearing you.
+      const { width, height } = scope;
+      pen.clearRect(0, 0, width, height);
+      pen.strokeStyle = "rgba(57, 135, 229, 0.25)";
+      pen.lineWidth = 1;
+      pen.beginPath();
+      pen.moveTo(0, height / 2);
+      pen.lineTo(width, height / 2);
+      pen.stroke();
+      pen.strokeStyle = "#5aa2f5";
+      pen.lineWidth = 2;
+      pen.beginPath();
+      const step = Math.floor(data.length / width) || 1;
+      for (let x = 0; x < width; x += 1) {
+        const y = height / 2 + ((data[x * step] - 128) / 128) * (height / 2 - 4) * 1.6;
+        if (x === 0) pen.moveTo(x, y); else pen.lineTo(x, y);
+      }
+      pen.stroke();
       raf = requestAnimationFrame(draw);
     };
     draw();
@@ -372,6 +392,8 @@ async function recordTake(task, maxSeconds, onTick, stopButton) {
     // failed take leaves the browser holding the device.
     if (raf) cancelAnimationFrame(raf);
     document.querySelector("#level-meter span").style.width = "0%";
+    const scope = document.getElementById("scope");
+    scope.getContext("2d").clearRect(0, 0, scope.width, scope.height);
     if (recorder && recorder.state !== "inactive") recorder.stop();
     if (stream) stream.getTracks().forEach((track) => track.stop());
     if (context && context.state !== "closed") await context.close();
@@ -992,7 +1014,40 @@ function sessionsSection(data) {
   return box;
 }
 
+// Three numbers at the top of the report: how much there is to go on, and
+// how many changes it found. Counts only, never an interpretation.
+function renderStats(data) {
+  const box = document.getElementById("report-stats");
+  box.replaceChildren();
+  box.hidden = data.state === "empty";
+  if (box.hidden) return;
+  const findings = data.findings || [];
+  const open = findings.filter((f) => !(f.explained_by && f.explained_by.length)).length;
+  const progress = data.baseline_progress || { have: 0, need: data.n_baseline };
+  const tiles = [
+    [String(data.session_count), data.session_count === 1 ? "check-in recorded" : "check-ins recorded", ""],
+    [`${Math.min(progress.have, progress.need)} of ${progress.need}`,
+      progress.have >= progress.need ? "baseline sessions, complete" : "baseline sessions so far", ""],
+    [String(open), open === 1 ? "change without a reported explanation" : "changes without a reported explanation",
+      open ? "flag" : ""],
+    [String(findings.length - open), "explained by your check-in", ""],
+  ];
+  for (const [value, label, tone] of tiles) {
+    const tile = document.createElement("div");
+    tile.className = `stat ${tone}`.trim();
+    const v = document.createElement("div");
+    v.className = "stat-value";
+    v.textContent = value;
+    const l = document.createElement("div");
+    l.className = "stat-label";
+    l.textContent = label;
+    tile.append(v, l);
+    box.appendChild(tile);
+  }
+}
+
 function renderReport(data) {
+  renderStats(data);
   document.getElementById("report-headline").textContent = data.headline;
   document.getElementById("baseline-note").textContent = data.state === "baseline"
     ? `Your baseline is built from your first ${data.n_baseline} sessions.`

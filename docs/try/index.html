@@ -10,8 +10,26 @@
 <body>
 <main class="wrap">
   <header class="masthead">
-    <h1>Baseline Drift</h1>
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
+        <rect width="48" height="48" rx="11" fill="#16233a"/>
+        <path d="M7 30H41" stroke="#3987e5" stroke-opacity="0.35" stroke-width="2" stroke-dasharray="2 4" stroke-linecap="round"/>
+        <path d="M7 30H14L17 21L21 35L25 17L29 27L33 22L37 13L41 11" fill="none" stroke="#3987e5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="41" cy="11" r="3.5" fill="#d95926"/>
+      </svg>
+      <div>
+        <p class="eyebrow">NASA Space Apps 2026 · Team Ground State</p>
+        <h1>Baseline Drift</h1>
+      </div>
+    </div>
+    <p class="tagline">One minute of talking a day. Compared with you, not with anyone else.</p>
     <p id="masthead-sub" class="sub">Daily voice check-in · stays on this machine</p>
+    <svg class="horizon" viewBox="0 0 800 46" preserveAspectRatio="none" aria-hidden="true">
+      <rect x="0" y="15" width="800" height="16" fill="#3987e5" opacity="0.09"/>
+      <path d="M0 23H800" stroke="#3987e5" stroke-opacity="0.4" stroke-dasharray="3 6"/>
+      <path class="trace" d="M0 24C40 21 60 26 100 23S170 20 210 24S280 26 320 22S390 21 430 24S500 25 540 21S590 17 630 13S700 8 740 6L800 4" fill="none" stroke="#3987e5" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="630" cy="13" r="3.5" fill="#d95926"/><circle cx="740" cy="6" r="3.5" fill="#d95926"/>
+    </svg>
   </header>
   <aside id="privacy" class="privacy" aria-label="Privacy">
     <p id="privacy-title" class="privacy-title">Private. For your personal use only.</p>
@@ -91,6 +109,7 @@
     <p id="record-error" class="error" role="alert" hidden></p>
     <div id="take-live">
     <p id="take-status" role="status" aria-live="polite">Record each take with its own button, in any order. Save the session when you are done.</p>
+    <canvas id="scope" class="scope" width="640" height="72" aria-hidden="true"></canvas>
     <div id="level-meter" class="meter" role="meter" aria-label="Microphone level"
          aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
     <div id="take-countdown" aria-live="assertive" hidden></div>
@@ -147,6 +166,7 @@
   </section>
   <section id="report" class="panel" hidden aria-labelledby="report-title">
     <h2 id="report-title">Report</h2>
+    <div id="report-stats" class="stats" hidden></div>
     <div id="report-headline" class="headline"></div>
     <p id="baseline-note" class="sub"></p>
     <div id="report-list" class="report-list"></div>
