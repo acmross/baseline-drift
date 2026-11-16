@@ -50,23 +50,23 @@ variability, intensity, jitter, shimmer, harmonic-to-noise ratio, pause ratio
 and speaking rate), compares them to that person's own baseline, and reports
 what changed in plain language.
 
-**How it works: three gates.** A finding is reported only when all three pass,
-and each gate exists because the previous set let noise through.
+**How it works: three checks.** A change is reported only when it passes all
+three. Each check was added because the ones before it still let false alarms
+through.
 
-1. The z-score against this speaker's own baseline mean and standard deviation
-   must reach 2.0.
-2. The change must also exceed a minimum meaningful size in the feature's own
-   units.
-3. The same feature must move the same direction across at least two
-   consecutive sessions.
+1. The reading must be unusual for this person, compared with their own
+   baseline.
+2. The change must be large enough to matter, not just a tiny shift.
+3. The change must show up in at least two sessions in a row, in the same
+   direction.
 
-We know the gates are necessary because we tested them. Running gate 1 alone on
-NASA's OSD-575 clinical panel flagged 65 of 272 comparisons, roughly a quarter,
-which is noise rather than detection. The cause is that a three-sample baseline
-produces a small unstable standard deviation: one crew member's calcium moved
-from 10.1 to 9.8 and scored z = -3.0, which is clinically meaningless. Adding
-gate 2 cut 52 flags to 11. On synthetic voice data where nothing changed, gates
-1 and 2 still fired on one isolated session, which is what gate 3 removes.
+We tested why each one is needed. Using only the first check on NASA's OSD-575
+blood tests flagged 65 of 272 readings, about a quarter, far too many to be
+real. The reason: a baseline of only three samples makes ordinary variation look
+dramatic. One crew member's calcium went from 10.1 to 9.8, a normal change, and
+still got flagged. Adding the second check cut 65 flags to 11. On test voice
+recordings where nothing had changed, the first two checks still flagged one
+stray session. The third check removes that.
 
 **The check-in, and why it matters.** A short check-in follows the recording: a
 tick form in the app, or in the command-line version an optional small language
