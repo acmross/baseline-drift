@@ -191,3 +191,15 @@ def test_checklist_raw_strings_parse_as_intended():
     assert blank["cold_or_congestion"] is False and blank["cough"] is False
     assert blank["setup_changed"] is False
     assert build_explains(blank) == {}
+
+
+def test_feeling_tired_accounts_for_pausing_and_rate_even_after_a_full_night():
+    answers = build_answers_from_raw({"sleep_hours": "8", "feeling_tired": "yes"})
+    explains = build_explains(answers)
+    assert explains["pause_ratio"] == ["feeling_tired"]
+    assert explains["voiced_rate_hz"] == ["feeling_tired"]
+    assert "f0_mean_hz" not in explains
+
+
+def test_not_tired_accounts_for_nothing():
+    assert build_explains(build_answers_from_raw({"feeling_tired": "no"})) == {}

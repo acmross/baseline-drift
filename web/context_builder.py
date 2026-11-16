@@ -7,7 +7,7 @@ Two entry points, both mirroring pipeline/checkin_agent.py:
                           parse_plain rules as the CLI and keeps the raw text
                           beside each parsed value.
   build_explains          applies the same licensing rules as the CLI so a
-                          reported cold, cough, short sleep, setup change, or
+                          reported cold, cough, short sleep, tiredness, setup change, or
                           non-upright posture accounts for the same features.
 
 Keeping this here lets the web app share the CLI's field definitions while

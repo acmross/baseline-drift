@@ -650,6 +650,7 @@ function buildRaw() {
     cold_or_congestion: cold.length ? `yes: ${cold.join(", ")}` : "no",
     cough: ticked("cough").length ? "yes" : "no",
     sleep_hours: text("sleep-hours"),
+    feeling_tired: ticked("feeling_tired").length ? "yes" : "no",
     unusual_pain: pain ? (text("pain-where") || "yes") : "no",
     posture: posture ? posture.value : null,
     // The question behind this field is "same setup as usual?", so a ticked
