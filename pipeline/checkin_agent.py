@@ -42,6 +42,12 @@ QUESTIONS = [
      "ask": "Roughly how many hours did you sleep?",
      "type": "number",
      "explains": ["voiced_rate_hz", "pause_ratio", "intensity_db"]},
+    # Tiredness is not only about last night: time of day, a meal, or a long
+    # shift can do it. Asked separately so a full night's sleep does not hide it.
+    {"field": "feeling_tired",
+     "ask": "Do you feel tired or sleepy right now?",
+     "type": "yesno",
+     "explains": ["voiced_rate_hz", "pause_ratio", "intensity_db"]},
     {"field": "unusual_pain",
      "ask": "Any unusual pain or discomfort today? If so, where?",
      "type": "free",

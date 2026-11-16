@@ -559,7 +559,9 @@ const BANNER_COPY = {
   real: ["Real recordings from a team member.",
     "These are real check-ins recorded by a team member on her own laptop, measured "
     + "by the same pipeline. The numbers and dates are real; dates are published "
-    + "without clock times. Her recordings and check-in answers are not published."],
+    + "without clock times. Open a session on the Sessions tab to hear her sustained "
+    + "\"ah\" and her reading of the fixed passage, published with her consent. Her "
+    + "free-speech takes and check-in answers are not published."],
 };
 
 function setDataset(name) {
@@ -648,6 +650,7 @@ function buildRaw() {
     cold_or_congestion: cold.length ? `yes: ${cold.join(", ")}` : "no",
     cough: ticked("cough").length ? "yes" : "no",
     sleep_hours: text("sleep-hours"),
+    feeling_tired: ticked("feeling_tired").length ? "yes" : "no",
     unusual_pain: pain ? (text("pain-where") || "yes") : "no",
     posture: posture ? posture.value : null,
     // The question behind this field is "same setup as usual?", so a ticked
@@ -942,7 +945,9 @@ function sessionDetail(info, query) {
     audio.className = "take-audio";
     audio.controls = true;
     audio.preload = "none";
-    audio.src = `/api/audio?${query}&take=${take}`;
+    audio.src = info.audio_base
+      ? `${info.audio_base}${info.session}_${take}.mp3`
+      : `/api/audio?${query}&take=${take}`;
     pair(TAKE_TITLES[take] || take, audio);
   }
   part("Measurements");
@@ -1066,6 +1071,7 @@ function sessionsSection(data) {
           + `&session=${encodeURIComponent(session)}`;
         const info = state.sample
           ? { ...data.details[session], audio_note: data.audio_note,
+              audio_base: data.audio_base,
               checkin_note: data.checkin_note }
           : await api(`/api/session-detail?${query}`);
         detail.replaceChildren(sessionDetail(info, query));

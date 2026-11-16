@@ -6,7 +6,8 @@ for Astronauts.**
 ## In one paragraph
 
 Astronauts on long missions carry most of the responsibility for noticing
-changes in their own health, at exactly the distance where help is slowest.
+changes in their own health, and the farther they travel, the longer
+help takes to reach them.
 Baseline Drift is a daily voice check-in that runs offline on the crew's own
 laptop. It extracts eight acoustic features, compares them against that
 person's own earlier sessions rather than a population norm, and reports what
@@ -45,9 +46,11 @@ has no established acoustic signature.
 
 ## The result that matters
 
-We validated the method on NASA OSD-575, the Inspiration4 serum panel, before
-applying it to voice. A z-score alone flagged 65 of 272 comparisons. Adding a
-reference-range gate cut it to 11.
+Before applying it to voice, we tested the method on real astronaut data:
+NASA's OSD-575 blood tests from the four Inspiration4 crew. Checking only
+whether a reading was unusual for that person flagged 65 of 272 readings, far
+too many to be real. Adding a second check, that the change is large enough to
+matter, cut that to 11.
 
 Among the survivors: glucose below range in three of four crew at R+45. Forty
 five days after landing, that is sample handling or fasting status, not

@@ -24,8 +24,9 @@ There are three ways in, from least to most effort.
 - Explore the Report and Trends views for a sample crew member. That data is
   simulated and labelled as such: 36 made-up check-ins across ten weeks.
 - Switch to real check-ins recorded by a team member on her own laptop. The
-  numbers and dates are real; her recordings and check-in answers are not
-  published.
+  numbers and dates are real. On the Sessions tab you can open a session and
+  hear her sustained "ah" and her reading of the fixed passage, published with
+  her consent. Her free-speech takes and check-in answers are not published.
 - Open any session to see its measurements, and delete one to see how that
   works (it comes back when you reload).
 - Go through a check-in yourself: record the three takes, play them back and

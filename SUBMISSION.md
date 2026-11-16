@@ -14,7 +14,8 @@ Baseline Drift
 ## Summary (50 to 200 words)
 
 Astronauts on long missions carry much of the responsibility for noticing
-changes in their own health, at exactly the distance where help is slowest.
+changes in their own health, and the farther they travel, the longer
+help takes to reach them.
 Baseline Drift is a daily voice check-in that runs entirely offline on the
 crew's own laptop.
 
@@ -29,11 +30,12 @@ interpretation to the crew member. That discipline is also what makes the tool
 useful: when a reported head cold accounts for the change, the report says so,
 and what remains unexplained is the part worth reading.
 
-We validated the detection method on NASA OSD-575, the Inspiration4 blood serum
-panel, before applying it to voice. A z-score alone flagged 65 of 272
-comparisons. Adding a clinical reference range gate cut that to 11. That result
-shaped the final three-gate design and is reproducible from the code and data in
-this repository.
+Before applying it to voice, we tested the method on real astronaut data:
+NASA's OSD-575 blood tests from the four Inspiration4 crew. Checking only
+whether a reading was unusual for that person flagged 65 of 272 readings, far
+too many to be real. Adding a second check, that the change is large enough to
+matter, cut that to 11. That result is why Baseline Drift has three checks, and
+it can be reproduced from the code and data in our repository.
 
 ---
 
@@ -48,40 +50,38 @@ variability, intensity, jitter, shimmer, harmonic-to-noise ratio, pause ratio
 and speaking rate), compares them to that person's own baseline, and reports
 what changed in plain language.
 
-**How it works: three gates.** A finding is reported only when all three pass,
-and each gate exists because the previous set let noise through.
+**How it works: three checks.** A change is reported only when it passes all
+three. Each check was added because the ones before it still let false alarms
+through.
 
-1. The z-score against this speaker's own baseline mean and standard deviation
-   must reach 2.0.
-2. The change must also exceed a minimum meaningful size in the feature's own
-   units.
-3. The same feature must move the same direction across at least two
-   consecutive sessions.
+1. The reading must be unusual for this person, compared with their own
+   baseline.
+2. The change must be large enough to matter, not just a tiny shift.
+3. The change must show up in at least two sessions in a row, in the same
+   direction.
 
-We know the gates are necessary because we tested them. Running gate 1 alone on
-NASA's OSD-575 clinical panel flagged 65 of 272 comparisons, roughly a quarter,
-which is noise rather than detection. The cause is that a three-sample baseline
-produces a small unstable standard deviation: one crew member's calcium moved
-from 10.1 to 9.8 and scored z = -3.0, which is clinically meaningless. Adding
-gate 2 cut 52 flags to 11. On synthetic voice data where nothing changed, gates
-1 and 2 still fired on one isolated session, which is what gate 3 removes.
+We tested why each one is needed. Using only the first check on NASA's OSD-575
+blood tests flagged 65 of 272 readings, about a quarter, far too many to be
+real. The reason: a baseline of only three samples makes ordinary variation look
+dramatic. One crew member's calcium went from 10.1 to 9.8, a normal change, and
+still got flagged. Adding the second check cut 65 flags to 11. On test voice
+recordings where nothing had changed, the first two checks still raised one false alarm, on a single session. The third check ignores a change that appears only once.
 
-**The check-in, and why it matters.** A short check-in follows the recording: a
-tick form in the app, or in the command-line version an optional small language
-model on the same machine. It asks about congestion, cough, sleep, unusual pain,
-posture and whether the recording setup changed. Each question declares which acoustic features a "yes" could plausibly
-account for: upper respiratory symptoms are well established as affecting voice
-quality, so a reported cold licenses movement in F0, harmonic-to-noise ratio,
-jitter, shimmer and intensity. Unusual pain licenses nothing, because it has no
-established acoustic signature, so it is recorded in the crew member's own
-words but never used to suppress a finding.
+**The health survey, and why it matters.** A short health survey follows the
+recording: a tick form in the app (the command-line version can use a small
+language model on the same machine instead). It asks about congestion, cough,
+sleep, feeling tired, unusual pain, posture and whether the recording setup changed. Each
+answer is tied to the voice changes it could explain. A cold is known to affect
+how a voice sounds, so a reported cold can explain changes in pitch, loudness,
+steadiness and breathiness. Unusual pain has no known effect on the voice, so it
+is recorded in the crew member's own words but never used to explain away a
+change.
 
-What falls out is the useful part. In our simulated sample run, a speaker
-reporting a cold
-has three of five changes accounted for, while "more pausing" and "speaking
-slower" survive unexplained. Those two are precisely the fatigue markers in the
-aviation literature, and what a 2026 sleep-deprivation study (SOMVOICE) found
-in tired speakers. A cold does not explain them.
+What is left over is the useful part. In our simulated sample run, a speaker
+reports a cold. The cold explains three of the five changes. Two are left
+unexplained: more pausing and slower speech. Those are the same signs of fatigue
+described in aviation research, and the same ones a 2026 sleep-deprivation study
+(SOMVOICE) found in tired speakers. A cold does not explain them.
 
 **Why two channels.** Self-report fails when someone will not say, and the
 National Academies has documented that astronauts face real pressure to withhold
@@ -92,11 +92,12 @@ depend on candour: concealing a cold pushes the drift into the unexplained
 column, which is the one the report highlights. It fails safe.
 
 **What we deliberately do not do.** We do not claim to detect fatigue, stress or
-mood. The published effect sizes do not support it: a clinical study detecting
-fatigue from free speech reached an AUC of 0.68, and a systematic review of
-twenty aviation studies found results fragmented by methodological heterogeneity
-and limited ecological validity. Every output string is a measurement plus a
-duration, never a diagnosis.
+mood. Published research does not support that claim yet. One clinical study
+that tried to detect fatigue from free speech scored 0.68 on a scale where 0.5
+is a coin flip and 1.0 is perfect. A review of twenty aviation studies found the
+results too inconsistent, and too far from real working conditions, to rely on.
+So every line the tool reports is a measurement and how long it has lasted,
+never a diagnosis.
 
 **Validation on NASA data.** OSD-575 is the Inspiration4 blood serum metabolic
 panel: four astronauts, three pre-flight and four post-flight samples each,
@@ -124,9 +125,12 @@ not reported a cold."
 extraction, the same toolchain used to derive features for NIH's Bridge2AI-Voice
 dataset. The crew-facing app is one page of plain HTML, CSS and JavaScript
 served by a small FastAPI process bound to 127.0.0.1 on the crew laptop, with
-inline SVG charts and no external assets. It has three views: Record, Report
-and Trends over days, weeks and months. A crew member can play back, open and
-delete any of their own sessions. There are no network calls at runtime,
+inline SVG charts and no external assets. It has four views: Record, Report,
+Trends over days, weeks and months, and Sessions. A crew member can play back,
+open and delete any of their own sessions, and restart their baseline in one
+press. That matters because about three in four ISS crew are congested in their
+first week in orbit, so a first-week baseline is a congested one. The app says
+so and offers to restart the baseline from flight day 8. There are no network calls at runtime,
 because the entire premise is that it works with mission control unreachable.
 
 **Try it.** Three ways, all public and sign-in free. The hosted demo

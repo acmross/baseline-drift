@@ -1,7 +1,7 @@
 {
  "subject": "AMANDA",
  "state": "stable",
- "session_count": 4,
+ "session_count": 5,
  "n_baseline": 3,
  "baseline_progress": {
   "have": 3,
@@ -52,17 +52,18 @@
    "series": [
     183.02946254608545,
     192.58050776157228,
-    177.51916370094943,
-    163.679725422868
+    184.8938429007622,
+    189.46293881624032,
+    205.23248640027924
    ],
-   "latest": 163.679725422868,
-   "baseline_mean": 184.37637800286905,
-   "baseline_sd": 7.620476176979145,
+   "latest": 205.23248640027924,
+   "baseline_mean": 186.83460440280663,
+   "baseline_sd": 5.062660622926625,
    "baseline_complete": true,
-   "latest_text": "163.7 Hz",
-   "baseline_text": "184.4 Hz",
-   "spread_text": "7.6 Hz",
-   "change_text": "20.7 Hz below your baseline",
+   "latest_text": "205.2 Hz",
+   "baseline_text": "186.8 Hz",
+   "spread_text": "5.1 Hz",
+   "change_text": "18.4 Hz above your baseline",
    "flagged": false
   },
   {
@@ -73,17 +74,18 @@
    "series": [
     40.51640230781676,
     54.69965503934255,
-    40.568897388496346,
-    39.31947092582967
+    48.42999978655958,
+    46.087196457669194,
+    48.21894450471707
    ],
-   "latest": 39.31947092582967,
-   "baseline_mean": 45.261651578551884,
-   "baseline_sd": 8.173592902010494,
+   "latest": 48.21894450471707,
+   "baseline_mean": 47.882019044572964,
+   "baseline_sd": 7.107487367683083,
    "baseline_complete": true,
-   "latest_text": "39.3 Hz",
-   "baseline_text": "45.3 Hz",
-   "spread_text": "8.2 Hz",
-   "change_text": "5.9 Hz below your baseline",
+   "latest_text": "48.2 Hz",
+   "baseline_text": "47.9 Hz",
+   "spread_text": "7.1 Hz",
+   "change_text": "0.3 Hz above your baseline",
    "flagged": false
   },
   {
@@ -94,17 +96,18 @@
    "series": [
     53.49633023190225,
     51.728002940997094,
-    50.00645934419125,
-    48.77171625703223
+    47.47229606445936,
+    52.678658888118406,
+    55.6004902383804
    ],
-   "latest": 48.77171625703223,
-   "baseline_mean": 51.74359750569686,
-   "baseline_sd": 1.744987706563952,
+   "latest": 55.6004902383804,
+   "baseline_mean": 50.8988764124529,
+   "baseline_sd": 3.096422938308275,
    "baseline_complete": true,
-   "latest_text": "48.8 dB",
-   "baseline_text": "51.7 dB",
-   "spread_text": "1.7 dB",
-   "change_text": "3.0 dB below your baseline",
+   "latest_text": "55.6 dB",
+   "baseline_text": "50.9 dB",
+   "spread_text": "3.1 dB",
+   "change_text": "4.7 dB above your baseline",
    "flagged": false
   },
   {
@@ -115,17 +118,18 @@
    "series": [
     0.0055305719322472574,
     0.005139235517021351,
-    0.005175659375508256,
-    0.004713751524084886
+    0.003475740544992599,
+    0.00695727476427829,
+    0.0073001318146172995
    ],
-   "latest": 0.004713751524084886,
-   "baseline_mean": 0.005281822274925622,
-   "baseline_sd": 0.0002161919711274958,
+   "latest": 0.0073001318146172995,
+   "baseline_mean": 0.004715182664753736,
+   "baseline_sd": 0.0010910768183995804,
    "baseline_complete": true,
-   "latest_text": "0.47%",
-   "baseline_text": "0.53%",
-   "spread_text": "0.02 points",
-   "change_text": "0.06 points below your baseline",
+   "latest_text": "0.73%",
+   "baseline_text": "0.47%",
+   "spread_text": "0.11 points",
+   "change_text": "0.26 points above your baseline",
    "flagged": false
   },
   {
@@ -136,17 +140,18 @@
    "series": [
     0.03688248784644002,
     0.03883459948299683,
-    0.04878693897147463,
-    0.047982616905258166
+    0.02844420995585776,
+    0.06862823453702138,
+    0.04952766927025475
    ],
-   "latest": 0.047982616905258166,
-   "baseline_mean": 0.041501342100303824,
-   "baseline_sd": 0.0063845615579541165,
+   "latest": 0.04952766927025475,
+   "baseline_mean": 0.034720432428431536,
+   "baseline_sd": 0.005522310327600686,
    "baseline_complete": true,
-   "latest_text": "4.80%",
-   "baseline_text": "4.15%",
-   "spread_text": "0.64 points",
-   "change_text": "0.65 points above your baseline",
+   "latest_text": "4.95%",
+   "baseline_text": "3.47%",
+   "spread_text": "0.55 points",
+   "change_text": "1.48 points above your baseline",
    "flagged": false
   },
   {
@@ -157,17 +162,18 @@
    "series": [
     17.118938549924742,
     21.589204604415986,
-    19.760149849436022,
-    18.556653715005
+    20.77305907037262,
+    16.040109922289925,
+    18.719664141137518
    ],
-   "latest": 18.556653715005,
-   "baseline_mean": 19.489431001258918,
-   "baseline_sd": 2.247395419269367,
+   "latest": 18.719664141137518,
+   "baseline_mean": 19.827067408237784,
+   "baseline_sd": 2.380545067438475,
    "baseline_complete": true,
-   "latest_text": "18.6 dB",
-   "baseline_text": "19.5 dB",
-   "spread_text": "2.2 dB",
-   "change_text": "0.9 dB below your baseline",
+   "latest_text": "18.7 dB",
+   "baseline_text": "19.8 dB",
+   "spread_text": "2.4 dB",
+   "change_text": "1.1 dB below your baseline",
    "flagged": false
   },
   {
@@ -178,17 +184,18 @@
    "series": [
     0.2334,
     0.2915,
-    0.2682,
-    0.3526
+    0.2924,
+    0.2476,
+    0.287
    ],
-   "latest": 0.3526,
-   "baseline_mean": 0.26436666666666664,
-   "baseline_sd": 0.029239072032698522,
+   "latest": 0.287,
+   "baseline_mean": 0.2724333333333333,
+   "baseline_sd": 0.033806853348593874,
    "baseline_complete": true,
-   "latest_text": "35.3%",
-   "baseline_text": "26.4%",
-   "spread_text": "2.92 points",
-   "change_text": "8.82 points above your baseline",
+   "latest_text": "28.7%",
+   "baseline_text": "27.2%",
+   "spread_text": "3.38 points",
+   "change_text": "1.46 points above your baseline",
    "flagged": false
   },
   {
@@ -199,29 +206,36 @@
    "series": [
     58.336,
     55.381,
-    51.848,
-    44.254
+    57.659,
+    53.201,
+    57.873
    ],
-   "latest": 44.254,
-   "baseline_mean": 55.18833333333333,
-   "baseline_sd": 3.248288215865909,
+   "latest": 57.873,
+   "baseline_mean": 57.12533333333333,
+   "baseline_sd": 1.548097649805506,
    "baseline_complete": true,
-   "latest_text": "44.3 per second",
-   "baseline_text": "55.2 per second",
-   "spread_text": "3.2",
-   "change_text": "10.9 below your baseline",
+   "latest_text": "57.9 per second",
+   "baseline_text": "57.1 per second",
+   "spread_text": "1.5",
+   "change_text": "0.7 above your baseline",
    "flagged": false
   }
  ],
+ "total_sessions": 5,
+ "baseline_moved": false,
+ "baseline_start": "fd2",
+ "earlier": [],
  "sessions": [
-  "day5",
-  "day7",
-  "fd8",
-  "fd9"
+  "fd2",
+  "fd6",
+  "fd10",
+  "fd11",
+  "fd12"
  ],
  "recorded_at": [
   null,
   null,
+  "2026-11-15",
   "2026-11-15",
   "2026-11-15"
  ],
@@ -229,9 +243,9 @@
  "real": true,
  "display_name": "AMANDA",
  "details": {
-  "day5": {
+  "fd2": {
    "subject": "AMANDA",
-   "session": "day5",
+   "session": "fd2",
    "recorded_at": null,
    "measures": [
     {
@@ -276,11 +290,14 @@
     }
    ],
    "checkin": null,
-   "takes": []
+   "takes": [
+    "vowel",
+    "passage"
+   ]
   },
-  "day7": {
+  "fd6": {
    "subject": "AMANDA",
-   "session": "day7",
+   "session": "fd6",
    "recorded_at": null,
    "measures": [
     {
@@ -325,107 +342,169 @@
     }
    ],
    "checkin": null,
-   "takes": []
+   "takes": [
+    "vowel",
+    "passage"
+   ]
   },
-  "fd8": {
+  "fd10": {
    "subject": "AMANDA",
-   "session": "fd8",
+   "session": "fd10",
    "recorded_at": "2026-11-15",
    "measures": [
     {
      "feature": "f0_mean_hz",
      "label": "Pitch",
-     "value_text": "177.5 Hz"
+     "value_text": "184.9 Hz"
     },
     {
      "feature": "f0_sd_hz",
      "label": "Pitch variation",
-     "value_text": "40.6 Hz"
+     "value_text": "48.4 Hz"
     },
     {
      "feature": "intensity_db",
      "label": "Loudness",
-     "value_text": "50.0 dB"
+     "value_text": "47.5 dB"
     },
     {
      "feature": "jitter_local",
      "label": "Pitch steadiness",
-     "value_text": "0.52%"
+     "value_text": "0.35%"
     },
     {
      "feature": "shimmer_local",
      "label": "Loudness steadiness",
-     "value_text": "4.88%"
+     "value_text": "2.84%"
     },
     {
      "feature": "hnr_db",
      "label": "Voice clarity",
-     "value_text": "19.8 dB"
+     "value_text": "20.8 dB"
     },
     {
      "feature": "pause_ratio",
      "label": "Pausing",
-     "value_text": "26.8%"
+     "value_text": "29.2%"
     },
     {
      "feature": "voiced_rate_hz",
      "label": "Speaking rate",
-     "value_text": "51.8 per second"
+     "value_text": "57.7 per second"
     }
    ],
    "checkin": null,
-   "takes": []
+   "takes": [
+    "vowel",
+    "passage"
+   ]
   },
-  "fd9": {
+  "fd11": {
    "subject": "AMANDA",
-   "session": "fd9",
+   "session": "fd11",
    "recorded_at": "2026-11-15",
    "measures": [
     {
      "feature": "f0_mean_hz",
      "label": "Pitch",
-     "value_text": "163.7 Hz"
+     "value_text": "189.5 Hz"
     },
     {
      "feature": "f0_sd_hz",
      "label": "Pitch variation",
-     "value_text": "39.3 Hz"
+     "value_text": "46.1 Hz"
     },
     {
      "feature": "intensity_db",
      "label": "Loudness",
-     "value_text": "48.8 dB"
+     "value_text": "52.7 dB"
     },
     {
      "feature": "jitter_local",
      "label": "Pitch steadiness",
-     "value_text": "0.47%"
+     "value_text": "0.70%"
     },
     {
      "feature": "shimmer_local",
      "label": "Loudness steadiness",
-     "value_text": "4.80%"
+     "value_text": "6.86%"
     },
     {
      "feature": "hnr_db",
      "label": "Voice clarity",
-     "value_text": "18.6 dB"
+     "value_text": "16.0 dB"
     },
     {
      "feature": "pause_ratio",
      "label": "Pausing",
-     "value_text": "35.3%"
+     "value_text": "24.8%"
     },
     {
      "feature": "voiced_rate_hz",
      "label": "Speaking rate",
-     "value_text": "44.3 per second"
+     "value_text": "53.2 per second"
     }
    ],
    "checkin": null,
-   "takes": []
+   "takes": [
+    "vowel",
+    "passage"
+   ]
+  },
+  "fd12": {
+   "subject": "AMANDA",
+   "session": "fd12",
+   "recorded_at": "2026-11-15",
+   "measures": [
+    {
+     "feature": "f0_mean_hz",
+     "label": "Pitch",
+     "value_text": "205.2 Hz"
+    },
+    {
+     "feature": "f0_sd_hz",
+     "label": "Pitch variation",
+     "value_text": "48.2 Hz"
+    },
+    {
+     "feature": "intensity_db",
+     "label": "Loudness",
+     "value_text": "55.6 dB"
+    },
+    {
+     "feature": "jitter_local",
+     "label": "Pitch steadiness",
+     "value_text": "0.73%"
+    },
+    {
+     "feature": "shimmer_local",
+     "label": "Loudness steadiness",
+     "value_text": "4.95%"
+    },
+    {
+     "feature": "hnr_db",
+     "label": "Voice clarity",
+     "value_text": "18.7 dB"
+    },
+    {
+     "feature": "pause_ratio",
+     "label": "Pausing",
+     "value_text": "28.7%"
+    },
+    {
+     "feature": "voiced_rate_hz",
+     "label": "Speaking rate",
+     "value_text": "57.9 per second"
+    }
+   ],
+   "checkin": null,
+   "takes": [
+    "vowel",
+    "passage"
+   ]
   }
  },
- "audio_note": "Recordings are not published in this preview.",
+ "audio_base": "real_audio/",
+ "audio_note": "No recording is published for this session.",
  "checkin_note": "Check-in answers are not published in this preview."
 }

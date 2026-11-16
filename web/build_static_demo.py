@@ -35,6 +35,12 @@ def build(out: Path) -> Path:
     real = APP / "real_report.json"
     if real.exists():
         shutil.copyfile(real, out / real.name)
+    audio = APP / "real_audio"
+    if audio.is_dir():
+        # Recordings a team member agreed to publish beside their real report.
+        (out / audio.name).mkdir(exist_ok=True)
+        for clip in sorted(audio.glob("*.mp3")):
+            shutil.copyfile(clip, out / audio.name / clip.name)
     html = (APP / "index.html").read_text(encoding="utf-8")
     replacements = [
         ('href="/styles.css"', 'href="styles.css"'),
