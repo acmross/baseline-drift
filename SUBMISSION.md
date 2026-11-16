@@ -70,7 +70,7 @@ recordings where nothing had changed, the first two checks still raised one fals
 **The health survey, and why it matters.** A short health survey follows the
 recording: a tick form in the app (the command-line version can use a small
 language model on the same machine instead). It asks about congestion, cough,
-sleep, unusual pain, posture and whether the recording setup changed. Each
+sleep, feeling tired, unusual pain, posture and whether the recording setup changed. Each
 answer is tied to the voice changes it could explain. A cold is known to affect
 how a voice sounds, so a reported cold can explain changes in pitch, loudness,
 steadiness and breathiness. Unusual pain has no known effect on the voice, so it
