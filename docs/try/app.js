@@ -1032,9 +1032,17 @@ function sessionsSection(data) {
     name.textContent = sessionName(session);
     const when = document.createElement("span");
     when.className = "session-when";
-    when.textContent = (stamp ? shortDate(parseStamp(stamp), !dateOnly(stamp)) : "no saved date")
-      + (index < 0 ? " · before your baseline" : index < data.n_baseline ? " · baseline" : "");
+    when.textContent = stamp ? shortDate(parseStamp(stamp), !dateOnly(stamp)) : "no saved date";
     view.append(arrow, name, when);
+    // Baseline sessions are marked in blue; ones before the baseline are dimmed.
+    const isBaseline = index >= 0 && index < data.n_baseline;
+    if (isBaseline || index < 0) {
+      const badge = document.createElement("span");
+      badge.className = isBaseline ? "badge baseline" : "badge earlier";
+      badge.textContent = isBaseline ? "Baseline" : "Before your baseline";
+      view.appendChild(badge);
+      row.classList.add(isBaseline ? "is-baseline" : "is-earlier");
+    }
     const detail = document.createElement("div");
     detail.className = "session-detail";
     detail.hidden = true;
@@ -1101,6 +1109,14 @@ function sessionsSection(data) {
     entry.group.append(row, detail);
     entry.n += 1;
     entry.count.textContent = entry.n === 1 ? "1 session" : `${entry.n} sessions`;
+    if (isBaseline && !entry.marked) {
+      // A folded month still shows that the baseline is inside it.
+      entry.marked = true;
+      const mark = document.createElement("span");
+      mark.className = "badge baseline";
+      mark.textContent = "Baseline";
+      entry.count.before(mark);
+    }
   });
   return box;
 }
