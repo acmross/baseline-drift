@@ -65,10 +65,9 @@ blood tests flagged 65 of 272 readings, about a quarter, far too many to be
 real. The reason: a baseline of only three samples makes ordinary variation look
 dramatic. One crew member's calcium went from 10.1 to 9.8, a normal change, and
 still got flagged. Adding the second check cut 65 flags to 11. On test voice
-recordings where nothing had changed, the first two checks still flagged one
-stray session. The third check removes that.
+recordings where nothing had changed, the first two checks still raised one false alarm, on a single session. The third check ignores a change that appears only once.
 
-**The check-in, and why it matters.** A short check-in follows the recording: a
+**The health questions, and why they matter.** A few health questions follow the recording: a
 tick form in the app, or in the command-line version an optional small language
 model on the same machine. It asks about congestion, cough, sleep, unusual pain,
 posture and whether the recording setup changed. Each question declares which acoustic features a "yes" could plausibly
