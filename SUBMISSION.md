@@ -166,22 +166,15 @@ train a per-person baseline. Our contribution is the thing that runs on the
 laptop the crew already has, needs no labels, no training and no network, and
 reports to the person who made the recording.
 
-**Additional data-quality findings from OSD-575.** Beyond the glucose artifact,
-running our detector surfaced three more problems in the dataset worth
-documenting: a header that breaks its own naming convention (`alt_max` and
-`ast_max` where every other analyte uses `_range_max`), which silently drops two
-analytes from any code matching the pattern; haptoglobin pinned at 17,907,000 in
-seven of twenty-eight samples in the cytokine panel, which is an assay ceiling
-rather than a measurement; and reference ranges that shift mid-study for one
-subject alone, meaning her pre-flight and post-flight values are not judged
-against the same yardstick. Each is reproducible from the committed code.
+**Reproducing the data findings.** Each of the four data problems described
+above can be reproduced from the code and data in our repository.
 
-**What we have not shown.** We have not demonstrated that unexplained drift
-predicts anything. NASA's HERA Standard Measures, which hold crew affect scores
-from the same isolation analog, is the dataset that would confirm or refute it.
-Our thresholds are placeholders that need calibrating against real
-session-to-session variability, for which NIH's Bridge2AI-Voice is the right
-corpus. Both require credentialed access.
+**What we have not shown.** We have not shown that a change nobody reported
+predicts anything. NASA's HERA Standard Measures, which records how crews felt
+during the same simulated missions, is the dataset that could confirm or
+disprove it. Our cut-off values are starting guesses. They need tuning on real
+day-to-day variation in people's voices, and NIH's Bridge2AI-Voice is the right
+dataset for that. Both need approved access.
 
 ---
 
