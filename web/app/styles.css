@@ -313,7 +313,9 @@ dialog { border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
 .badge { flex: 0 0 auto; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; letter-spacing: 0.02em; white-space: nowrap; }
 .badge.baseline { color: #9cc6fa; background: rgba(57, 135, 229, 0.16); border: 1px solid rgba(57, 135, 229, 0.6); }
 .badge.earlier { color: var(--text-muted); border: 1px solid var(--line); }
-.session-row.is-baseline { border-left: 3px solid var(--series-1); padding-left: 10px; background: linear-gradient(90deg, rgba(57, 135, 229, 0.10), transparent 55%); }
+/* Every row reserves the edge the baseline marker uses, so all rows line up. */
+.session-row { border-left: 3px solid transparent; padding-left: 10px; }
+.session-row.is-baseline { border-left-color: var(--series-1); background: linear-gradient(90deg, rgba(57, 135, 229, 0.10), transparent 55%); }
 .session-row.is-earlier .session-name, .session-row.is-earlier .session-when { color: var(--text-muted); }
 .session-when { flex: 0 1 auto; }
 .session-open .badge { margin-left: 4px; }
