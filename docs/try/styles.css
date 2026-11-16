@@ -332,3 +332,11 @@ select { min-height: 44px; padding: 0 12px; background: #0f1218; color: var(--te
 select:focus { outline: 2px solid var(--series-1); outline-offset: 1px; }
 .baseline-change { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
 .baseline-card .baseline-change .baseline-title { font-size: 15px; }
+
+/* Report: one quiet line about the baseline; the controls live on Sessions. */
+.baseline-strip { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 14px 0 4px; padding: 10px 14px; border: 1px solid var(--line); border-left: 4px solid var(--series-1); border-radius: 10px; font-size: 14px; color: var(--text-secondary); }
+.baseline-strip[hidden] { display: none; }
+.baseline-strip.warn { border-left-color: var(--accent); }
+.baseline-strip button { flex: 0 0 auto; }
+#sessions .stable-list { border-top: 0; margin-top: 8px; padding-top: 0; }
+#sessions-list { margin-top: 22px; }

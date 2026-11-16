@@ -66,18 +66,19 @@ const ERROR_COPY = {
 };
 
 function showState(name) {
-  for (const id of ["record", "checkin", "report", "trends"]) {
+  for (const id of ["record", "checkin", "report", "trends", "sessions"]) {
     document.getElementById(id).hidden = id !== name;
   }
   if (STATIC_PREVIEW) {
-    // In the preview the dataset banner belongs to the Report and Trends views.
+    // In the preview the dataset banner belongs to the views that show data.
     document.getElementById("sample-banner").hidden =
-      !(name === "report" || name === "trends");
+      !(name === "report" || name === "trends" || name === "sessions");
   }
   // Check-in belongs to a recording session, so it sits under the Record tab.
   const current = name === "report" ? "nav-report"
-    : name === "trends" ? "nav-trends" : "nav-record";
-  for (const id of ["nav-record", "nav-report", "nav-trends"]) {
+    : name === "trends" ? "nav-trends"
+      : name === "sessions" ? "nav-sessions" : "nav-record";
+  for (const id of ["nav-record", "nav-report", "nav-trends", "nav-sessions"]) {
     const tab = document.getElementById(id);
     if (id === current) tab.setAttribute("aria-current", "page");
     else tab.removeAttribute("aria-current");
@@ -88,7 +89,7 @@ function showState(name) {
 // While the microphone or an upload is in use nothing else may start.
 function setBusy(busy) {
   for (const id of ["save-session", "nav-record", "nav-report", "nav-trends",
-                    "replace-session", "retry-upload"]) {
+                    "nav-sessions", "replace-session", "retry-upload"]) {
     document.getElementById(id).disabled = busy;
   }
   for (const button of document.querySelectorAll(".take-button")) button.disabled = busy;
@@ -580,9 +581,15 @@ function setSample(on) {
   document.getElementById("sample-off").hidden = STATIC_PREVIEW;
 }
 
-function openReport() {
+// The Sessions tab shows the same data as the report, so it loads the same way.
+function openSessions() {
+  openReport("sessions");
+}
+
+function openReport(view) {
+  const target = view === "sessions" ? "sessions" : "report";
   if (state.sample) {
-    showState("report");
+    showState(target);
     loadReport();
     return;
   }
@@ -596,7 +603,7 @@ function openReport() {
   }
   clearRecordError();
   state.subject = subject;
-  showState("report");
+  showState(target);
   loadReport();
 }
 
@@ -1238,7 +1245,7 @@ function renderBaselineCard(data) {
     how.textContent = "Choose the session where you felt most like your normal self in "
       + "space. Your baseline becomes that session and the two after it. You can change "
       + "it again at any time, here or with \"Start baseline here\" beside any session "
-      + "in the list below. Nothing is deleted.";
+      + "in the list on this page. Nothing is deleted.";
     change.append(heading, how);
     card.appendChild(change);
     const pick = document.createElement("select");
@@ -1261,9 +1268,47 @@ function renderBaselineCard(data) {
   if (actions.children.length) card.appendChild(actions);
 }
 
+// One line on the report saying what the baseline is, with the way to change
+// it. The full explanation and controls live on the Sessions tab.
+function renderBaselineStrip(data) {
+  const strip = document.getElementById("baseline-strip");
+  strip.replaceChildren();
+  strip.className = "baseline-strip";
+  strip.hidden = !data.sessions || !data.sessions.length;
+  if (strip.hidden) return;
+  const baseline = data.sessions.slice(0, data.n_baseline);
+  const early = baseline.some((s) => flightDay(s) !== null && flightDay(s) < SETTLE_DAY);
+  const text = document.createElement("span");
+  text.textContent = `Baseline: ${baseline.map(sessionName).join(", ")}.`
+    + (early ? ` Includes sessions from before flight day ${SETTLE_DAY}, when most crew are `
+      + "congested, so it may not be your normal voice." : "");
+  const change = document.createElement("button");
+  change.type = "button";
+  change.className = "secondary small";
+  change.textContent = early ? "Review my baseline" : "Change baseline";
+  change.addEventListener("click", openSessions);
+  if (early) strip.classList.add("warn");
+  strip.append(text, change);
+}
+
+function renderSessions(data) {
+  renderBaselineCard(data);
+  const box = document.getElementById("sessions-list");
+  box.replaceChildren();
+  const list = sessionsSection(data);
+  if (list) {
+    box.appendChild(list);
+  } else {
+    const empty = document.createElement("p");
+    empty.textContent = "No sessions yet. Record your first check-in to begin.";
+    box.appendChild(empty);
+  }
+}
+
 function renderReport(data) {
   renderStats(data);
-  renderBaselineCard(data);
+  renderBaselineStrip(data);
+  renderSessions(data);
   document.getElementById("report-headline").textContent = data.headline;
   document.getElementById("baseline-note").textContent = data.state === "baseline"
     ? `Your baseline is built from your first ${data.n_baseline} sessions.`
@@ -1286,8 +1331,6 @@ function renderReport(data) {
     list.appendChild(pending);
     const soFar = measuresSection(data, "Your measures so far");
     if (soFar) list.appendChild(soFar);
-    const sessionList = sessionsSection(data);
-    if (sessionList) list.appendChild(sessionList);
     return;
   }
   for (const finding of data.findings) {
@@ -1295,8 +1338,6 @@ function renderReport(data) {
   }
   const within = measuresSection(data, "Within your baseline");
   if (within) list.appendChild(within);
-  const sessionList = sessionsSection(data);
-  if (sessionList) list.appendChild(sessionList);
   const footer = document.createElement("p");
   footer.className = "sub";
   footer.textContent = "This describes what changed, not why. Ordinary causes are the "
@@ -1569,18 +1610,23 @@ document.getElementById("sample-off").addEventListener("click", () => {
   // Stay on the tab you were reading; only the data behind it changes.
   const onTrends = !document.getElementById("trends").hidden;
   const onReport = !document.getElementById("report").hidden;
+  const onSessions = !document.getElementById("sessions").hidden;
   setSample(false);
   if (onTrends) openTrends();
+  else if (onSessions) openSessions();
   else if (onReport) openReport();
   else showState("record");
 });
 for (const button of document.querySelectorAll(".dataset")) {
   button.addEventListener("click", () => {
     setDataset(button.dataset.dataset);
-    if (document.getElementById("trends").hidden) openReport(); else openTrends();
+    if (!document.getElementById("trends").hidden) openTrends();
+    else if (!document.getElementById("sessions").hidden) openSessions();
+    else openReport();
   });
 }
-document.getElementById("nav-report").addEventListener("click", openReport);
+document.getElementById("nav-report").addEventListener("click", () => openReport());
+document.getElementById("nav-sessions").addEventListener("click", openSessions);
 document.getElementById("nav-trends").addEventListener("click", openTrends);
 for (const button of document.querySelectorAll(".trend-group")) {
   button.addEventListener("click", () => {
