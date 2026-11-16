@@ -306,7 +306,7 @@ dialog { border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
 .month-count { font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
 .month .session-row { margin-left: 20px; }
 .month .session-detail { margin-left: 20px; }
-.baseline-move { margin-top: 14px; }
+.baseline-move { flex: 0 0 auto; }
 .stable-list > button.small { margin: 4px 0 12px; }
 
 /* Baseline sessions stand out; sessions before the baseline step back. */
@@ -330,3 +330,5 @@ dialog { border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
 .baseline-card .actions { margin-top: 12px; align-items: center; }
 select { min-height: 44px; padding: 0 12px; background: #0f1218; color: var(--text-primary); border: 1px solid var(--line); border-radius: 9px; font: inherit; }
 select:focus { outline: 2px solid var(--series-1); outline-offset: 1px; }
+.baseline-change { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }
+.baseline-card .baseline-change .baseline-title { font-size: 15px; }
