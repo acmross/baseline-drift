@@ -131,9 +131,22 @@ def _findings_for(stats, findings, subject, records, context):
     return sorted(rows, key=lambda row: (bool(row["explained"]), row["feature"]))
 
 
-def build_report(records, context, subject, n_baseline=3, z_threshold=2.0, min_run=2):
-    """Return the report state for one subject. Records stay in append order."""
-    subject_records = [r for r in records if r.get("subject") == subject]
+def build_report(records, context, subject, n_baseline=3, z_threshold=2.0, min_run=2,
+                 baseline_start=None):
+    """Return the report state for one subject. Records stay in append order.
+
+    baseline_start names the session the baseline begins at. Sessions before it
+    are kept and listed, but are not part of the baseline and are not scored.
+    That is how a crew member re-sets their baseline, for example once their
+    voice has settled after the first week in orbit.
+    """
+    every = [r for r in records if r.get("subject") == subject]
+    start = 0
+    if baseline_start is not None:
+        names = [r.get("session") for r in every]
+        if baseline_start in names:
+            start = names.index(baseline_start)
+    earlier, subject_records = every[:start], every[start:]
 
     base = {
         "subject": subject,
@@ -146,6 +159,11 @@ def build_report(records, context, subject, n_baseline=3, z_threshold=2.0, min_r
         "findings": [],
         "stable_features": [],
         "measures": [],
+        "total_sessions": len(every),
+        "baseline_moved": start > 0,
+        "baseline_start": subject_records[0]["session"] if subject_records else None,
+        "earlier": [{"session": r["session"], "recorded_at": r.get("recorded_at")}
+                    for r in earlier],
     }
     if not subject_records:
         return base

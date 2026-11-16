@@ -767,6 +767,10 @@
    "flagged": true
   }
  ],
+ "total_sessions": 36,
+ "baseline_moved": false,
+ "baseline_start": "fd1",
+ "earlier": [],
  "sessions": [
   "fd1",
   "fd2",

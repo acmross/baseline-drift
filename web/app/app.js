@@ -865,6 +865,25 @@ function dropFromReadOnly(data, index) {
   data.session_count = data.sessions.length;
 }
 
+// Sets the session the baseline begins at (or clears the choice with null) and
+// redraws the report. Nothing is deleted: earlier sessions stay saved and listed.
+async function moveBaseline(subject, session) {
+  try {
+    await api("/api/baseline", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ subject, session }),
+    });
+    await loadReport();
+    setStatus(session
+      ? `Your baseline now starts at ${sessionName(session)}. Earlier sessions are kept `
+        + "but are no longer part of it."
+      : "Your baseline is your first sessions again.");
+  } catch (error) {
+    setStatus(`Could not change the baseline. (${error.message})`);
+  }
+}
+
 // Which month groups are open, so the list keeps its shape when it is redrawn
 // after a deletion or a refresh.
 const openMonths = new Set();
@@ -935,18 +954,32 @@ function sessionsSection(data) {
   heading.textContent = "Your sessions";
   const note = document.createElement("p");
   note.className = "sub";
-  note.textContent = `The first ${data.n_baseline} sessions are your baseline. Sessions are `
-    + "grouped by month, newest first. Select a session to listen to it and see its "
-    + "measurements and check-in.";
+  note.textContent = (data.baseline_moved
+    ? `Your baseline is the ${data.n_baseline} sessions starting at ${sessionName(data.baseline_start)}. `
+    : `The first ${data.n_baseline} sessions are your baseline. `)
+    + "Sessions are grouped by month, newest first. Select a session to listen to it, "
+    + "see its measurements and check-in, or start your baseline from it.";
   box.append(heading, note);
-  // Newest first; index still points at the session's place in time.
-  const newestFirst = data.sessions.map((session, index) => ({ session, index })).reverse();
+  if (data.baseline_moved && !state.sample) {
+    const reset = document.createElement("button");
+    reset.type = "button";
+    reset.className = "secondary small";
+    reset.textContent = "Use my first sessions as the baseline again";
+    reset.addEventListener("click", () => moveBaseline(data.subject, null));
+    box.appendChild(reset);
+  }
+  // Newest first. index is the session's place among the scored sessions, or
+  // -1 for one recorded before the chosen baseline.
+  const stamps = data.recorded_at || [];
+  const newestFirst = (data.earlier || [])
+    .map((e) => ({ session: e.session, stamp: e.recorded_at, index: -1 }))
+    .concat(data.sessions.map((session, index) => ({ session, stamp: stamps[index], index })))
+    .reverse();
   // A long mission means hundreds of sessions, so they sit in one folding
   // group per month, under a year heading once there is more than one year.
   const groups = new Map();
   const years = new Set();
-  for (const { index } of newestFirst) {
-    const stamp = data.recorded_at && data.recorded_at[index];
+  for (const { stamp } of newestFirst) {
     if (stamp) years.add(parseStamp(stamp).getFullYear());
   }
   let lastYear = null;
@@ -983,7 +1016,7 @@ function sessionsSection(data) {
     groups.set(key, entry);
     return entry;
   };
-  newestFirst.forEach(({ session, index }) => {
+  newestFirst.forEach(({ session, index, stamp }) => {
     const row = document.createElement("div");
     row.className = "session-row";
     // The whole left side of the row opens the session; Delete sits alone.
@@ -999,9 +1032,8 @@ function sessionsSection(data) {
     name.textContent = sessionName(session);
     const when = document.createElement("span");
     when.className = "session-when";
-    const stamp = data.recorded_at && data.recorded_at[index];
     when.textContent = (stamp ? shortDate(parseStamp(stamp), !dateOnly(stamp)) : "no saved date")
-      + (index < data.n_baseline ? " · baseline" : "");
+      + (index < 0 ? " · before your baseline" : index < data.n_baseline ? " · baseline" : "");
     view.append(arrow, name, when);
     const detail = document.createElement("div");
     detail.className = "session-detail";
@@ -1022,6 +1054,15 @@ function sessionsSection(data) {
               checkin_note: data.checkin_note }
           : await api(`/api/session-detail?${query}`);
         detail.replaceChildren(sessionDetail(info, query));
+        if (!state.sample && index !== 0) {
+          // Re-setting the baseline deletes nothing; earlier sessions stay saved.
+          const move = document.createElement("button");
+          move.type = "button";
+          move.className = "secondary small baseline-move";
+          move.textContent = "Start my baseline from this session";
+          move.addEventListener("click", () => moveBaseline(data.subject, session));
+          detail.appendChild(move);
+        }
         detail.hidden = false;
         view.setAttribute("aria-expanded", "true");
       } catch (error) {
@@ -1075,7 +1116,8 @@ function renderStats(data) {
   const open = findings.filter((f) => !(f.explained_by && f.explained_by.length)).length;
   const progress = data.baseline_progress || { have: 0, need: data.n_baseline };
   const tiles = [
-    [String(data.session_count), data.session_count === 1 ? "check-in recorded" : "check-ins recorded", ""],
+    [String(data.total_sessions || data.session_count),
+      (data.total_sessions || data.session_count) === 1 ? "check-in recorded" : "check-ins recorded", ""],
     [`${Math.min(progress.have, progress.need)} of ${progress.need}`,
       progress.have >= progress.need ? "baseline sessions, complete" : "baseline sessions so far", ""],
     [String(open), open === 1 ? "change without a reported explanation" : "changes without a reported explanation",
