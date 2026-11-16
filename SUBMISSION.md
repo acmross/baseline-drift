@@ -92,11 +92,12 @@ depend on candour: concealing a cold pushes the drift into the unexplained
 column, which is the one the report highlights. It fails safe.
 
 **What we deliberately do not do.** We do not claim to detect fatigue, stress or
-mood. The published effect sizes do not support it: a clinical study detecting
-fatigue from free speech reached an AUC of 0.68, and a systematic review of
-twenty aviation studies found results fragmented by methodological heterogeneity
-and limited ecological validity. Every output string is a measurement plus a
-duration, never a diagnosis.
+mood. Published research does not support that claim yet. One clinical study
+that tried to detect fatigue from free speech scored 0.68 on a scale where 0.5
+is a coin flip and 1.0 is perfect. A review of twenty aviation studies found the
+results too inconsistent, and too far from real working conditions, to rely on.
+So every line the tool reports is a measurement and how long it has lasted,
+never a diagnosis.
 
 **Validation on NASA data.** OSD-575 is the Inspiration4 blood serum metabolic
 panel: four astronauts, three pre-flight and four post-flight samples each,
