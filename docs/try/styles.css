@@ -292,3 +292,17 @@ dialog { border-radius: 14px; box-shadow: 0 30px 80px rgba(0,0,0,0.6); }
   .stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tabs { flex-wrap: wrap; }
 }
+
+/* Sessions fold into one group per month. */
+.year { margin: 22px 0 6px; font-size: 20px; font-weight: 700; letter-spacing: -0.01em; }
+.month { border-top: 1px solid var(--line); }
+.month > summary { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 0 4px; cursor: pointer; list-style: none; border-radius: 8px; }
+.month > summary::-webkit-details-marker { display: none; }
+.month > summary::before { content: ""; flex: 0 0 auto; width: 8px; height: 8px; border-right: 2px solid var(--text-secondary); border-bottom: 2px solid var(--text-secondary); transform: rotate(-45deg); transition: transform 120ms; }
+.month[open] > summary::before { transform: rotate(45deg); }
+.month > summary:hover { background: var(--surface-2); }
+.month > summary:focus-visible { outline: 2px solid var(--text-primary); outline-offset: 2px; }
+.month-name { font-size: 16px; font-weight: 600; }
+.month-count { margin-left: auto; font-size: 13px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.month .session-row { margin-left: 20px; }
+.month .session-detail { margin-left: 20px; }

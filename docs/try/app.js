@@ -865,6 +865,10 @@ function dropFromReadOnly(data, index) {
   data.session_count = data.sessions.length;
 }
 
+// Which month groups are open, so the list keeps its shape when it is redrawn
+// after a deletion or a refresh.
+const openMonths = new Set();
+
 // Asks before a session is deleted. Resolves true only on "Delete session";
 // Cancel, Escape and closing the box all keep the session.
 function confirmDelete(name) {
@@ -931,11 +935,54 @@ function sessionsSection(data) {
   heading.textContent = "Your sessions";
   const note = document.createElement("p");
   note.className = "sub";
-  note.textContent = `The first ${data.n_baseline} sessions are your baseline. Select a `
-    + "session to listen to it and see its measurements and check-in.";
+  note.textContent = `The first ${data.n_baseline} sessions are your baseline. Sessions are `
+    + "grouped by month, newest first. Select a session to listen to it and see its "
+    + "measurements and check-in.";
   box.append(heading, note);
   // Newest first; index still points at the session's place in time.
   const newestFirst = data.sessions.map((session, index) => ({ session, index })).reverse();
+  // A long mission means hundreds of sessions, so they sit in one folding
+  // group per month, under a year heading once there is more than one year.
+  const groups = new Map();
+  const years = new Set();
+  for (const { index } of newestFirst) {
+    const stamp = data.recorded_at && data.recorded_at[index];
+    if (stamp) years.add(parseStamp(stamp).getFullYear());
+  }
+  let lastYear = null;
+  const groupFor = (stamp) => {
+    const date = stamp ? parseStamp(stamp) : null;
+    const key = date ? `${date.getFullYear()}-${date.getMonth()}` : "undated";
+    if (groups.has(key)) return groups.get(key);
+    if (date && years.size > 1 && date.getFullYear() !== lastYear) {
+      lastYear = date.getFullYear();
+      const year = document.createElement("h4");
+      year.className = "year";
+      year.textContent = String(lastYear);
+      box.appendChild(year);
+    }
+    const group = document.createElement("details");
+    group.className = "month";
+    group.open = groups.size === 0 && openMonths.size === 0 ? true : openMonths.has(key);
+    group.addEventListener("toggle", () => {
+      if (group.open) openMonths.add(key); else openMonths.delete(key);
+    });
+    if (group.open) openMonths.add(key);
+    const summary = document.createElement("summary");
+    const title = document.createElement("span");
+    title.className = "month-name";
+    title.textContent = date
+      ? date.toLocaleString([], years.size > 1 ? { month: "long" } : { month: "long", year: "numeric" })
+      : "No saved date";
+    const count = document.createElement("span");
+    count.className = "month-count";
+    summary.append(title, count);
+    group.appendChild(summary);
+    box.appendChild(group);
+    const entry = { group, count, n: 0 };
+    groups.set(key, entry);
+    return entry;
+  };
   newestFirst.forEach(({ session, index }) => {
     const row = document.createElement("div");
     row.className = "session-row";
@@ -1009,7 +1056,10 @@ function sessionsSection(data) {
       }
     });
     row.append(view, remove);
-    box.append(row, detail);
+    const entry = groupFor(stamp);
+    entry.group.append(row, detail);
+    entry.n += 1;
+    entry.count.textContent = entry.n === 1 ? "1 session" : `${entry.n} sessions`;
   });
   return box;
 }
