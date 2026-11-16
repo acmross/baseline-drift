@@ -124,9 +124,12 @@ not reported a cold."
 extraction, the same toolchain used to derive features for NIH's Bridge2AI-Voice
 dataset. The crew-facing app is one page of plain HTML, CSS and JavaScript
 served by a small FastAPI process bound to 127.0.0.1 on the crew laptop, with
-inline SVG charts and no external assets. It has three views: Record, Report
-and Trends over days, weeks and months. A crew member can play back, open and
-delete any of their own sessions. There are no network calls at runtime,
+inline SVG charts and no external assets. It has four views: Record, Report,
+Trends over days, weeks and months, and Sessions. A crew member can play back,
+open and delete any of their own sessions, and restart their baseline in one
+press. That matters because about three in four ISS crew are congested in their
+first week in orbit, so a first-week baseline is a congested one. The app says
+so and offers to restart the baseline from flight day 8. There are no network calls at runtime,
 because the entire premise is that it works with mission control unreachable.
 
 **Try it.** Three ways, all public and sign-in free. The hosted demo
