@@ -11,6 +11,7 @@ it (recordings, measurements, check-in answers) is deleted within
 RETENTION_SECONDS of that visitor's first request. The page says all of this in place of the privacy notice.
 """
 import contextvars
+import json
 import os
 import re
 import secrets
@@ -20,7 +21,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+from fastapi import Body, FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse, HTMLResponse
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -241,7 +242,45 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
         context_records = read_records(data / "context.jsonl")
         context = {(r["subject"], r["session"]): r.get("explains", {})
                    for r in context_records}
-        return build_report(records, context, subject)
+        return build_report(records, context, subject,
+                            baseline_start=_baseline_starts().get(subject))
+
+    def _baseline_starts() -> dict:
+        path = data / "baseline.json"
+        if not path.exists():
+            return {}
+        try:
+            found = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            return {}
+        return found if isinstance(found, dict) else {}
+
+    def _save_baseline_starts(starts: dict) -> None:
+        (data / "baseline.json").write_text(json.dumps(starts), encoding="utf-8")
+
+    @app.post("/api/baseline")
+    def set_baseline(body: dict = Body(...)) -> dict:
+        """Choose the session the baseline begins at, or clear the choice.
+
+        Nothing is deleted. Sessions before the chosen one stay saved and
+        listed; they simply stop being part of the baseline.
+        """
+        try:
+            subject = validate_id(str(body.get("subject", "")), "subject")
+            session = body.get("session")
+            if session is not None:
+                session = validate_id(str(session), "session")
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        starts = _baseline_starts()
+        if session is None:
+            starts.pop(subject, None)
+        else:
+            if not has_session(read_records(data / "sessions.jsonl"), subject, session):
+                raise HTTPException(status_code=404, detail="no such session")
+            starts[subject] = session
+        _save_baseline_starts(starts)
+        return {"subject": subject, "baseline_start": session}
 
     # The page is served from disk on this machine, so caching buys nothing
     # and a stale script against a newer page breaks the buttons.
@@ -386,6 +425,11 @@ def create_app(data_dir: Path | None = None, static_dir: Path | None = None,
         if not removed:
             raise HTTPException(status_code=404, detail="no such session")
         remove_session(data / "context.jsonl", subject, session)
+        starts = _baseline_starts()
+        if starts.get(subject) == session:
+            # The chosen starting point is gone, so fall back to the first sessions.
+            starts.pop(subject)
+            _save_baseline_starts(starts)
         files = 0
         recording_dir = data / "recordings" / subject
         for take in ("vowel", "passage", "free"):

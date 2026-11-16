@@ -247,3 +247,36 @@ def test_local_app_is_not_hosted(tmp_path):
     client = TestClient(create_app(data_dir=tmp_path / "data"))
     page = client.get("/")
     assert "BASELINE_DRIFT_HOSTED = " not in page.text and "set-cookie" not in page.headers
+
+
+def test_baseline_can_start_at_a_chosen_session(tmp_path):
+    data = tmp_path / "data"
+    client = TestClient(create_app(data_dir=data, max_upload_bytes=5_000_000))
+    for day in range(1, 6):
+        made = client.post(
+            "/api/session", data={"subject": "AMANDA", "session": f"fd{day}"},
+            files={"vowel": ("v.wav", wav_bytes(tmp_path / "v.wav"), "audio/wav"),
+                   "passage": ("p.wav", wav_bytes(tmp_path / "p.wav", 1.5), "audio/wav")})
+        assert made.status_code == 201
+    report = client.get("/api/report", params={"subject": "AMANDA"}).json()
+    assert report["sessions"][0] == "fd1" and not report["baseline_moved"]
+
+    moved = client.post("/api/baseline", json={"subject": "AMANDA", "session": "fd3"})
+    assert moved.status_code == 200
+    report = client.get("/api/report", params={"subject": "AMANDA"}).json()
+    assert report["sessions"] == ["fd3", "fd4", "fd5"]            # the new baseline
+    assert [e["session"] for e in report["earlier"]] == ["fd1", "fd2"]
+    assert report["baseline_moved"] and report["state"] == "baseline"
+    assert report["total_sessions"] == 5                          # nothing was deleted
+
+    assert client.post("/api/baseline",
+                       json={"subject": "AMANDA", "session": "nope"}).status_code == 404
+
+    # Deleting the chosen starting session falls back to the first sessions.
+    client.delete("/api/session", params={"subject": "AMANDA", "session": "fd3"})
+    report = client.get("/api/report", params={"subject": "AMANDA"}).json()
+    assert report["sessions"][0] == "fd1" and not report["baseline_moved"]
+
+    client.post("/api/baseline", json={"subject": "AMANDA", "session": "fd4"})
+    client.post("/api/baseline", json={"subject": "AMANDA", "session": None})
+    assert not client.get("/api/report", params={"subject": "AMANDA"}).json()["baseline_moved"]
