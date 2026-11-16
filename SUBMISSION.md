@@ -14,41 +14,37 @@ Baseline Drift
 ## Summary (50 to 200 words)
 
 Astronauts on long missions carry much of the responsibility for noticing
-changes in their own health, and the farther they travel, the longer
-help takes to reach them.
-Baseline Drift is a daily voice check-in that runs entirely offline on the
-crew's own laptop.
+changes in their own health, and the farther they travel, the longer help takes
+to reach them. Baseline Drift is a daily voice check-in that runs entirely
+offline on the crew's own laptop.
 
-The astronaut records a short sample and answers a few questions. The tool
-extracts eight acoustic features, compares them against that person's own
-earlier sessions rather than a population norm, and reports what moved, how
-far, and for how long.
+The astronaut records a short voice sample and fills in a short health survey.
+The tool takes eight measurements from the voice, compares them with that
+person's own earlier sessions rather than an average of other people, and
+reports what changed, how far, and for how long.
 
-It does not diagnose. Inferring mood or fatigue from voice is an open research
-problem with modest published accuracy, so we report measurements and leave
-interpretation to the crew member. That discipline is also what makes the tool
-useful: when a reported head cold accounts for the change, the report says so,
-and what remains unexplained is the part worth reading.
+It does not diagnose. Reading mood or fatigue from a voice is still unproven
+research, so we report measurements and leave the interpretation to the crew
+member. When a reported cold accounts for a change, the report says so, and what
+remains unexplained is the part worth reading.
 
-Before applying it to voice, we tested the method on real astronaut data:
-NASA's OSD-575 blood tests from the four Inspiration4 crew. Checking only
-whether a reading was unusual for that person flagged 65 of 272 readings, far
-too many to be real. Adding a second check, that the change is large enough to
-matter, cut that to 11. That result is why Baseline Drift has three checks, and
-it can be reproduced from the code and data in our repository.
+We first tested the method on real astronaut data: NASA's OSD-575 blood tests
+from the four Inspiration4 crew. Checking only whether a reading was unusual for
+that person flagged 65 of 272 readings, far too many to be real. Requiring the
+change to also be large enough to matter cut that to 11. That is why Baseline
+Drift has three checks.
 
 ---
 
 ## Project Details
 
 **What it does.** Baseline Drift turns a daily voice check-in into a health
-signal the crew member can act on. Each session has three fixed tasks: a
-sustained vowel, a fixed passage read aloud, and thirty seconds of free speech
-answering the same four questions. The
-tool extracts eight acoustic measures (mean fundamental frequency and its
-variability, intensity, jitter, shimmer, harmonic-to-noise ratio, pause ratio
-and speaking rate), compares them to that person's own baseline, and reports
-what changed in plain language.
+signal the crew member can act on. Each session has three fixed tasks: holding
+an "ah" sound, reading a fixed passage aloud, and thirty seconds of free speech
+in response to four fixed prompts. The tool takes eight measurements from the
+recording (pitch and how much it varies, loudness, two measures of steadiness,
+breathiness, how much of the time is pauses, and speaking rate), compares them
+with that person's own baseline, and reports what changed in plain language.
 
 **How it works: three checks.** A change is reported only when it passes all
 three. Each check was added because the ones before it still let false alarms
@@ -83,13 +79,14 @@ unexplained: more pausing and slower speech. Those are the same signs of fatigue
 described in aviation research, and the same ones a 2026 sleep-deprivation study
 (SOMVOICE) found in tired speakers. A cold does not explain them.
 
-**Why two channels.** Self-report fails when someone will not say, and the
-National Academies has documented that astronauts face real pressure to withhold
-medical information because disclosure may affect whether they fly again.
-Acoustics fail when something benign moves the numbers. Neither is trustworthy
-alone, and each covers the other's blind spot. Critically, the design does not
-depend on candour: concealing a cold pushes the drift into the unexplained
-column, which is the one the report highlights. It fails safe.
+**Why two channels.** Asking people how they feel fails when someone will not
+say, and the National Academies has documented that astronauts face real
+pressure to withhold medical information, because disclosure may affect whether
+they fly again. Measuring the voice fails when something harmless moves the
+numbers. Neither can be trusted alone, and each covers the other's blind spot.
+The design also does not depend on honesty: hiding a cold does not hide the
+change, it only leaves the change unexplained, and unexplained changes are what
+the report highlights. It fails safe.
 
 **What we deliberately do not do.** We do not claim to detect fatigue, stress or
 mood. Published research does not support that claim yet. One clinical study
@@ -139,7 +136,7 @@ because the entire premise is that it works with mission control unreachable.
 (https://acmross.github.io/baseline-drift/demo/) runs the real pipeline so a
 judge can record check-ins and get their own measurements back. It is the one
 version that sends a recording off the device, it says so on the page, and
-everything recorded there is deleted within two hours. The online preview
+everything recorded there is deleted within two hours. The example report
 (https://acmross.github.io/baseline-drift/example/) opens instantly on a simulated
 crew member's ten weeks of check-ins, plus real check-ins from a team member.
 The repository has the app itself for macOS, Linux and Windows.
@@ -149,22 +146,22 @@ offline on existing hardware, tracks a person against their own history rather
 than a population they may not resemble, and gives them something concrete to
 bring to a clinician they see rarely.
 
-**Prior work, and what is actually new.** The signal is not speculative and we
-are not claiming an empty field. NASA-funded work on the HERA isolation analog
-predicted crew efficacy and cohesion at 80 to 91 percent from acoustic features
-(that figure is team functioning, not individual fatigue, and we are careful not
-to overstate it). Axiom Space is flying Voice in Space on private astronaut
-missions, using electroglottograph measurements and scripted recordings to train
-detection algorithms. NIH's Bridge2AI-Voice has assembled 48,000 recordings
-using the same Praat and OpenSMILE toolchain we use.
+**Prior work, and what is actually new.** The idea that voice carries health
+information is not speculative, and we are not claiming an empty field. NASA-
+funded work on HERA, a simulated space mission on Earth, predicted how well
+crews worked together at 80 to 91 percent accuracy from the sound of their
+voices (that figure is about team functioning, not individual fatigue, and we
+are careful not to overstate it). Axiom Space is flying Voice in Space on
+private astronaut missions, collecting scripted recordings with dedicated
+sensors to train detection algorithms. NIH's Bridge2AI-Voice has assembled
+48,000 recordings using the same Praat and OpenSMILE tools we use.
 
-What none of those are is a deployed, crew-facing tool. Axiom's is a study that
-reports to investigators and requires dedicated hardware. Bridge2AI is
-cross-sectional and supervised, built to classify which condition a voice
-indicates, with mostly one session per participant, so it structurally cannot
-train a per-person baseline. Our contribution is the thing that runs on the
-laptop the crew already has, needs no labels, no training and no network, and
-reports to the person who made the recording.
+What none of those are is a working tool in the crew's hands. Axiom's is a study
+that reports to researchers and needs dedicated hardware. Bridge2AI is built to
+recognise which condition a voice points to, and has mostly one recording
+session per person, so it cannot be used to learn one person's baseline. Our
+contribution is the thing that runs on the laptop the crew already has, needs no
+training data and no network, and reports to the person who made the recording.
 
 **Reproducing the data findings.** Each of the four data problems described
 above can be reproduced from the code and data in our repository.
@@ -172,9 +169,10 @@ above can be reproduced from the code and data in our repository.
 **What we have not shown.** We have not shown that a change nobody reported
 predicts anything. NASA's HERA Standard Measures, which records how crews felt
 during the same simulated missions, is the dataset that could confirm or
-disprove it. Our cut-off values are starting guesses. They need tuning on real
-day-to-day variation in people's voices, and NIH's Bridge2AI-Voice is the right
-dataset for that. Both need approved access.
+disprove it. Our cut-off values are starting guesses. They need tuning on
+recordings of the same people over many sessions. The Leeds Multi-Session Corpus
+(16 speakers, 6 to 8 sessions each) has that shape, and NIH's Bridge2AI-Voice
+adds breadth. All three need approved access.
 
 ---
 

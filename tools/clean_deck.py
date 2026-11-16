@@ -5,7 +5,8 @@ The deck is edited in Claude and exported from there as a web page (Download,
 "Web page (.html)"). The export copies every style on the page, including any
 hide-rules a browser ad blocker injected, which adds a long list of ad and
 adult site names to the file. This strips those rules and nothing else, then
-writes docs/pitch-deck.html, the public address the submission links to.
+adds the app's tab icon, and writes docs/pitch-deck.html, the public address
+the submission links to.
 
 Usage:
     python tools/clean_deck.py "path/to/Baseline Drift.html"
@@ -14,7 +15,21 @@ import re
 import sys
 from pathlib import Path
 
-TARGET = Path(__file__).resolve().parent.parent / "docs" / "pitch-deck.html"
+ROOT = Path(__file__).resolve().parent.parent
+TARGET = ROOT / "docs" / "pitch-deck.html"
+APP_PAGE = ROOT / "web" / "app" / "index.html"
+
+
+def add_tab_icon(html: str) -> str:
+    """Give the deck the app's tab icon. The export has none, so a browser
+    shows a blank globe."""
+    if 'rel="icon"' in html:
+        return html
+    icon = re.search(r'<link rel="icon"[^>]*>', APP_PAGE.read_text(encoding="utf-8"))
+    head = re.search(r"<head[^>]*>", html)
+    if not icon or not head:
+        return html
+    return html[:head.end()] + "\n" + icon.group(0) + html[head.end():]
 
 
 def strip_blocker_rules(css: str) -> tuple[str, int]:
@@ -59,6 +74,7 @@ def main() -> int:
     if slides != 7:
         print(f"expected 7 slides, found {slides}; not writing")
         return 1
+    html = add_tab_icon(html)
     TARGET.write_text(html, encoding="utf-8")
     print(f"wrote {TARGET.name}: {slides} slides, {total} ad-blocker rules removed, "
           f"{len(html) // 1024} KB")
