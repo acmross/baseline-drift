@@ -99,18 +99,20 @@ results too inconsistent, and too far from real working conditions, to rely on.
 So every line the tool reports is a measurement and how long it has lasted,
 never a diagnosis.
 
-**Validation on NASA data.** OSD-575 is the Inspiration4 blood serum metabolic
-panel: four astronauts, three pre-flight and four post-flight samples each,
-nineteen analytes. That before-and-after structure is the same shape as our
-baseline logic, so the detector transfers directly. Beyond validating the
-method, running it surfaced four data-quality findings: a header that breaks its
-own naming convention and silently drops two analytes; haptoglobin pinned at an
-assay ceiling in seven of twenty-eight samples; reference ranges that shift
-mid-study for one subject only; and glucose below the reference range in three
-of four crew at R+45, which forty-five days after landing is far more likely to
-be fasting status or sample handling than physiology. That last one is the best
-argument for our design: the detector fired correctly and the cause was
-logistics. A tool that had named a cause would have been confidently wrong.
+**Validation on NASA data.** OSD-575 holds blood test results from the four
+Inspiration4 astronauts: three samples each before the flight and four after,
+covering nineteen blood measurements. That is the same pattern our tool uses, a
+few early readings and then later ones to compare against them, so we could run
+it on this data unchanged. Running it also turned up four problems in the data
+itself. One column heading does not follow the file's own naming pattern, so two
+measurements are silently dropped. One protein, haptoglobin, sits at the highest
+value the lab test can report in seven of twenty-eight samples. The normal range
+changes partway through the study for one astronaut only. And three of the four
+crew had low blood sugar 45 days after landing. That long after landing, low
+blood sugar is far more likely to come from not having eaten, or from how the
+sample was handled, than from spaceflight. That last one is the best argument
+for our design: the tool correctly flagged a real change, and the cause was
+ordinary. A tool that had named a cause would have been confidently wrong.
 
 **Where it runs.** On the Station Support Computer, the Ops LAN laptop that
 already hosts private medical conferences and sits deliberately off the
