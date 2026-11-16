@@ -6,7 +6,8 @@ for Astronauts.**
 ## In one paragraph
 
 Astronauts on long missions carry most of the responsibility for noticing
-changes in their own health, at exactly the distance where help is slowest.
+changes in their own health, and the farther they travel, the longer
+help takes to reach them.
 Baseline Drift is a daily voice check-in that runs offline on the crew's own
 laptop. It extracts eight acoustic features, compares them against that
 person's own earlier sessions rather than a population norm, and reports what

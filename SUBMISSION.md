@@ -14,7 +14,8 @@ Baseline Drift
 ## Summary (50 to 200 words)
 
 Astronauts on long missions carry much of the responsibility for noticing
-changes in their own health, at exactly the distance where help is slowest.
+changes in their own health, and the farther they travel, the longer
+help takes to reach them.
 Baseline Drift is a daily voice check-in that runs entirely offline on the
 crew's own laptop.
 
